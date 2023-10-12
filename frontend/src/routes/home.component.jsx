@@ -1,10 +1,27 @@
+import { useState, useEffect } from 'react';
+
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
+import fetchFromFlaskAPIUsingGet from '../utils/fetch-from-flask-api';
+
+
 const Home = ()  => {
+    const [data, setData] = useState(123);
+
+    useEffect(() => {
+        const getData = async () => {
+            const response = await fetchFromFlaskAPIUsingGet("/api/getItem/4323");
+            console.log(response);
+            setData(response.SKU)
+        }
+        getData();
+    },[]);
+
   return (
     <View style={styles.container}>
       <Text>Welcome to my react app</Text>
+      <Text>{data}</Text>
       <StatusBar style="auto" />
     </View>
   );
