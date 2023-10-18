@@ -21,7 +21,7 @@ headers = {
     }
 
 def pretty_print_json(json_data):
-    print(json.dumps(json_data, indent=1))
+    print(json.dumps(json_data, indent=5))
 
 
 def getAllEbayItemIDs(page=1):

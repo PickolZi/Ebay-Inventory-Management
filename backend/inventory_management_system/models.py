@@ -9,15 +9,14 @@ class Item(db.Model):
     # And then all of this data will be displayed on the frontend.
     id = Column("id", Integer, primary_key=True)
     title = Column("title", Integer)
-    desc = Column("desc", String)
     price = Column("price", Float)
-    location = Column("location", String)
     status = Column("status", String)
     listed_date = Column("listed_date", db.Date)
     ebay_url = Column("ebay_url", String)
 
     # Will be given default values
-    last_updated_date = Column("last_updated_date", default=datetime.utcnow)
+    location = Column("location", String, default="")
+    last_updated_date = Column("last_updated_date", db.Date, default=datetime.utcnow)
     length = Column("length", Float, default=0)
     width = Column("width", Float, default=0)
     height = Column("height", Float, default=0)
@@ -27,12 +26,10 @@ class Item(db.Model):
     image_url = db.relationship("Url", backref="item")
 
 
-    def __init__(self, id, title, desc, price, location, status, listed_date, ebay_url):
+    def __init__(self, id, title, price, status, listed_date, ebay_url):
         self.id = id
         self.title = title
-        self.desc = desc
         self.price = price
-        self.location = location
         self.status = status
         self.listed_date = listed_date
         self.ebay_url = ebay_url
