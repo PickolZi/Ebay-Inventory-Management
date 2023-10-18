@@ -1,7 +1,9 @@
 from flask import Flask, render_template
-from .routes import main
+from flask_sqlalchemy import SQLAlchemy
 import os, json
 
+
+db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
@@ -11,11 +13,11 @@ def create_app():
 
     # app.config["SECRET_KEY"] = SECRETS.get('FLASK_SECRET_KEY')
     app.config["SECRET_KEY"] = "7be1e1e0ae42c0e74724e2cf"
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 
+    db.init_app(app)
 
+    from .routes import main
     app.register_blueprint(main)
 
     return app
-
-
-from inventory_management_system import routes 

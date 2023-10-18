@@ -1,9 +1,19 @@
 from flask import Flask, render_template, request, Blueprint, request, redirect, url_for, jsonify
+from .models import Item
+from . import db
 
 main = Blueprint('main', __name__)
 
 @main.route("/")
 def index():
+    # item = Item(382190381, 2014, "Toyota", "Prius", 8028, "B5")
+    # db.session.add(item)
+    # db.session.commit()
+    # print("Created and added item...")
+
+    print(Item.query.all())
+    print(db)
+
     return "Nyhallo world!"
 
 @main.route("/api/getAllItems")
