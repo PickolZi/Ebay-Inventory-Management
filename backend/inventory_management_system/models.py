@@ -11,12 +11,12 @@ class Item(db.Model):
     title = Column("title", Integer)
     price = Column("price", Float)
     status = Column("status", String)
-    listed_date = Column("listed_date", db.Date)
+    listed_date = Column("listed_date", db.DateTime)
     ebay_url = Column("ebay_url", String)
 
     # Will be given default values
     location = Column("location", String, default="")
-    last_updated_date = Column("last_updated_date", db.Date, default=datetime.utcnow)
+    last_updated_date = Column("last_updated_date", db.DateTime, default=datetime.utcnow)
     length = Column("length", Float, default=0)
     width = Column("width", Float, default=0)
     height = Column("height", Float, default=0)
@@ -45,6 +45,6 @@ class Url(db.Model):
 
 
     def __repr__(self):
-        return f"Url: {image_url}"
+        return f"Url: {self.image_url}"
 
     
