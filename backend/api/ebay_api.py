@@ -24,7 +24,7 @@ def pretty_print_json(json_data):
     print(json.dumps(json_data, indent=5))
 
 
-def getAllEbayItemIDs(page=1):
+def getAllEbayItemIDs(all_item_ids, page=1):
     # Calls ebay's tradional inventory api to get the user's items from inventory
     # Doesn't get all the item's info, so I am using this call just to gather all the item's ids.
     # Returns list[int] => item ids
@@ -47,11 +47,9 @@ def getAllEbayItemIDs(page=1):
 
     response = requests.post(EBAY_GET_ITEMS_ENDPOINT, headers=headers, data=body)
     json_data = xmlToJsonParser(response.text)
+
     if "Errors" in json_data["GetMyeBaySellingResponse"].keys():
         return None
-
-    if page == 1:
-        all_item_ids = []
 
     ebay_items = json_data["GetMyeBaySellingResponse"]["ActiveList"]["ItemArray"]["Item"]
     for item in ebay_items:
@@ -60,7 +58,7 @@ def getAllEbayItemIDs(page=1):
         
     numOfPages = int(json_data["GetMyeBaySellingResponse"]["ActiveList"]["PaginationResult"]["TotalNumberOfPages"])
     if numOfPages > page:
-        getAllEbayItemIDs(page=page+1)
+        all_item_ids = getAllEbayItemIDs(all_item_ids, page=page+1)
 
     return all_item_ids
 
@@ -88,4 +86,6 @@ def getEbayItem(id):
 
 if __name__ == "__main__":
     # print(getAllEbayItemIDs())
-    pretty_print_json(getEbayItem(364532113079))
+    # pretty_print_json(getEbayItem(364532113079))
+    total = getAllEbayItemIDs(all_item_ids)
+    pretty_print_json(total)

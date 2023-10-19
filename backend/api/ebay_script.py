@@ -10,7 +10,8 @@ def firstTimeRunFillDatabase():
     # 2) Loops through each id and calls ebay id to get json data for each item.
     # 3) Each iteration will grab only the data I need and then update the database.
    
-    ebay_ids = getAllEbayItemIDs()
+    ebay_ids = []
+    ebay_ids = getAllEbayItemIDs(ebay_ids)
     if not ebay_ids:
         print("Error has occured: check ebay user token and then try again.")
         return None
@@ -64,4 +65,5 @@ def updateDatabase(ebayItemID, data):
     pass
 
 if __name__ == "__main__":
+    # pass
     firstTimeRunFillDatabase()

@@ -11,9 +11,9 @@ const Home = ()  => {
 
     useEffect(() => {
         const getData = async () => {
-            const response = await fetchFromFlaskAPIUsingGet("/api/getItem/4323");
+            const response = await fetchFromFlaskAPIUsingGet("/api/getItem/364532113079");
             console.log(response);
-            setData(response.SKU)
+            setData(response.title)
         }
         getData();
     },[]);
