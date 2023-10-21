@@ -6,7 +6,15 @@ main = Blueprint('main', __name__)
 
 @main.route("/")
 def index():
-    return "Nyhallo world!"
+    items = Item.query.all()
+
+    return render_template('temp_home.html', items=items)
+
+@main.route("/item/<int:id>")
+def item(id):
+    item = Item.query.get_or_404(id)
+
+    return render_template('temp_item.html', item=item)
 
 @main.route("/api/getAllItems")
 def getAllItems():

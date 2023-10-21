@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Itemiz App - {{item.title}}</title>
+
+        <style>
+            .item__img {
+                width: 300px;
+                height: 300px;
+            }
+        </style>
+
+    </head>
+    <body>
+        
+        <div class="item">
+            <h1><a href="/">Itemiz Home</a></h1>
+            <h2>{{ item.title }}</h2>
+            <h3>Status: {{ item.status }}</h3>
+            <h3>${{ item.price }}</h3>
+            <h3>Listed: {{ item.listed_date}}</h3>
+            <h3>Location: {{ item.location }}</h3>
+            <h3>Length: {{ item.length }}</h3>
+            <h3>Width: {{ item.width }}</h3>
+            <h3>Height: {{ item.height }}</h3>
+            <h3>Weight: {{ item.weight }}</h3>
+            <h3>Ebay ID: {{ item.id }}</h3>
+            <a href="{{ item.ebay_url }}" target="_blank">Ebay link</a>
+
+            <div class="item__imgs">
+                {% for img in item.image_url %}
+                    <img class="item__img" src="{{ img.image_url }}" alt="{{item.title}} image">
+                {% endfor %}
+            </div>
+        </div>
+
+    </body>
+</html>
