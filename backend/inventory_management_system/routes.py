@@ -1,9 +1,12 @@
+from datetime import datetime
+
 from flask import Flask, render_template, request, Blueprint, request, redirect, url_for, jsonify
 from .models import Item, Url
 from . import db
 
 main = Blueprint('main', __name__)
 
+# Flask temporary frontend routes
 @main.route("/")
 def index():
     items = Item.query.all()
@@ -12,10 +15,13 @@ def index():
 
 @main.route("/item/<int:id>")
 def item(id):
+    message = request.args.get('message')
     item = Item.query.get_or_404(id)
 
-    return render_template('temp_item.html', item=item)
+    return render_template('temp_item.html', item=item, message=message)
 
+
+# Endpoints for React frontend
 @main.route("/api/getAllItems")
 def getAllItems():
     # Returns the ids off all ebay items
@@ -45,10 +51,37 @@ def getItem(id):
         'image_urls': image_urls,
     })
 
-@main.route('/api/editItem/<int:id>')
+@main.route('/api/editItem/<int:id>', methods=["POST"])
 def editItem(id):
     # TODO: Given the ebay item id as well as a JSON data payload through a POST method. Update the info in the database.
     # The only info that SHOULD be updated are: location, last_updated_date, length, width, height, and weight.
-    # id, title, price, status, listed_date, and ebay_url SHOULD NOT BE UPDATED THROUGH FLASK, SHOULD BE PULLED FROM EBAY API.
+    # id, title, price, status, listed_date, and ebay_url SHOULD NOT BE UPDATED THROUGH FLASK, SHOULD BE UPDATED FROM EBAY API.
 
-    return f"editing item: {id}"
+    item = Item.query.get_or_404(id)
+
+    # API POST DATA built temporarily for flask. Will need to change to take in JSON for react frontend.
+    location = request.form.get('item__form-location-data', "")
+    length = request.form.get('item__form-length-data', "")
+    width = request.form.get('item__form-width-data', "")
+    height = request.form.get('item__form-height-data', "")
+    weight = request.form.get('item__form-weight-data', "")
+
+    item.location = location
+    item.length = length
+    item.width = width
+    item.height = height
+    item.weight = weight
+    item.last_updated_date = datetime.utcnow()
+
+    db.session.commit()
+
+    return redirect(url_for('main.item', id=id, message="Successfully edited item!"))
+
+
+# Endpoints for Ebay API
+@main.route('/ebay-api/updateItem/')
+def ebayUpdateItem(id):
+    # Endpoint that is called by ebay's webhooks to update any information regarding the inventory item
+    # Updating: titles, status, price, images, etc...
+    
+    return f"Hello Ebay webhook!"

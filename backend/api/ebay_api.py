@@ -1,4 +1,4 @@
-# Holds all of ebay api functionality
+# Anything that calls the ebay API will be held in this file.
 # getAllEbayItemIDs() => list[int] => returns all user's ebay item ids.
 # getEbayItem(id) => json => returns all data retaining an ebay item.
 import requests

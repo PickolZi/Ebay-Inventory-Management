@@ -12,18 +12,67 @@
 
     </head>
     <body>
-        
+        {% if message %}
+            <h1 style="color: green">{{ message }}</h1>
+        {% endif %}
         <div class="item">
             <h1><a href="/">Itemiz Home</a></h1>
             <h2>{{ item.title }}</h2>
             <h3>Status: {{ item.status }}</h3>
             <h3>${{ item.price }}</h3>
             <h3>Listed: {{ item.listed_date}}</h3>
-            <h3>Location: {{ item.location }}</h3>
-            <h3>Length: {{ item.length }}</h3>
-            <h3>Width: {{ item.width }}</h3>
-            <h3>Height: {{ item.height }}</h3>
-            <h3>Weight: {{ item.weight }}</h3>
+            <h3>Last updated: {{ item.last_updated_date }}</h3>
+
+            <form action="/api/editItem/{{item.id}}" method="POST" class="item__form">
+                <!-- Variables -->
+                {% if item.location %}
+                    {% set item_location = item.location %} 
+                {% else %}
+                    {% set item_location = "" %} 
+                {% endif %}
+
+                {% if item.length %}
+                    {% set item_length = item.length %} 
+                {% else %}
+                    {% set item_length = "" %} 
+                {% endif %}
+
+                {% if item.width %}
+                    {% set item_width = item.width %} 
+                {% else %}
+                    {% set item_width = "" %} 
+                {% endif %}
+
+                {% if item.height %}
+                    {% set item_height = item.height %} 
+                {% else %}
+                    {% set item_height = "" %} 
+                {% endif %}
+
+                {% if item.weight %}
+                    {% set item_weight = item.weight %} 
+                {% else %}
+                    {% set item_weight = "" %} 
+                {% endif %}
+
+                <h3>Location: {{ item.location }}</h3>
+                <input class="item__form-input" name="item__form-location-data" type="text" value={{item_location}}>
+
+                <h3>Length: {{ item.length }} inch</h3>
+                <input class="item__form-input" name="item__form-length-data" type="number" step="any" value={{item_length}}>
+
+                <h3>Width: {{ item.width }} inch</h3>
+                <input class="item__form-input" name="item__form-width-data" type="number" step="any" value={{item_width}}>
+
+                <h3>Height: {{ item.height }} inch</h3>
+                <input class="item__form-input" name="item__form-height-data" type="number" step="any" value={{item_height}}>
+
+                <h3>Weight: {{ item.weight }} Lbs</h3>
+                <input class="item__form-input" name="item__form-weight-data" type="number" step="any" value={{item_weight}}>
+
+                <input type="submit" value="Submit edit">
+            </form>
+
             <h3>Ebay ID: {{ item.id }}</h3>
             <a href="{{ item.ebay_url }}" target="_blank">Ebay link</a>
 
