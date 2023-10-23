@@ -26,7 +26,38 @@ def item(id):
 def getAllItems():
     # Returns the ids off all ebay items
     items = Item.query.all()
-    return jsonify({'ids': [item.id for item in items]})
+    return jsonify({
+            'ids': [item.id for item in items], 
+            'total': len(items)
+        })
+
+@main.route("/api/getAllItemsAndData")
+def getAllItemsAndData():
+    # Returns the json of every single ebay item from the database including all of its attributes.
+    items = Item.query.all()
+    output = []
+    for item in items:
+        image_urls = [image_url.image_url for image_url in item.image_url]
+        output.append(
+            {
+                'id': item.id,
+                'title': item.title,
+                'price': item.price,
+                'status': item.status,
+                'listed_date': item.listed_date,
+                'ebay_url': item.ebay_url,
+                'location': item.location,
+                'last_updated_date': item.last_updated_date,
+                'length': item.length,
+                'width': item.width,
+                'height': item.height,
+                'weight': item.weight,
+                'image_urls': image_urls,
+            }
+        )
+
+    return jsonify({'items': output, 'total': len(output)})
+
 
 @main.route("/api/getItem/<int:id>")
 def getItem(id):
