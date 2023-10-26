@@ -1,12 +1,15 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 import os, json
+from flask_cors import CORS
 
 
 db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
+    cors = CORS(app)
+    app.config['CORS_HEADERS'] = 'Content-Type'
 
     # with open("SECRETS.json", "r") as file:
     #     SECRETS = json.load(file)

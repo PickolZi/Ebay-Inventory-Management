@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from flask_cors import cross_origin
 from flask import Flask, render_template, request, Blueprint, request, redirect, url_for, jsonify
 from .models import Item, Url
 from . import db
@@ -23,6 +24,7 @@ def item(id):
 
 # Endpoints for React frontend
 @main.route("/api/getAllItems")
+@cross_origin()
 def getAllItems():
     # Returns the ids off all ebay items
     items = Item.query.all()
