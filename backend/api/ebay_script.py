@@ -1,32 +1,54 @@
 # This script will be ran whenever we want to update the sqlite database with the ebay api data
 import sqlite3
-from ebay_api import getAllEbayItemIDs, getEbayItem, pretty_print_json
-from datetime import datetime
+from ebay_api import getAllEbayItemIDs, getEbayItem, areSoldItems, pretty_print_json
+from datetime import datetime, timedelta
 
+DB_LOCATION = "../instance/db.sqlite3"
 
-def firstTimeRunFillDatabase():
-    # PLEASE ONLY RUN WHEN DATABASE IS EMPTY AND WANTING TO FILL DATABASE WITH EACH AND EVERY ITEM FROM EBAY API.
-    # 1) Gets all ebay ids
-    # 2) Loops through each id and calls ebay id to get json data for each item.
-    # 3) Each iteration will grab only the data I need and then update the database.
+def updateDatabaseActiveAndSoldEbayItems():
+    # Function ran every 30 minutes, getting newly listed/sold items from ebay and updating to database.
+    # 1) Gets list of ebay ids from ebay api
+    # 2) For each ebay id in list of ebay items, update last_checked_on_ebay_date. 
+    # 3) Only call getEbayItem() for newly listed items not in database to get more info. Then add to database.
+    # 4) For ebay items that weren't just updated, check if item has sold. If so, change status to Sold
    
-    ebay_ids = []
-    ebay_ids = getAllEbayItemIDs(ebay_ids)
-    if not ebay_ids:
-        print("Error has occured: check ebay user token and then try again.")
+    from db_commands import getAllEbayItemIDsFromDatabase
+    # Step 1:
+    ebay_ids_from_ebay = []
+    ebay_ids_from_ebay = getAllEbayItemIDs()
+    if not ebay_ids_from_ebay:
+        print("Error has occured when getting ebay items from ebay api: check ebay user token and then try again.")
         return None
+    
 
     # Connecting to database
-    con = sqlite3.connect("../instance/db.sqlite3")
+    con = sqlite3.connect(DB_LOCATION)
     cur = con.cursor()
 
-    for ebay_index, ebay_id in enumerate(ebay_ids):
+    # Step 2:
+    ebay_ids_in_database = getAllEbayItemIDsFromDatabase()
+    ebay_ids_not_in_database = []
+    cur_time = datetime.now() - timedelta(minutes=2)
+    for ebay_id in ebay_ids_from_ebay:
+        if ebay_id in ebay_ids_in_database:
+            con.execute(f"""
+                UPDATE item 
+                SET last_checked_on_ebay_date="{datetime.now()}"
+                WHERE id = {ebay_id};
+            """)
+        else:
+            ebay_ids_not_in_database.append(ebay_id)
+    con.commit()
+
+    # Step 3:
+    for ebay_index, ebay_id in enumerate(ebay_ids_not_in_database):
         ebay_json_data = getEbayItem(ebay_id)
 
         id = ebay_id
         title = ebay_json_data["GetItemResponse"]["Item"]["Title"]
         price = ebay_json_data["GetItemResponse"]["Item"]["StartPrice"]["#text"]
         status = ebay_json_data["GetItemResponse"]["Item"]["SellingStatus"]["ListingStatus"]
+        sku = ebay_json_data["GetItemResponse"]["Item"]["SKU"] if "SKU" in ebay_json_data["GetItemResponse"]["Item"] else ""
         listed_date = ebay_json_data["GetItemResponse"]["Item"]["ListingDetails"]["StartTime"]
         ebay_url = ebay_json_data["GetItemResponse"]["Item"]["ListingDetails"]["ViewItemURL"]
         ebay_image_urls = ebay_json_data["GetItemResponse"]["Item"]["PictureDetails"]["PictureURL"]
@@ -34,12 +56,16 @@ def firstTimeRunFillDatabase():
             ebay_image_urls = [ebay_image_urls]
 
         # Adds item to database
-        cur.execute(f"""
-            INSERT INTO item 
-            (id, title, price, status, listed_date, ebay_url, last_updated_date) VALUES 
-            ({id}, "{title}", {price}, "{status}", "{listed_date}", "{ebay_url}", "{datetime.now()}")
-        """)
-        print(f"Item added... {ebay_index+1}/{len(ebay_ids)}")
+        try:
+            cur.execute(f"""
+                INSERT INTO item 
+                (id, title, price, status, sku, listed_date, ebay_url, last_updated_date, last_checked_on_ebay_date) VALUES 
+                ({id}, "{title}", {price}, "{status}", "{sku}", "{listed_date}", "{ebay_url}", "{datetime.now()}", "{datetime.now()}")
+            """)
+            print(f"Item added... {id}: {ebay_index+1}/{len(ebay_ids_not_in_database)}")
+        except sqlite3.IntegrityError:
+            print(f"Item ID: {ebay_id} already in database... skipping")
+            continue
 
         # Adds images to database
         for image_index, image_url in enumerate(ebay_image_urls):
@@ -52,18 +78,27 @@ def firstTimeRunFillDatabase():
         
 
     con.commit()
-    print(f"Finished committing {len(ebay_ids)} items to database...")
+    print(f"Finished committing {len(ebay_ids_not_in_database)} items to database...")
     
+    # Step 4:
+    try:
+        from db_commands import getEbayItemIDsWhereDateIsBefore
+        ebay_ids_to_check_if_sold = getEbayItemIDsWhereDateIsBefore(cur_time)
+        sold_ebay_ids = areSoldItems(ebay_ids_to_check_if_sold)
+        for ebay_id, isSold in sold_ebay_ids.items():
+            if isSold:
+                con.execute(f"""
+                    UPDATE item 
+                    SET status="Completed"
+                    WHERE id = {ebay_id};
+                """)
+                print(f"Setting Ebay ID: {ebay_id} set to Completed...")
+    except:
+        print("No items were sold....")
+
     con.close()  
 
 
-
-def updateDatabase(ebayItemID, data):
-    # TODO: Given ebay item id and json data from ebay api, update the item's data in the database
-    # The only data that SHOULD be updated could be title, desc, price, and status.
-    # All other data for each item in the database should only be edited by the react front-end or through the SQL command line.
-    pass
-
 if __name__ == "__main__":
-    # pass
-    firstTimeRunFillDatabase()
+    updateDatabaseActiveAndSoldEbayItems()
+    pass

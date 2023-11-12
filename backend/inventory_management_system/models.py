@@ -11,12 +11,14 @@ class Item(db.Model):
     title = Column("title", Integer)
     price = Column("price", Float)
     status = Column("status", String)
+    sku = Column("sku", String)
     listed_date = Column("listed_date", db.DateTime)
     ebay_url = Column("ebay_url", String)
 
     # Will be given default values
     location = Column("location", String, default="")
-    last_updated_date = Column("last_updated_date", db.DateTime, default=datetime.utcnow)
+    last_updated_date = Column("last_updated_date", db.DateTime, default=datetime.now)
+    last_checked_on_ebay_date = Column("last_checked_on_ebay_date", db.DateTime, default=datetime.now)
     length = Column("length", Float, default=0)
     width = Column("width", Float, default=0)
     height = Column("height", Float, default=0)
@@ -31,6 +33,7 @@ class Item(db.Model):
         self.title = title
         self.price = price
         self.status = status
+        self.sku = sku
         self.listed_date = listed_date
         self.ebay_url = ebay_url
 

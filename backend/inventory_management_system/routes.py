@@ -23,7 +23,7 @@ def item(id):
 
 
 # Endpoints for React frontend
-@main.route("/api/getAllItems")
+@main.route("/api/getAllItemIDs")
 @cross_origin()
 def getAllItems():
     # Returns the ids off all ebay items
@@ -33,7 +33,7 @@ def getAllItems():
             'total': len(items)
         })
 
-@main.route("/api/getAllItemsAndData")
+@main.route("/api/getAllItems")
 def getAllItemsAndData():
     # Returns the json of every single ebay item from the database including all of its attributes.
     items = Item.query.all()
@@ -109,12 +109,3 @@ def editItem(id):
     db.session.commit()
 
     return redirect(url_for('main.item', id=id, message="Successfully edited item!"))
-
-
-# Endpoints for Ebay API
-@main.route('/ebay-api/updateItem/')
-def ebayUpdateItem(id):
-    # Endpoint that is called by ebay's webhooks to update any information regarding the inventory item
-    # Updating: titles, status, price, images, etc...
-    
-    return f"Hello Ebay webhook!"
