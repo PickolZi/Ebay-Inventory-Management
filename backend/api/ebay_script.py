@@ -93,6 +93,7 @@ def updateDatabaseActiveAndSoldEbayItems():
                     WHERE id = {ebay_id};
                 """)
                 print(f"Setting Ebay ID: {ebay_id} set to Completed...")
+        con.commit()
     except:
         print("No items were sold....")
 
@@ -100,5 +101,5 @@ def updateDatabaseActiveAndSoldEbayItems():
 
 
 if __name__ == "__main__":
+    # Should still be executing when executed by cronjobs.
     updateDatabaseActiveAndSoldEbayItems()
-    pass

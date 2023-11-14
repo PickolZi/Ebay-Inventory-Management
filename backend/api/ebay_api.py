@@ -2,24 +2,22 @@
 # getAllEbayItemIDs() => list[int] => returns all user's ebay item ids.
 # getEbayItem(id) => json => returns all data retaining an ebay item.
 # areSoldItems(total_ebay_ids) => dict => returns key, value pair of ebay id, boolean if sold.
-import requests
+# generateAccessToken() => String => returns access token. Called by every function that needs the access token.
+# generateRefreshToken(user_code) => String => returns refresh token, given user_code from url from consent page.
+
+import sys
+import base64
 import json
+import requests
+from urllib.parse import unquote
 
 from xmlToJson import xmlToJsonParser
 
 
+ACCESS_TOKEN = ""
 # Load ebay API keys from SECRETS.json
 with open("../SECRETS.json", "r") as f:
     cred = json.load(f)
-
-EBAY_GET_ITEMS_ENDPOINT = "https://api.ebay.com/ws/api.dll"
-EBAY_SHOPPING_GET_ITEMS_ENDPOINT = "https://open.api.ebay.com/shopping" 
-headers = {
-        "X-EBAY-API-SITEID": "0",
-        "X-EBAY-API-COMPATIBILITY-LEVEL": "967",
-        "X-EBAY-API-CALL-NAME": None,
-        "X-EBAY-API-IAF-TOKEN": cred['userToken']
-    }
 
 def pretty_print_json(json_data):
     print(json.dumps(json_data, indent=5))
@@ -101,7 +99,7 @@ def areSoldItems(total_ebay_ids):
     results = {}
 
     # API request
-    headers["X-EBAY-API-IAF-TOKEN"] = f"Bearer {cred['userToken']}"
+    headers["X-EBAY-API-IAF-TOKEN"] = f"Bearer {ACCESS_TOKEN}"
     headers["X-EBAY-API-SITE-ID"] = "0"
     headers["X-EBAY-API-CALL-NAME"] = "GetItemStatus"
     headers["X-EBAY-API-VERSION"] = "863"
@@ -150,6 +148,93 @@ def areSoldItems(total_ebay_ids):
 
     return results
 
+
+def generateAccessToken():
+    # Using the refreshToken from environment variables. Generate a new access token before each use.
+    authorization = cred["appid"] + ":" + cred["certid"]
+    authorization_bytes = authorization.encode("ascii")
+    base64_bytes = base64.b64encode(authorization_bytes)
+    base64_string = base64_bytes.decode("ascii")
+
+    EBAY_TOKEN_ENDPOINT = "https://api.ebay.com/identity/v1/oauth2/token"
+    TOKEN_HEADERS = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Basic " + base64_string
+    }
+    TOKEN_BODY = {
+        "grant_type": "refresh_token",
+        "refresh_token": cred["refreshToken"],
+        "redirect_uri": cred["redirecturi"]
+    }
+    
+    response = requests.post(EBAY_TOKEN_ENDPOINT, headers=TOKEN_HEADERS, data=TOKEN_BODY)
+
+    if response.status_code == 200:
+        print("Access token retrieved successfully...")
+        return response.json()["access_token"]
+    elif response.status_code == 400:
+        print("Failed to retrieve Access Token.")
+        return False
+    else:
+        print("Something went wrong when trying to retrieve access token.")
+        print(reponse.json())
+        return False
+
+
+def generateRefreshToken(user_code):
+    # Given user_code, decode the user_code provided from the User Consent Page and call ebay endpoint to generate a new refresh token.
+    # Ideally this function should only be manually called once every 1.5 years because that's when the refresh token expires.
+
+    """ URL FOR USER CONSENT PAGE.
+    https://auth.ebay.com/oauth2/authorize?client_id=JohSan-helloWor-PRD-1fcc2d46c-6fde8886&response_type=code&redirect_uri=Joh_San-JohSan-helloWor-irvlccp&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly
+    """
+    decoded_user_code = unquote(user_code)
+
+    authorization = cred["appid"] + ":" + cred["certid"]
+    authorization_bytes = authorization.encode("ascii")
+    base64_bytes = base64.b64encode(authorization_bytes)
+    base64_string = base64_bytes.decode("ascii")
+
+    EBAY_TOKEN_ENDPOINT = "https://api.ebay.com/identity/v1/oauth2/token"
+    TOKEN_HEADERS = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Basic " + base64_string
+    }
+    TOKEN_BODY = {
+        "grant_type": "authorization_code",
+        "code": decoded_user_code,
+        "redirect_uri": cred["redirecturi"]
+    }
+
+    response = requests.post(EBAY_TOKEN_ENDPOINT, headers=TOKEN_HEADERS, data=TOKEN_BODY)
+
+    if response.status_code == 400:
+        print("User code failed. Please try another user code.")
+        return
+    elif response.status_code == 200:
+        print("Successfully generated User Refresh token.")
+        refresh_token = response.json()["refresh_token"]
+        print(f"refresh token: {refresh_token}")
+    else:
+        print("Something unexpected happen. Investigate further.")
+
+
+ACCESS_TOKEN = generateAccessToken()
+
+if not ACCESS_TOKEN:
+    print("Terminating ebay api program....")
+    sys.exit()
+
+EBAY_GET_ITEMS_ENDPOINT = "https://api.ebay.com/ws/api.dll"
+EBAY_SHOPPING_GET_ITEMS_ENDPOINT = "https://open.api.ebay.com/shopping" 
+headers = {
+        "X-EBAY-API-SITEID": "0",
+        "X-EBAY-API-COMPATIBILITY-LEVEL": "967",
+        "X-EBAY-API-CALL-NAME": None,
+        "X-EBAY-API-IAF-TOKEN": ACCESS_TOKEN
+    }
+
+
 if __name__ == "__main__":
     # total = getAllEbayItemIDs()
     # print(f"List of all IDs: {total}, total: {len(total)}")
@@ -158,4 +243,7 @@ if __name__ == "__main__":
     # pretty_print_json(getEbayItem(295673492242))
     # total = getAllEbayItemIDs()
     # pretty_print_json(total)
+    # generateValidEbayToken()
+    # generateAccessToken()
+    # generateRefreshToken(r"refresh_token")
     pass
