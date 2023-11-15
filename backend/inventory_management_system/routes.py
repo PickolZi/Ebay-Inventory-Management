@@ -46,10 +46,12 @@ def getAllItemsAndData():
                 'title': item.title,
                 'price': item.price,
                 'status': item.status,
+                'sku': item.sku,
                 'listed_date': item.listed_date,
                 'ebay_url': item.ebay_url,
                 'location': item.location,
                 'last_updated_date': item.last_updated_date,
+                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
                 'length': item.length,
                 'width': item.width,
                 'height': item.height,
@@ -73,10 +75,12 @@ def getItem(id):
         'title': item.title,
         'price': item.price,
         'status': item.status,
+        'sku': item.sku,
         'listed_date': item.listed_date,
         'ebay_url': item.ebay_url,
         'location': item.location,
         'last_updated_date': item.last_updated_date,
+        'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
         'length': item.length,
         'width': item.width,
         'height': item.height,
@@ -93,18 +97,20 @@ def editItem(id):
     item = Item.query.get_or_404(id)
 
     # API POST DATA built temporarily for flask. Will need to change to take in JSON for react frontend.
-    location = request.form.get('item__form-location-data', "")
-    length = request.form.get('item__form-length-data', "")
-    width = request.form.get('item__form-width-data', "")
-    height = request.form.get('item__form-height-data', "")
-    weight = request.form.get('item__form-weight-data', "")
+    location = request.form.get('item__form-location-data')
+    length = request.form.get('item__form-length-data')
+    width = request.form.get('item__form-width-data')
+    height = request.form.get('item__form-height-data',)
+    weight = request.form.get('item__form-weight-data')
 
-    item.location = location
-    item.length = length
-    item.width = width
-    item.height = height
-    item.weight = weight
-    item.last_updated_date = datetime.utcnow()
+
+
+    item.location = location 
+    item.length = length if length != "" else 0
+    item.width = width if width != "" else 0
+    item.height = height if height != "" else 0
+    item.weight = weight if weight != "" else 0
+    item.last_updated_date = datetime.now()
 
     db.session.commit()
 
