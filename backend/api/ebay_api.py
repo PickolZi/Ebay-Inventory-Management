@@ -6,6 +6,7 @@
 # generateRefreshToken(user_code) => String => returns refresh token, given user_code from url from consent page.
 
 import sys
+import os
 import base64
 import json
 import requests
@@ -15,8 +16,9 @@ from xmlToJson import xmlToJsonParser
 
 
 ACCESS_TOKEN = ""
+SECRET_FILEPATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "SECRETS.json"))
 # Load ebay API keys from SECRETS.json
-with open("../SECRETS.json", "r") as f:
+with open(SECRET_FILEPATH, "r") as f:
     cred = json.load(f)
 
 def pretty_print_json(json_data):
@@ -246,4 +248,6 @@ if __name__ == "__main__":
     # generateValidEbayToken()
     # generateAccessToken()
     # generateRefreshToken(r"refresh_token")
+    print(cred)
+    # print(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "SECRETS.json")))
     pass

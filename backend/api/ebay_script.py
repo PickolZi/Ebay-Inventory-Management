@@ -1,9 +1,10 @@
 # This script will be ran whenever we want to update the sqlite database with the ebay api data
 import sqlite3
+import os
 from ebay_api import getAllEbayItemIDs, getEbayItem, areSoldItems, pretty_print_json
 from datetime import datetime, timedelta
 
-DB_LOCATION = "../instance/db.sqlite3"
+DB_LOCATION = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "instance/db.sqlite3"))
 
 def updateDatabaseActiveAndSoldEbayItems():
     # Function ran every 30 minutes, getting newly listed/sold items from ebay and updating to database.
