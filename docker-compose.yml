@@ -1,0 +1,17 @@
+version: "3"
+services:
+  flask_backend:
+    build: ./backend/
+    ports: 
+      - "5000:5000"
+    expose:
+      - 5000
+    volumes:
+      - ./backend:/usr/src/backend
+  react_frontend:
+    build: ./frontend/
+    ports:
+      - "80:3000"
+    volumes:
+      - ./frontend:/usr/src/frontend
+      - /usr/src/frontend/node_modules

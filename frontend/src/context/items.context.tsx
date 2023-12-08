@@ -15,7 +15,8 @@ export const ItemsProvider = ({children}) => {
     const value = {items, setItems};
 
     useEffect(() => {
-        axios.get(MACHINE_IP + "/api/getAllItems").then((res) => {
+        axios.get(MACHINE_IP + "/api/getAllItems").then((res) => {  // For Development on local machine.
+        // axios.get("/api/getAllItems").then((res) => {
             setItems(res.data["items"]);
         })
     }, []);

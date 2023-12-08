@@ -1,0 +1,22 @@
+.detailed_items {
+    display: flex;
+    flex-direction: row;
+}
+
+.detailed_items__img {
+    width: 50%;
+}
+
+.detailed_items__text_content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem;
+}
+
+.detailed_items__form {
+
+}
+.detailed_items__save_button {
+    background-color: lightblue;
+}

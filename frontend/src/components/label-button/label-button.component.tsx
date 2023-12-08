@@ -63,10 +63,6 @@ const LabelButton = ({itemData}) => {
     }
     }
 
-    const handlePrint2 = () => {
-        console.log(itemData)
-    }
-
     return (
         <button className={styles.label_button} onClick={handlePrint}>Print Label</button>
     )
