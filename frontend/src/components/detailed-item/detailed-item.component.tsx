@@ -2,12 +2,14 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 
-import ImageGallery from "react-image-gallery"
+import ImageGallery from "react-image-gallery";
 import LabelButton from "../label-button/label-button.component";
 
 import styles from "./detailed-item.module.css"
+import DetailedItemForm from "../detailed-item-form/detailed-item-form.component";
 
-const MACHINE_IP = "http://68.190.242.157/";
+const MACHINE_IP = "http://68.190.242.157:5000/";
+// const MACHINE_IP = "http://127.0.0.1:5000/";
 
 const DetailedItems = ({params}) => {
     const [itemsID, setItemsID] = useState(params.itemsID);
@@ -16,8 +18,7 @@ const DetailedItems = ({params}) => {
 
     // Calls backend API to retrieve Item information given the item id.
     useEffect(() => {
-        axios.get(MACHINE_IP + "/api/getItem/" + itemsID).then((res) => {  // For development on local machine.
-        // axios.get("/api/getItem/" + itemsID).then((res) => {
+        axios.get(MACHINE_IP + "/api/getItem/" + itemsID).then((res) => {
             setItemData(res.data);
         })
     }, [itemsID]);
@@ -52,35 +53,7 @@ const DetailedItems = ({params}) => {
                         <h2 className={styles.detailed_items__id}>Ebay ID: {itemData["id"]}</h2>
                     </div>
 
-                    <form className={styles.detailed_items__form}>
-                        <div className={styles.detailed_items__length}>
-                            <label>length: {itemData["length"]}</label>
-                            <input type="text" />
-                        </div>
-
-                        <div className={styles.detailed_items__width}>
-                            <label>width: {itemData["width"]}</label>
-                            <input type="text" />
-                        </div>
-
-                        <div className={styles.detailed_items__height}>
-                            <label>height: {itemData["height"]}</label>
-                            <input type="text" />
-                        </div>
-
-                        <div className={styles.detailed_items__weight}>
-                            <label>weight: {itemData["weight"]}</label>
-                            <input type="text" />
-                        </div>
-
-                        <div className={styles.detailed_items__location}>
-                            <label>Location: {itemData["location"]}</label>
-                            <input type="text" />
-                        </div>
-
-
-                        <button className={styles.detailed_items__save_button}>Save data</button>
-                    </form>
+                    <DetailedItemForm itemsID={itemsID} itemData={itemData} setItemData={setItemData}/>
 
                     <LabelButton itemData={itemData}/>
                 </div> :

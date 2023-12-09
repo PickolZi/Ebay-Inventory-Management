@@ -3,7 +3,7 @@ import { createContext, useState, useEffect } from "react";
 import axios from 'axios';
 
 
-const MACHINE_IP = "http://68.190.242.157/";
+const MACHINE_IP = "http://68.190.242.157:5000/";
 
 export const ItemsContext = createContext({
     items: [],
@@ -25,5 +25,3 @@ export const ItemsProvider = ({children}) => {
         <ItemsContext.Provider value={value}>{children}</ItemsContext.Provider>
     )
 }
-
-// export default ItemsProvider;

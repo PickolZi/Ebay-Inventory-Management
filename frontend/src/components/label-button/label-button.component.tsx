@@ -15,10 +15,10 @@ const LabelButton = ({itemData}) => {
     const location = itemData["location"]
     const locationGap = "_____"
     const eBayItemNumber = itemData["id"]
-    const length = itemData["length"] ? itemData["length"] : "___"
-    const width = itemData["width"] ? itemData["width"] : "___"
-    const height = itemData["height"] ? itemData["height"] : "___"
-    const weight = itemData["weight"] ? itemData["weight"] : "___"
+    const length = itemData["length"] && itemData["length"] != "0" ? itemData["length"] : "___"
+    const width = itemData["width"] && itemData["width"] != "0" ? itemData["width"] : "___"
+    const height = itemData["height"] && itemData["height"] != "0" ? itemData["height"] : "___"
+    const weight = itemData["weight"] && itemData["weight"] != "0" ? itemData["weight"] : "___"
     const listerInitial = itemData["sku"] ? itemData["sku"][1] : "___"
     const Counter = "___"
 

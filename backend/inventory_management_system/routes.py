@@ -90,20 +90,17 @@ def getItem(id):
 
 @main.route('/api/editItem/<int:id>', methods=["POST"])
 def editItem(id):
-    # TODO: Given the ebay item id as well as a JSON data payload through a POST method. Update the info in the database.
     # The only info that SHOULD be updated are: location, last_updated_date, length, width, height, and weight.
     # id, title, price, status, listed_date, and ebay_url SHOULD NOT BE UPDATED THROUGH FLASK, SHOULD BE UPDATED FROM EBAY API.
 
     item = Item.query.get_or_404(id)
 
-    # API POST DATA built temporarily for flask. Will need to change to take in JSON for react frontend.
-    location = request.form.get('item__form-location-data')
-    length = request.form.get('item__form-length-data')
-    width = request.form.get('item__form-width-data')
-    height = request.form.get('item__form-height-data',)
-    weight = request.form.get('item__form-weight-data')
-
-
+    post_data = request.json
+    location = post_data['item__form-location-data']
+    length = post_data['item__form-length-data']
+    width = post_data['item__form-width-data']
+    height = post_data['item__form-height-data']
+    weight = post_data['item__form-weight-data']
 
     item.location = location 
     item.length = length if length != "" else 0
@@ -114,4 +111,8 @@ def editItem(id):
 
     db.session.commit()
 
-    return redirect(url_for('main.item', id=id, message="Successfully edited item!"))
+    if post_data:
+        return "Itemiz) Status 200: Item updated into database."
+    else:
+        return "Itemiz) Status 300: Failed to update item into database. No post data given to API endpoint."
+    # return redirect(url_for('main.item', id=id, message="Successfully edited item!"))
