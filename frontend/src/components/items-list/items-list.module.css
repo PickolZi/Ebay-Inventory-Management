@@ -1,0 +1,7 @@
+.items_container {
+    position: relative;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: left;
+    padding-top: 3.5rem;
+}

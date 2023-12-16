@@ -6,6 +6,7 @@ import { ItemsContext } from '@/context/items.context';
 
 import Item from '../item/item.component';
 import SearchBar from '../search-bar/search-bar.component';
+import FilterSideBar from '../filter-sidebar/filter-sidebar.component';
 
 import styles from './items-list.module.css';
 import Link from 'next/link';
@@ -14,8 +15,9 @@ import Link from 'next/link';
 const ItemsList = ({status, sortKeyword}) => {
     const {items, setItems} = useContext(ItemsContext);
     const [filteredItems, setFilteredItems] = useState([]);
-    const [tempItems, setTempItems] = useState();
-    const [searchBarInput, setSearchBarInput] = useState();
+    const [tempItems, setTempItems] = useState([]);
+    const [searchBarInput, setSearchBarInput] = useState("");
+    const [excludeBarInput, setExcludeBarInput] = useState("");
 
     useEffect(() => {
         // Filters items into Active, Sold, Shipped.
@@ -57,20 +59,43 @@ const ItemsList = ({status, sortKeyword}) => {
                 return true;
             }))
         }
-    }, [searchBarInput]);
+
+        // Filter items depending on excluding field.
+        if (excludeBarInput != "") {
+            console.log("exclude bar: " + excludeBarInput)
+            setTempItems(tempItems.filter((item) => {
+                const itemTitle = item["title"].toLowerCase();
+                const excludeBarInputKeywords = excludeBarInput.split(" ");
+                for (let i=0; i<excludeBarInputKeywords.length; i++) {
+                    if (itemTitle.includes(excludeBarInputKeywords[i])) {
+                        return false;
+                    }
+                }
+                return true;
+            }))
+        }
+
+    }, [searchBarInput, excludeBarInput]);
 
     return (
-        <div className="items-list">
-            <SearchBar searchbarInput={searchBarInput} setSearchBarInput={setSearchBarInput}/>
-            {tempItems ? tempItems.map((item) => {
-                return (
-                    <Link key={item["id"]} href={`/pages/items/${item["id"]}`} target="_blank">
-                        <Item item={item}/>
-                    </Link>
-                )
-            }) :
-                <h1>Loading items...</h1>
-            }
+        <div className={styles.items_container}>
+            <div className="items-list">
+                <SearchBar searchbarInput={searchBarInput} setSearchBarInput={setSearchBarInput}/>
+                <p>
+                    {tempItems ? tempItems.length : 0} results...
+                </p>
+                {tempItems ? tempItems.map((item) => {
+                    return (
+                        <Link key={item["id"]} href={`/pages/items/${item["id"]}`} target="_blank">
+                            <Item item={item}/>
+                        </Link>
+                    )
+                }) :
+                    <h1>Loading items...</h1>
+                }
+            </div>
+
+            <FilterSideBar excludeBarInput={excludeBarInput} setExcludeBarInput={setExcludeBarInput} />
         </div>
     )
 }

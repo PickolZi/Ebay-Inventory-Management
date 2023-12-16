@@ -4,6 +4,11 @@
 
 @import "~react-image-gallery/styles/css/image-gallery.css";
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 /* :root {
   --foreground-rgb: 0, 0, 0;
