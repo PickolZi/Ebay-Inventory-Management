@@ -18,6 +18,7 @@ const ItemsList = ({status, sortKeyword}) => {
     const [tempItems, setTempItems] = useState([]);
     const [searchBarInput, setSearchBarInput] = useState("");
     const [excludeBarInput, setExcludeBarInput] = useState("");
+    const [locationBarInput, setLocationBarInput] = useState("");
 
     useEffect(() => {
         // Filters items into Active, Sold, Shipped.
@@ -44,38 +45,49 @@ const ItemsList = ({status, sortKeyword}) => {
     },[filteredItems])
 
     useEffect(() => {
-        // Filter items depending on search field.
-        if (searchBarInput == "") {
-            setTempItems(filteredItems);
-        } else {
-            setTempItems(filteredItems.filter((item) => {
-                const itemTitle = item["title"].toLowerCase();
-                const searchBarKeyWords = searchBarInput.split(" ");
-                for (let i=0; i<searchBarKeyWords.length; i++) {
-                    if (!itemTitle.includes(searchBarKeyWords[i])) {
+        // Filter items depending on search field(s).
+        setTempItems(filteredItems.filter((item) => {
+            const itemTitle = item["title"].toLowerCase();
+            const itemLocation = item["location"];
+
+            // Search bar filter.
+            if (searchBarInput != "") {
+                const searchBarKeywords = searchBarInput.split(" ");
+                for (let i=0; i< searchBarKeywords.length; i++) {
+                    if (!itemTitle.includes(searchBarKeywords[i])) {
                         return false;
                     }
                 }
-                return true;
-            }))
-        }
+            }
 
-        // Filter items depending on excluding field.
-        if (excludeBarInput != "") {
-            console.log("exclude bar: " + excludeBarInput)
-            setTempItems(tempItems.filter((item) => {
-                const itemTitle = item["title"].toLowerCase();
-                const excludeBarInputKeywords = excludeBarInput.split(" ");
-                for (let i=0; i<excludeBarInputKeywords.length; i++) {
-                    if (itemTitle.includes(excludeBarInputKeywords[i])) {
+            // Exclude bar filter.
+            if (excludeBarInput != "") {
+                const excludeBarKeywords = excludeBarInput.split(" ");
+                for (let i=0; i< excludeBarKeywords.length; i++) {
+                    if (itemTitle.includes(excludeBarKeywords[i])) {
                         return false;
                     }
                 }
-                return true;
-            }))
-        }
+            }
 
-    }, [searchBarInput, excludeBarInput]);
+            // Location bar filter.
+            if (locationBarInput == "n/a") {
+                if (itemLocation != null) {
+                    return false;
+                }
+            } else if (locationBarInput != "") {
+                if (itemLocation == null) {
+                    return false
+                }
+
+                if (locationBarInput.trim() != itemLocation.toLowerCase().trim()) {
+                    return false
+                }
+            }
+            return true;
+
+        }))
+    }, [searchBarInput, excludeBarInput, locationBarInput]);
 
     return (
         <div className={styles.items_container}>
@@ -95,7 +107,7 @@ const ItemsList = ({status, sortKeyword}) => {
                 }
             </div>
 
-            <FilterSideBar excludeBarInput={excludeBarInput} setExcludeBarInput={setExcludeBarInput} />
+            <FilterSideBar excludeBarInput={excludeBarInput} setExcludeBarInput={setExcludeBarInput} locationBarInput={locationBarInput} setLocationBarInput={setLocationBarInput}/>
         </div>
     )
 }
