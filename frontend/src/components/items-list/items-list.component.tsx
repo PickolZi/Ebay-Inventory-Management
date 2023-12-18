@@ -19,6 +19,7 @@ const ItemsList = ({status, sortKeyword}) => {
     const [searchBarInput, setSearchBarInput] = useState("");
     const [excludeBarInput, setExcludeBarInput] = useState("");
     const [locationBarInput, setLocationBarInput] = useState("");
+    const [isMobileFilterBar, setMobileFilterBar] = useState(false);
 
     useEffect(() => {
         // Filters items into Active, Sold, Shipped.
@@ -91,23 +92,28 @@ const ItemsList = ({status, sortKeyword}) => {
 
     return (
         <div className={styles.items_container}>
-            <div className="items-list">
-                <SearchBar searchbarInput={searchBarInput} setSearchBarInput={setSearchBarInput}/>
-                <p>
-                    {tempItems ? tempItems.length : 0} results...
-                </p>
-                {tempItems ? tempItems.map((item) => {
-                    return (
-                        <Link key={item["id"]} href={`/pages/items/${item["id"]}`} target="_blank">
-                            <Item item={item}/>
-                        </Link>
-                    )
-                }) :
-                    <h1>Loading items...</h1>
-                }
-            </div>
+            <FilterSideBar excludeBarInput={excludeBarInput} setExcludeBarInput={setExcludeBarInput} locationBarInput={locationBarInput} setLocationBarInput={setLocationBarInput} isMobileFilterBar={isMobileFilterBar}/>
 
-            <FilterSideBar excludeBarInput={excludeBarInput} setExcludeBarInput={setExcludeBarInput} locationBarInput={locationBarInput} setLocationBarInput={setLocationBarInput}/>
+            <div className={styles.items_list_wrapper}>
+                <div className={styles.items_search_container}>
+                    <SearchBar searchbarInput={searchBarInput} setSearchBarInput={setSearchBarInput} isMobileFilterBar={isMobileFilterBar} setMobileFilterBar={setMobileFilterBar} />
+                    <p>
+                        {tempItems ? tempItems.length : 0} results...
+                    </p>
+                </div>
+
+                <div className={styles.items_list}>
+                    {tempItems ? tempItems.map((item) => {
+                        return (
+                            <Link key={item["id"]} href={`/pages/items/${item["id"]}`} target="_blank">
+                                <Item item={item}/>
+                            </Link>
+                        )
+                    }) :
+                        <h1>Loading items...</h1>
+                    }
+                </div>
+            </div>
         </div>
     )
 }

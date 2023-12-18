@@ -1,7 +1,12 @@
 
-import "./search-bar.module.css";
+import styles from "./search-bar.module.css";
 
-const SearchBar = ({searchBarInput, setSearchBarInput}) => {
+const SearchBar = ({searchBarInput, setSearchBarInput, isMobileFilterBar, setMobileFilterBar}) => {
+
+    const mobileFilterBarHandler = () => {
+        setMobileFilterBar(!isMobileFilterBar);
+        console.log("mobile: " + isMobileFilterBar)
+    }
 
     const searchBarEventHandler = (event) => {
         if (event.key === "Enter") {
@@ -11,7 +16,10 @@ const SearchBar = ({searchBarInput, setSearchBarInput}) => {
     }
 
     return (
-        <input type="items-search-bar" name="items-search-bar" placeholder="Search here..." onKeyDown={searchBarEventHandler}/>
+        <div>
+            <button onClick={mobileFilterBarHandler}>mobile</button>
+            <input type="search" className={styles.items_search_bar} name="items-search-bar" placeholder="Search items by title..." onKeyDown={searchBarEventHandler}/>
+        </div>
     )
 }
 

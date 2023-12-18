@@ -1,3 +1,39 @@
 .filter_container {
-    width: 320px;
+    width: 17%;
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 3rem;
 }
+.mobile_filter_container {
+    display: flex;
+    position: relative;
+    z-index: 998;
+    width: 50%;
+}
+
+/* xs */
+/* @media (min-width: 475px) {} */
+
+/* sm */
+/* @media (min-width: 640px) {} */
+
+/* md */
+@media (min-width: 768px) {
+    .filter_container {
+        display: flex;
+    }
+    .mobile_filter_container {
+        position: fixed;
+        width: 17%;
+    }
+}
+
+/* lg */
+/* @media (min-width: 1024px) {} */
+
+/* xl */
+/* @media (min-width: 1280px) {} */
+
+/* 2xl */
+/* @media (min-width: 1536px) {}  */

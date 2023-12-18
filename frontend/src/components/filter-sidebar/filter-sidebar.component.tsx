@@ -1,7 +1,7 @@
 
 import styles from "./filter-sidebar.module.css";
 
-const FilterSideBar = ({excludeBarInput, setExcludeBarInput, locationBarInput, setLocationBarInput}) => {
+const FilterSideBar = ({excludeBarInput, setExcludeBarInput, locationBarInput, setLocationBarInput, isMobileFilterBar}) => {
 
     const excludeBarEventHandler = (event) => {
         if (event.key === "Enter") {
@@ -18,9 +18,10 @@ const FilterSideBar = ({excludeBarInput, setExcludeBarInput, locationBarInput, s
     }
 
     return (
-        <div className={styles.filter_container}>
-            <input type="items-exclude-bar" name="items-exclude-bar" placeholder="Excluded words here..." onKeyDown={excludeBarEventHandler}/>
-            <input type="items-location-bar" name="items-location-bar" placeholder="Location here..." onKeyDown={locationBarEventHandler}/>
+        <div className={`${styles.filter_container} ${isMobileFilterBar && styles.mobile_filter_container }`}>
+            {/* <label htmlFor="items-exclude-bar">Exclude: </label> */}
+            <input type="search" name="items-exclude-bar" placeholder="Excluded words here..." onKeyDown={excludeBarEventHandler}/>
+            <input type="search" name="items-location-bar" placeholder="Location here..." onKeyDown={locationBarEventHandler}/>
         </div>
     )
 }

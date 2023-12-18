@@ -1,10 +1,36 @@
 .item {
     display: flex;
+    justify-content: space-between;
+    border-top: 1px solid black;
+    height: 200px;
 }
 .item:hover {
     background-color: grey;
 }
+
+.item__sub_container {
+    display: flex;
+    flex-direction: row;
+}
+.items__text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
 .item__img {
     width: 200px;
     height: 200px;
+}
+.item__location_container {
+    margin-top: auto;
+    margin-bottom: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: pink;
+    border: 1px solid black;
+    width: 64px;
+    height: 64px;
+    margin-right: 1rem;
 }
