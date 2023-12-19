@@ -1,6 +1,20 @@
 .detailed_items__form {
-
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
+.detailed_items__form div {
+    display: flex;
+    flex-direction: column;
+}
+.detailed_items__form div input {
+    height: 2.5rem;
+    border: 1px solid black;
+    border-radius: 12px;
+}
+
+
 .detailed_items__save_button {
     background-color: lightblue;
+    border-radius: 12px;
 }

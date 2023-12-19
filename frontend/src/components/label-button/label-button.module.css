@@ -1,3 +1,5 @@
 .label_button {
+    margin-top: 1rem;
     background-color: lightgreen;
+    border-radius: 12px;
 }

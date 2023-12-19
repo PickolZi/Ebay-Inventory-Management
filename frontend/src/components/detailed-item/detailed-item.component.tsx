@@ -9,6 +9,25 @@ import styles from "./detailed-item.module.css"
 import DetailedItemForm from "../detailed-item-form/detailed-item-form.component";
 import ShippedButton from "../shipped-button/shipped-button.component";
 
+import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc'
+import tz from 'dayjs/plugin/timezone'
+
+dayjs.extend(utc)
+dayjs.extend(tz)
+
+const dateFormatter = (date) => {
+    const date_string = dayjs(date).subtract(8, "hours").toString();
+    let date_array = date_string.split(" ")
+    let temp = date_array[1]
+    date_array[1] = date_array[2]
+    date_array[2] = temp + ","
+    date_array.pop();
+
+    const date_format = date_array.join(" ");
+    return date_format;
+}
+
 const MACHINE_IP = "http://68.190.242.157:5000/";
 // const MACHINE_IP = "http://127.0.0.1:5000/";
 
@@ -45,23 +64,28 @@ const DetailedItems = ({params}) => {
 
             {itemData ? 
                 <div className={styles.detailed_items__text_content}>
-                    <ShippedButton itemID={itemData["id"]} MACHINE_IP={MACHINE_IP} itemData={itemData} setItemData={setItemData}/>
+
+                    {
+                        itemData["status"] == "Completed" && 
+                        <ShippedButton itemID={itemData["id"]} MACHINE_IP={MACHINE_IP} itemData={itemData} setItemData={setItemData}/>
+                    }
+
                     <div>
                         <h1 className={styles.detailed_items__title}>Title: {itemData["title"]}</h1>
                         <h2 className={styles.detailed_items__status}>Status: {itemData["status"]}</h2>
                         <h2 className={styles.detailed_items__price}>Price: {itemData["price"]}</h2>
-                        <h2 className={styles.detailed_items__listed_date}>Listed Date: {itemData["listed_date"]}</h2>
+                        <h2 className={styles.detailed_items__listed_date}>Listed Date: {dateFormatter(itemData["listed_date"])}</h2>
                         {
                             itemData["status"] != "Active" &&
-                            <h2 className={styles.detailed_items__listed_date}>Date Sold: {itemData["last_checked_on_ebay_date"]}</h2>
+                            <h2 className={styles.detailed_items__listed_date}>Date Sold: {dateFormatter(itemData["last_checked_on_ebay_date"])}</h2>
                         }
                         <h2 className={styles.detailed_items__sku}>SKU: {itemData["sku"]}</h2>
                         <h2 className={styles.detailed_items__id}>Ebay ID: {itemData["id"]}</h2>
                     </div>
 
-                    <DetailedItemForm itemsID={itemsID} itemData={itemData} setItemData={setItemData}/>
+                    <DetailedItemForm itemsID={itemsID} itemData={itemData} setItemData={setItemData} />
 
-                    <LabelButton itemData={itemData}/>
+                    <LabelButton itemData={itemData} />
                 </div> :
                 <h1>Item not available....</h1>
             }

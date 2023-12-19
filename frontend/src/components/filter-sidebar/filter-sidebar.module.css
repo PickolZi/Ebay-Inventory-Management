@@ -44,6 +44,9 @@
         position: fixed;
         width: 17%;
     }
+    .close_button_svg {
+        display: none;
+    }
 }
 
 /* lg */

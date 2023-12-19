@@ -1,11 +1,8 @@
 import axios from "axios";
 
 import styles from "./shipped-button.module.css";
-import { useState } from "react";
 
 const ShippedButton = ({itemID, MACHINE_IP, itemData, setItemData}) => {
-    const [shippedButtonHighlight, setShippedButtonHighlight] = useState(true);
-
     const handleShippedButton = () => {
         axios.get(MACHINE_IP + "/api/shipItem/" + itemID).then((res) => {
             console.log(res.data)
@@ -19,7 +16,7 @@ const ShippedButton = ({itemID, MACHINE_IP, itemData, setItemData}) => {
     }
 
     return (
-        <button className={`${styles.shipped_button} ${itemData["status"] == "Completed" && styles.show_button}`} onClick={handleShippedButton}>Mark as Shipped!</button>
+        <button className={styles.shipped_button} onClick={handleShippedButton}>Mark as Shipped!</button>
     )
 }
 

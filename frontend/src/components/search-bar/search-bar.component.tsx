@@ -8,7 +8,6 @@ const SearchBar = ({searchBarInput, setSearchBarInput, isMobileFilterBar, setMob
 
     const mobileFilterBarHandler = () => {
         setMobileFilterBar(!isMobileFilterBar);
-        console.log("mobile: " + isMobileFilterBar)
     }
 
     const searchBarEventHandler = (event) => {
