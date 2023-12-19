@@ -2,15 +2,16 @@
     display: flex;
     flex-direction: row;
     height: 3rem;
-    background-color: lightcyan;
+    background-color: #0b0f35;
+    color: white;
     position: fixed;
     width: 100%;
     z-index: 999;
+    /* text-transform: uppercase; */
 }
 .mid_nav {
-    width: 66%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    margin: 0 1rem;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -19,3 +20,33 @@
 .mid_nav a:hover {
     text-decoration: underline;
 }
+.left_nav, .right_nav {
+    display: none;
+}
+
+/* xs */
+/* @media (min-width: 475px) {} */
+
+/* sm */
+/* @media (min-width: 640px) {} */
+
+/* md */
+@media (min-width: 768px) {
+    .mid_nav {
+        width: 66%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .left_nav, .right_nav {
+        display: inline-block;
+    }
+}
+
+/* lg */
+/* @media (min-width: 1024px) {} */
+
+/* xl */
+/* @media (min-width: 1280px) {} */
+
+/* 2xl */
+/* @media (min-width: 1536px) {}  */

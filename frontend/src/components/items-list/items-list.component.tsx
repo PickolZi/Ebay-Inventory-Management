@@ -19,6 +19,7 @@ const ItemsList = ({status, sortKeyword}) => {
     const [searchBarInput, setSearchBarInput] = useState("");
     const [excludeBarInput, setExcludeBarInput] = useState("");
     const [locationBarInput, setLocationBarInput] = useState("");
+    const [ebayIDBarInput, setEbayIDBarInput] = useState("");
     const [isMobileFilterBar, setMobileFilterBar] = useState(false);
 
     useEffect(() => {
@@ -85,14 +86,19 @@ const ItemsList = ({status, sortKeyword}) => {
                     return false
                 }
             }
+
+            if (ebayIDBarInput != "" && !item["id"].toString().includes(ebayIDBarInput)) {
+                return false;
+            }
+
             return true;
 
         }))
-    }, [searchBarInput, excludeBarInput, locationBarInput]);
+    }, [searchBarInput, excludeBarInput, locationBarInput, ebayIDBarInput]);
 
     return (
         <div className={styles.items_container}>
-            <FilterSideBar excludeBarInput={excludeBarInput} setExcludeBarInput={setExcludeBarInput} locationBarInput={locationBarInput} setLocationBarInput={setLocationBarInput} isMobileFilterBar={isMobileFilterBar}/>
+            <FilterSideBar excludeBarInput={excludeBarInput} setExcludeBarInput={setExcludeBarInput} locationBarInput={locationBarInput} setLocationBarInput={setLocationBarInput} isMobileFilterBar={isMobileFilterBar} setMobileFilterBar={setMobileFilterBar} ebayIDBarInput={ebayIDBarInput} setEbayIDBarInput={setEbayIDBarInput}/>
 
             <div className={styles.items_list_wrapper}>
                 <div className={styles.items_search_container}>

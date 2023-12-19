@@ -1,7 +1,16 @@
+.search_bar_container {
+    display: flex;
+    gap: 0.25rem;
+}
 .items_search_bar {
     height: 2rem;
     width: 100%;
     padding: 16px 24px;
     border: 1px solid black;
     border-radius: 12px;
+}
+.filter_icon {
+    width: 32px;
+    height: 32px;
+    margin-left: 0.25rem;
 }

@@ -4,12 +4,29 @@
     flex-direction: column;
     position: fixed;
     top: 3rem;
+    background-color: white;
+    gap: 1rem;
 }
 .mobile_filter_container {
     display: flex;
-    position: relative;
+    position: fixed;
     z-index: 998;
     width: 50%;
+    height: 100%;
+}
+.close_button_svg {
+    width: 24px;
+    height: 24px;
+    position: fixed;
+    right: 50%;
+    margin: 0.5rem;
+}
+.filter__input_container input {
+    width: 100%;
+}
+.filter__title {
+    font-size: var(--size-xl);
+    border-bottom: 1px solid black;
 }
 
 /* xs */

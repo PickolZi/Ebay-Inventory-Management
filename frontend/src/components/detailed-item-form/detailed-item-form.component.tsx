@@ -1,12 +1,18 @@
 import axios from "axios";
 
-import styles from "./detailed-item-form.module.css";
 import { useEffect, useState } from "react";
+import { useContext } from "react";
+
+import { ItemsContext } from "@/context/items.context";
+
+import styles from "./detailed-item-form.module.css";
 
 const MACHINE_IP = "http://68.190.242.157:5000/";
 // const MACHINE_IP = "http://127.0.0.1:5000/";
 
 const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
+    const {items, setItems} = useContext(ItemsContext);
+
     const [length, setLength] = useState();
     const [width, setWidth] = useState();
     const [height, setHeight] = useState();
@@ -24,7 +30,6 @@ const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
-
         setItemChange(false);
 
         const body = {
@@ -44,7 +49,7 @@ const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
                 width: width,
                 height: height,
                 weight: weight
-            })
+            });            
         });
     }
 

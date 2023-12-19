@@ -14,11 +14,14 @@ export const ItemsProvider = ({children}) => {
     const [items, setItems] = useState();
     const value = {items, setItems};
 
-    useEffect(() => {
-        axios.get(MACHINE_IP + "/api/getAllItems").then((res) => {  // For Development on local machine.
-        // axios.get("/api/getAllItems").then((res) => {
+    const callBackendToSetItems = () => {
+        axios.get(MACHINE_IP + "/api/getAllItems").then((res) => {
             setItems(res.data["items"]);
         })
+    }
+
+    useEffect(() => {
+        callBackendToSetItems();
     }, []);
 
     return (

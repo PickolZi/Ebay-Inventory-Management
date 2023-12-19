@@ -3,6 +3,7 @@
     justify-content: space-between;
     border-top: 1px solid black;
     height: 200px;
+    line-height: 100%;
 }
 .item:hover {
     background-color: grey;
@@ -22,15 +23,48 @@
     width: 200px;
     height: 200px;
 }
+.item__price {
+    display: none;
+}
 .item__location_container {
     margin-top: auto;
     margin-bottom: auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: pink;
+    background-color: #ffc0cb;
     border: 1px solid black;
     width: 64px;
     height: 64px;
     margin-right: 1rem;
 }
+
+/* xs */
+@media (min-width: 475px) {
+    .item {
+        line-height: normal;
+    }
+}
+
+/* sm */
+/* @media (min-width: 640px) {} */
+
+/* md */
+@media (min-width: 768px) {
+    .item__img {
+        width: 200px;
+        height: 200px;
+    }
+    .item__price {
+        display: inline-block;
+    }
+}
+
+/* lg */
+/* @media (min-width: 1024px) {} */
+
+/* xl */
+/* @media (min-width: 1280px) {} */
+
+/* 2xl */
+/* @media (min-width: 1536px) {}  */

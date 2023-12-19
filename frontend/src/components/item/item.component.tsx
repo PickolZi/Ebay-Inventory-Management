@@ -1,6 +1,20 @@
 
 import styles from "./item.module.css";
 
+import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc'
+import tz from 'dayjs/plugin/timezone'
+
+dayjs.extend(utc)
+dayjs.extend(tz)
+
+const dateFormatter = (date) => {
+    const date_string = dayjs(date).tz(dayjs.tz.guess()).toString();
+    const date_array = date_string.split(" ")
+    const date_format = date_array[2] + " " + date_array[1] + ", " + date_array[3]
+    return date_format;
+}
+
 const Item = ({item}) => {
     return (
         <div className={styles.item}>
@@ -15,9 +29,9 @@ const Item = ({item}) => {
 
                     <div className={styles.items__text_bottom}>
                         <p className={styles.item__sku}>SKU: {item["sku"]}</p>
-                        <p className={styles.item__listed_date}>Listed Date: {item["listed_date"]}</p>
-                        {item["status"] == "Completed" &&  
-                        <p className={styles.item__date_sold}>Date sold: {item["last_checked_on_ebay_date"]}</p>
+                        <p className={styles.item__listed_date}>Listed: {dateFormatter(item["listed_date"])}</p>
+                        {item["status"] != "Active" &&  
+                        <p className={styles.item__date_sold}>Sold: {dateFormatter(item["last_checked_on_ebay_date"])}</p>
                         }
                         <p className={styles.item__id}>Ebay ID: {item["id"]}</p>
                     </div>

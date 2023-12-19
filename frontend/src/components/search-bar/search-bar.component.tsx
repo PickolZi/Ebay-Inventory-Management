@@ -1,5 +1,8 @@
+import Image from "next/image";
 
 import styles from "./search-bar.module.css";
+
+import filterBarSVG from "../../../public/assets/svg/filter.svg"
 
 const SearchBar = ({searchBarInput, setSearchBarInput, isMobileFilterBar, setMobileFilterBar}) => {
 
@@ -16,8 +19,10 @@ const SearchBar = ({searchBarInput, setSearchBarInput, isMobileFilterBar, setMob
     }
 
     return (
-        <div>
-            <button onClick={mobileFilterBarHandler}>mobile</button>
+        <div className={styles.search_bar_container}>
+            
+            <Image src={filterBarSVG} alt="filter bar when mobile view is active" className={styles.filter_icon} onClick={mobileFilterBarHandler} />
+
             <input type="search" className={styles.items_search_bar} name="items-search-bar" placeholder="Search items by title..." onKeyDown={searchBarEventHandler}/>
         </div>
     )
