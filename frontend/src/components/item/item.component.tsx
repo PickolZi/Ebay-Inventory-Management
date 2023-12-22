@@ -2,14 +2,9 @@
 import styles from "./item.module.css";
 
 import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc'
-import tz from 'dayjs/plugin/timezone'
-
-dayjs.extend(utc)
-dayjs.extend(tz)
 
 const dateFormatter = (date) => {
-    const date_string = dayjs(date).tz(dayjs.tz.guess()).toString();
+    const date_string = dayjs(date).subtract(8, "hours").toString();
     const date_array = date_string.split(" ")
     const date_format = date_array[2] + " " + date_array[1] + ", " + date_array[3]
     return date_format;

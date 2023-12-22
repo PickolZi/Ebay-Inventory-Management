@@ -3,18 +3,14 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 import ImageGallery from "react-image-gallery";
-import LabelButton from "../label-button/label-button.component";
+import ShippedButton from "../shipped-button/shipped-button.component";
+import DetailedItemForm from "../detailed-item-form/detailed-item-form.component";
+import PrintLabelButton from "../print-label-button/print-label-button.component";
 
 import styles from "./detailed-item.module.css"
-import DetailedItemForm from "../detailed-item-form/detailed-item-form.component";
-import ShippedButton from "../shipped-button/shipped-button.component";
 
 import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc'
-import tz from 'dayjs/plugin/timezone'
 
-dayjs.extend(utc)
-dayjs.extend(tz)
 
 const dateFormatter = (date) => {
     const date_string = dayjs(date).subtract(8, "hours").toString();
@@ -81,15 +77,15 @@ const DetailedItems = ({params}) => {
                         }
                         <h2 className={styles.detailed_items__sku}>SKU: {itemData["sku"]}</h2>
                         <h2 className={styles.detailed_items__id}>Ebay ID: {itemData["id"]}</h2>
+                        <a href={itemData["ebay_url"]} className={styles.detailed_items__ebay_url} target="_blank">Ebay item page</a>
                     </div>
 
                     <DetailedItemForm itemsID={itemsID} itemData={itemData} setItemData={setItemData} />
 
-                    <LabelButton itemData={itemData} />
+                    <PrintLabelButton itemData={itemData} />
                 </div> :
                 <h1>Item not available....</h1>
             }
-
         </div>
     )
 }
