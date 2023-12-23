@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 
 import ImageGallery from "react-image-gallery";
 import ShippedButton from "../shipped-button/shipped-button.component";
+import DeletedButton from "../deleted-button/deleted-button.component";
 import DetailedItemForm from "../detailed-item-form/detailed-item-form.component";
 import PrintLabelButton from "../print-label-button/print-label-button.component";
 
@@ -61,6 +62,10 @@ const DetailedItems = ({params}) => {
             {itemData ? 
                 <div className={styles.detailed_items__text_content}>
 
+                    {
+                        itemData["status"] == "Completed" && 
+                        <DeletedButton itemID={itemData["id"]} MACHINE_IP={MACHINE_IP} itemData={itemData} setItemData={setItemData}/>
+                    }
                     {
                         itemData["status"] == "Completed" && 
                         <ShippedButton itemID={itemData["id"]} MACHINE_IP={MACHINE_IP} itemData={itemData} setItemData={setItemData}/>
