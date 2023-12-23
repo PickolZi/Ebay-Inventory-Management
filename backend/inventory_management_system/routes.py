@@ -117,7 +117,7 @@ def editItem(id):
         return "Itemiz) Status 300: Failed to update item into database. No post data given to API endpoint."
     # return redirect(url_for('main.item', id=id, message="Successfully edited item!"))
 
-@main.route('/api/shipItem/<int:id>')
+@main.route('/api/shipItem/<int:id>', methods=["POST"])
 def shipItem(id):
     # Given ebay item id. If the item's status is a "Completed" or "sold" item. Change the status to shipped.
     # Else return a 404.
@@ -132,4 +132,21 @@ def shipItem(id):
     elif item.status.lower() == "shipped":
         return f"Itemiz ERROR) Status 300: Item #{id}, Title: '{item.title}' status is already marked as shipped"
     else:
-        return f"Itemiz ERROR) Status 300: Item #{id}, Title: '{item.title}' status could not be updated likely due to item being still active."
+        return f"Itemiz ERROR) Status 300: Item #{id}, Title: '{item.title}' status could not be updated likely due to item being still active or deleted."
+
+@main.route('/api/deleteItem/<int:id>', methods=["POST"])
+def deleteItem(id):
+    # Given ebay item id. If the item's status is a "Completed" or "sold" item. Change the status to deleted.
+    # Else return a 404.
+
+    item = Item.query.get_or_404(id)
+
+    if item.status.lower() == "completed":
+        item.status = "Deleted"
+        db.session.commit()
+
+        return f"Itemiz) Status 200: Item #{id}, Title: '{item.title}' status has been updated to Deleted"
+    elif item.status.lower() == "deleted":
+        return f"Itemiz ERROR) Status 300: Item #{id}, Title: '{item.title}' status is already marked as deleted"
+    else:
+        return f"Itemiz ERROR) Status 300: Item #{id}, Title: '{item.title}' status could not be updated likely due to item being still active or shipped."

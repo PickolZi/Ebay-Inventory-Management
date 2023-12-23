@@ -2,6 +2,7 @@ version: "3"
 services:
   flask_backend:
     build: ./backend/
+    container_name: flask_backend
     ports: 
       - "5000:5000"
     expose:
@@ -10,6 +11,7 @@ services:
       - ./backend:/usr/src/backend
   react_frontend:
     build: ./frontend/
+    container_name: react_frontend
     ports:
       - "80:3000"
     volumes:
