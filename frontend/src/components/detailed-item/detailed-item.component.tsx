@@ -28,6 +28,14 @@ const dateFormatter = (date) => {
 const MACHINE_IP = "http://68.190.242.157:5000/";
 // const MACHINE_IP = "http://127.0.0.1:5000/";
 
+const getLowerResEbayImage = (ebay_url) => {
+    // Given original ebay image url, format it to request the smaller formatted ebay image.
+    let ebay_url_pieces = ebay_url.split("/")
+    let ebay_special_code = ebay_url_pieces[7]
+    let res = `https://i.ebayimg.com/images/g/${ebay_special_code}/s-l100.jpg`
+    return res;
+}
+
 const DetailedItems = ({params}) => {
     const [itemsID, setItemsID] = useState(params.itemsID);
     const [itemData, setItemData] = useState();
@@ -46,7 +54,7 @@ const DetailedItems = ({params}) => {
         setItemImages(itemData["image_urls"].map((imageURL) => {
             return {
                 original: imageURL,
-                thumbnail: imageURL
+                thumbnail: getLowerResEbayImage(imageURL)
             }
         }))
     }, [itemData])

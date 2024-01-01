@@ -10,11 +10,19 @@ const dateFormatter = (date) => {
     return date_format;
 }
 
+const getLowerResEbayImage = (ebay_url) => {
+    // Given original ebay image url, format it to request the smaller formatted ebay image.
+    let ebay_url_pieces = ebay_url.split("/")
+    let ebay_special_code = ebay_url_pieces[7]
+    let res = `https://i.ebayimg.com/images/g/${ebay_special_code}/s-l400.jpg`
+    return res;
+}
+
 const Item = ({item}) => {
     return (
         <div className={styles.item}>
             <div className={styles.item__sub_container}>
-                <img className={styles.item__img} src={item["image_urls"][0]} alt={`${item["title"]} image`} />
+                <img className={styles.item__img} src={getLowerResEbayImage(item["image_urls"][0])} alt={`${item["title"]} image`} />
                 <div className={styles.items__text}>
                     <div className={styles.items__text_top}>
                         <p className={styles.item__title}>{item["title"]}</p>
