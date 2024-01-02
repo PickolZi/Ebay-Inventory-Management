@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from sqlalchemy import select
 from flask_cors import cross_origin
 from flask import Flask, render_template, request, Blueprint, request, redirect, url_for, jsonify
 from .models import Item, Url
@@ -32,6 +33,18 @@ def getAllItems():
             'ids': [item.id for item in items], 
             'total': len(items)
         })
+
+@main.route("/api/getAllLocations")
+def getAllLocations():
+    # Returns all the different locations
+    locations = db.session.query(Item.location).distinct().all()
+    locations = [location[0] for location in locations]
+    locations.remove(None)
+    locations.sort()
+
+    return jsonify({
+        "locations": locations
+    })
 
 @main.route("/api/getAllItems")
 def getAllItemsAndData():
