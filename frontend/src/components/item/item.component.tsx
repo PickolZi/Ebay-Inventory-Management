@@ -1,3 +1,4 @@
+import Link from 'next/link';
 
 import styles from "./item.module.css";
 
@@ -22,10 +23,20 @@ const Item = ({item}) => {
     return (
         <div className={styles.item}>
             <div className={styles.item__sub_container}>
+                {/* <Link 
+                    href={`/pages/items/${item["id"]}`} 
+                    target="_blank">
+                    <img className={styles.item__img} src={getLowerResEbayImage(item["image_urls"][0])} alt={`${item["title"]} image`} />
+                </Link> */}
                 <img className={styles.item__img} src={getLowerResEbayImage(item["image_urls"][0])} alt={`${item["title"]} image`} />
                 <div className={styles.items__text}>
                     <div className={styles.items__text_top}>
-                        <p className={styles.item__title}>{item["title"]}</p>
+                        <Link 
+                            href={`/pages/items/${item["id"]}`} 
+                            target="_blank">
+                            <p className={styles.item__title}>{item["title"]}</p>
+                        </Link>
+                        {/* <p className={styles.item__title}>{item["title"]}</p> */}
                         {/* <p className={styles.item__status}>Status: {item["status"]}</p> */}
                         <p className={styles.item__price}>${item["price"]}</p>
                     </div>
@@ -44,7 +55,7 @@ const Item = ({item}) => {
             <div className={styles.item__location_container}>
                 <p className={styles.item__location}>
                     {item["location"] ? item["location"] : "N/A"}
-                    </p>
+                </p>
             </div>
         </div>
     )

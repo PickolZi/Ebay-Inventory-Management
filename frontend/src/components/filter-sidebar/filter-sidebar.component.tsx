@@ -1,16 +1,30 @@
 import Image from "next/image";
+import axios from 'axios';
 
 import styles from "./filter-sidebar.module.css";
-
 import closeButtonSVG from "../../../public/assets/svg/close_button.svg";
+import { useEffect, useState } from "react";
 
+
+const MACHINE_IP = "http://68.190.242.157:5000/";
 const FilterSideBar = ({excludeBarInput, setExcludeBarInput, locationBarInput, setLocationBarInput, isMobileFilterBar, setMobileFilterBar, ebayIDBarInput, setEbayIDBarInput}) => {
+    const [locations, setLocations] = useState([])
+
+    useEffect(() => {
+        axios.get(MACHINE_IP + "/api/getAllLocations").then((res) => {
+            setLocations(res.data["locations"]);
+        })
+    }, []);
 
     const excludeBarEventHandler = (event) => {
         if (event.key === "Enter") {
             const excludeBarText = event.target.value.toLowerCase();
             setExcludeBarInput(excludeBarText);
         }
+    }
+
+    const locationCheckBoxHandler = (event) => {
+        console.log(event.target)
     }
 
     const locationBarEventHandler = (event) => {
@@ -40,17 +54,43 @@ const FilterSideBar = ({excludeBarInput, setExcludeBarInput, locationBarInput, s
 
             <div className={styles.filter__input_container}>
                 <label htmlFor="items_exclude_bar">Exclude: </label>
-                <input type="search" id="items_exclude_bar" name="items_exclude_bar" placeholder="Excluded words here..." onKeyDown={excludeBarEventHandler}/>
-            </div>
-
-            <div className={styles.filter__input_container}>
-                <label htmlFor="location_search_bar">Location: </label>
-                <input type="search" id="location_search_bar" name="location_search_bar" placeholder="Location here..." onKeyDown={locationBarEventHandler}/>
+                <input 
+                    type="search" 
+                    id="items_exclude_bar" 
+                    name="items_exclude_bar" 
+                    placeholder="Excluded words here..." 
+                    onKeyDown={excludeBarEventHandler}
+                />
             </div>
 
             <div className={styles.filter__input_container}>
                 <label htmlFor="ebay_id_search_bar">Ebay ID: </label>
-                <input type="number" id="ebay_id_search_bar" name="ebay_id_search_bar" placeholder="Search by ebay ID..." onKeyDown={ebayIDBarEventHandler}/>
+                <input 
+                    type="number" 
+                    id="ebay_id_search_bar" 
+                    name="ebay_id_search_bar" 
+                    placeholder="Search by ebay ID..." 
+                    onKeyDown={ebayIDBarEventHandler}
+                />
+            </div>
+
+            <div className={styles.filter__input_container}>
+                <h2>Locations:</h2>
+                {/* {locations.map((location) => {
+                    return (
+                        <div className={styles.filter__location_checkbox}>
+                            <input onClick={locationCheckBoxHandler} type="checkbox" name="testing" id={`styles.location_${location}`} disabled/>
+                            <label onClick={locationCheckBoxHandler} htmlFor={`styles.location_${location}`}>{location != "" ? location : "N/A"}</label>
+                        </div>
+                    )
+                })} */}
+                <input 
+                    type="search" 
+                    id="location_search_bar" 
+                    name="location_search_bar" 
+                    placeholder="Location here..." 
+                    onKeyDown={locationBarEventHandler}
+                />
             </div>
 
         </div>
