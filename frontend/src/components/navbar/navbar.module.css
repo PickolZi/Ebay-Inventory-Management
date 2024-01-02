@@ -7,7 +7,6 @@
     position: fixed;
     width: 100%;
     z-index: 999;
-    /* text-transform: uppercase; */
     font-size: var(--size-lg);
     padding: 0 1rem;
 }

@@ -1,5 +1,6 @@
 .item {
     display: flex;
+    position: relative;
     justify-content: space-between;
     line-height: 100%;
     margin: 0.25rem 0;
@@ -19,9 +20,12 @@
     justify-content: space-between;
     margin-bottom: 1rem;
     padding-left: 0.5rem;
+    width: 200px;
+    overflow: hidden;
+    outline: 1px solid red;
 }
 .item__title {
-    font-size: var(--size-lg);
+    font-size: var(--size-md);
     font-weight: 600;
 }
 .item__img {
@@ -36,6 +40,10 @@
 .item__location_container {
     margin-top: auto;
     margin-bottom: auto;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -51,6 +59,9 @@
 @media (min-width: 475px) {
     .item {
         line-height: normal;
+    }
+    .items__text {
+        width: auto;
     }
 }
 
