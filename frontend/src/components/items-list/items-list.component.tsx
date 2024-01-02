@@ -14,6 +14,7 @@ import Link from 'next/link';
 
 const ItemsList = ({status, sortKeyword}) => {
     const {items, setItems} = useContext(ItemsContext);
+
     const [filteredItems, setFilteredItems] = useState([]);
     const [tempItems, setTempItems] = useState([]);
     const [searchBarInput, setSearchBarInput] = useState("");
@@ -79,14 +80,15 @@ const ItemsList = ({status, sortKeyword}) => {
                 }
             } else if (locationBarInput != "") {
                 if (itemLocation == null) {
-                    return false
+                    return false;
                 }
 
                 if (locationBarInput.trim() != itemLocation.toLowerCase().trim()) {
-                    return false
+                    return false;
                 }
             }
 
+            // Ebay ID bar filter.
             if (ebayIDBarInput != "" && !item["id"].toString().includes(ebayIDBarInput)) {
                 return false;
             }
@@ -98,11 +100,25 @@ const ItemsList = ({status, sortKeyword}) => {
 
     return (
         <div className={styles.items_container}>
-            <FilterSideBar excludeBarInput={excludeBarInput} setExcludeBarInput={setExcludeBarInput} locationBarInput={locationBarInput} setLocationBarInput={setLocationBarInput} isMobileFilterBar={isMobileFilterBar} setMobileFilterBar={setMobileFilterBar} ebayIDBarInput={ebayIDBarInput} setEbayIDBarInput={setEbayIDBarInput}/>
+            <FilterSideBar 
+                excludeBarInput={excludeBarInput} 
+                setExcludeBarInput={setExcludeBarInput} 
+                locationBarInput={locationBarInput} 
+                setLocationBarInput={setLocationBarInput} 
+                isMobileFilterBar={isMobileFilterBar} 
+                setMobileFilterBar={setMobileFilterBar} 
+                ebayIDBarInput={ebayIDBarInput} 
+                setEbayIDBarInput={setEbayIDBarInput}
+            />
 
             <div className={styles.items_list_wrapper}>
                 <div className={styles.items_search_container}>
-                    <SearchBar searchbarInput={searchBarInput} setSearchBarInput={setSearchBarInput} isMobileFilterBar={isMobileFilterBar} setMobileFilterBar={setMobileFilterBar} />
+                    <SearchBar 
+                        searchbarInput={searchBarInput} 
+                        setSearchBarInput={setSearchBarInput} 
+                        isMobileFilterBar={isMobileFilterBar} 
+                        setMobileFilterBar={setMobileFilterBar} 
+                    />
                     <p>
                         {tempItems ? tempItems.length : 0} results...
                     </p>
@@ -111,9 +127,12 @@ const ItemsList = ({status, sortKeyword}) => {
                 <div className={styles.items_list}>
                     {tempItems ? tempItems.map((item) => {
                         return (
-                            <Link key={item["id"]} href={`/pages/items/${item["id"]}`} target="_blank">
-                                <Item item={item}/>
-                            </Link>
+                            // <Link 
+                            //     key={item["id"]} 
+                            //     href={`/pages/items/${item["id"]}`} 
+                            //     target="_blank">
+                            // </Link>
+                            <Item key={item["id"]} item={item} />
                         )
                     }) :
                         <h1>Loading items...</h1>

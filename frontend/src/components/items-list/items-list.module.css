@@ -10,14 +10,19 @@
 }
 .items_search_container {
     display: flex;
+    margin-left: 0.50rem;
     flex-direction: column;
     position: relative;
     position: sticky;
     top: 3rem;
     background-color: white;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 .items_search_container p {
     background-color: white;
+    /* text-align: right; */
+    /* padding-top: 0.5rem; */
+    border-bottom: 1px solid black;
 }
 .items_list {
     display: flex;
