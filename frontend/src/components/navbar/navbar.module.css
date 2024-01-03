@@ -12,7 +12,6 @@
 }
 .mid_nav {
     width: 100%;
-    margin: 0 1rem;
     display: flex;
     flex-direction: row;
     align-items: center;

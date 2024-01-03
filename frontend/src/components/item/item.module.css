@@ -5,6 +5,7 @@
     line-height: 100%;
     margin: 0.25rem 0;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    width: 100%;
 }
 /* .item:hover {
     background-color: grey;
@@ -22,7 +23,6 @@
     padding-left: 0.5rem;
     width: 200px;
     overflow: hidden;
-    outline: 1px solid red;
 }
 .item__title {
     font-size: var(--size-md);

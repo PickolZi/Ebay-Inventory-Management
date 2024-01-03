@@ -23,11 +23,6 @@ const Item = ({item}) => {
     return (
         <div className={styles.item}>
             <div className={styles.item__sub_container}>
-                {/* <Link 
-                    href={`/pages/items/${item["id"]}`} 
-                    target="_blank">
-                    <img className={styles.item__img} src={getLowerResEbayImage(item["image_urls"][0])} alt={`${item["title"]} image`} />
-                </Link> */}
                 <img className={styles.item__img} src={getLowerResEbayImage(item["image_urls"][0])} alt={`${item["title"]} image`} />
                 <div className={styles.items__text}>
                     <div className={styles.items__text_top}>

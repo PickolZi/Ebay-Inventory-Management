@@ -1,22 +1,12 @@
-import LabelQRCode from "../label-qr-code/label-qr-code.component";
 
-import styles from "./print-label-button.module.css";
+import styles from "./bulk-print-button.module.css";
 
 import dayjs from "dayjs";
 
-const PrintLabelButton = ({itemData}) => {
-    const MACHINE_IP = "http://68.190.242.157"
+const BulkPrintButton = ({ebayIndexesToPrint, ebayItems}) => {
 
-    const handlePrint = () => {
-        // Window Settings
-        // const labelWidth = 567;
-        // const labelHeight = 378;
-        const labelWidth = 567*2;
-        const labelHeight = 378*2;
-        const left = (screen.width/2)-(labelWidth/2);
-        const top = (screen.height/2)-(labelHeight/2);
-        const labelDimension = `width=${labelWidth}, height=${labelHeight}, left=${left}, top=${top}`
-        
+    const generateLabelDataForIndividualEbayItem = (index, itemData, labelPrintingWindow) => {
+
         // Item info
         const date_string = dayjs().subtract(8, "hours");
         const day = date_string.date();
@@ -33,11 +23,8 @@ const PrintLabelButton = ({itemData}) => {
         const listerInitial = itemData["sku"] ? itemData["sku"][1] : "___"
 
         const allanSKU = `SKU[${listerInitial}][${month}/${day}/${year}][___][${stockNumber}]`
-        
-        let labelPrintingWindow = window.open("", "", labelDimension);
-        if (labelPrintingWindow) {
-            labelPrintingWindow.document.open()
-            labelPrintingWindow.document.write(`
+
+        labelPrintingWindow.document.write(`
                 <style>
                     .labelQRCode {
                         display: flex;
@@ -53,29 +40,44 @@ const PrintLabelButton = ({itemData}) => {
                     <h1>[${length}x${width}x${height}] ${weight} LBS</h1>
                     <h1>${allanSKU}</h1>
                     <div class="labelQRCode">
-                        ${document.getElementById("labelQRCode").innerHTML}
-                        ${document.getElementById("labelQRCode").innerHTML}
-                        ${document.getElementById("labelQRCode").innerHTML}
-                        ${document.getElementById("labelQRCode").innerHTML}
+                        ${document.getElementById("labelQRCode_"+index).innerHTML}
+                        ${document.getElementById("labelQRCode_"+index).innerHTML}
+                        ${document.getElementById("labelQRCode_"+index).innerHTML}
+                        ${document.getElementById("labelQRCode_"+index).innerHTML}
                     </div>
                 </div>
             `)
-            labelPrintingWindow.document.close()
 
+    }
+
+    const handlePrint = () => {
+        // Window Settings
+        // const labelWidth = 567;
+        // const labelHeight = 378;
+        const labelWidth = 567*2;
+        const labelHeight = 378*2;
+        const left = (screen.width/2)-(labelWidth/2);
+        const top = (screen.height/2)-(labelHeight/2);
+        const labelDimension = `width=${labelWidth}, height=${labelHeight}, left=${left}, top=${top}`
+                
+        let labelPrintingWindow = window.open("", "", labelDimension);
+        if (labelPrintingWindow) {
+            labelPrintingWindow.document.open()
+
+            ebayIndexesToPrint.map((ebayBoolean, index) => {
+                if (ebayBoolean) {
+                    generateLabelDataForIndividualEbayItem(index, ebayItems[index], labelPrintingWindow)
+                }
+            })
+
+            labelPrintingWindow.document.close()
             labelPrintingWindow.print();
         }
     }
 
-
     return (
-        <div>
-            <button className={styles.print_label_button} onClick={handlePrint}>Print Label</button>
-            
-            <div id="labelQRCode" style={{display: 'none'}}>
-                <LabelQRCode machineIP={MACHINE_IP} itemID={itemData["id"]} />
-            </div>
-        </div>
+        <button className={styles.bulk_print_button} onClick={handlePrint}>Bulk Print Labels</button>
     )
 }
 
-export default PrintLabelButton;
+export default BulkPrintButton;

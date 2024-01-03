@@ -7,10 +7,13 @@ import { ItemsContext } from '@/context/items.context';
 import Item from '../item/item.component';
 import SearchBar from '../search-bar/search-bar.component';
 import FilterSideBar from '../filter-sidebar/filter-sidebar.component';
+import ItemsListSelectBox from '../items-list-select-box/items-list-select-box.component';
 
 import styles from './items-list.module.css';
-import Link from 'next/link';
+import BulkPrintButton from '../bulk-print-button/bulk-print-button.component';
+import LabelQRCode from '../label-qr-code/label-qr-code.component';
 
+const MACHINE_IP = "http://68.190.242.157"
 
 const ItemsList = ({status, sortKeyword}) => {
     const {items, setItems} = useContext(ItemsContext);
@@ -22,6 +25,9 @@ const ItemsList = ({status, sortKeyword}) => {
     const [locationBarInput, setLocationBarInput] = useState("");
     const [ebayIDBarInput, setEbayIDBarInput] = useState("");
     const [isMobileFilterBar, setMobileFilterBar] = useState(false);
+
+    const [ebayIndexesToPrint, setEbayIndexesToPrint] = useState([]);
+    const [masterIndex, setMasterIndex] = useState(false);
 
     useEffect(() => {
         // Filters items into Active, Sold, Shipped.
@@ -98,8 +104,13 @@ const ItemsList = ({status, sortKeyword}) => {
         }))
     }, [searchBarInput, excludeBarInput, locationBarInput, ebayIDBarInput]);
 
+    useEffect(() => {
+        // Sets all the checkboxes to false whenever tempItems is changed.
+        setEbayIndexesToPrint(tempItems.map(() => { return false }))
+    }, [tempItems])
+
     return (
-        <div className={styles.items_container}>
+        <div className={styles.items_list_container}>
             <FilterSideBar 
                 excludeBarInput={excludeBarInput} 
                 setExcludeBarInput={setExcludeBarInput} 
@@ -125,14 +136,38 @@ const ItemsList = ({status, sortKeyword}) => {
                 </div>
 
                 <div className={styles.items_list}>
-                    {tempItems ? tempItems.map((item) => {
+                    <div className={styles.item_container}>
+                        <ItemsListSelectBox 
+                            role="master" 
+                            ebayIndexesToPrint={ebayIndexesToPrint} 
+                            setEbayIndexesToPrint={setEbayIndexesToPrint}
+                            masterIndex={masterIndex}
+                            setMasterIndex={setMasterIndex}
+                            index="N/A" />
+                        <h1>Select All</h1>
+                        <BulkPrintButton ebayIndexesToPrint={ebayIndexesToPrint} ebayItems={tempItems}/>
+                    </div>
+                    {tempItems ? tempItems.map((item, index) => {
                         return (
-                            // <Link 
-                            //     key={item["id"]} 
-                            //     href={`/pages/items/${item["id"]}`} 
-                            //     target="_blank">
-                            // </Link>
-                            <Item key={item["id"]} item={item} />
+                            <div className={styles.item_container}>
+                                <ItemsListSelectBox 
+                                    role="basic" 
+                                    ebayIndexesToPrint={ebayIndexesToPrint} 
+                                    setEbayIndexesToPrint={setEbayIndexesToPrint}
+                                    masterIndex={masterIndex}
+                                    setMasterIndex={setMasterIndex}
+                                    index={index} />
+
+                                <Item key={item["id"]} item={item} />
+
+                                {/* Invisible QR code is needed for printing qr codes with label. */}
+                                {
+                                    ebayIndexesToPrint[index] &&
+                                    <div id={`labelQRCode_${index}`} style={{display: 'none'}}>
+                                        <LabelQRCode machineIP={MACHINE_IP} itemID={item["id"]}/>
+                                    </div>
+                                }
+                            </div>
                         )
                     }) :
                         <h1>Loading items...</h1>

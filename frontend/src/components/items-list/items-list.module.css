@@ -1,12 +1,9 @@
-.items_container {
+.items_list_container {
     position: relative;
     display: flex;
 }
 .items_list_wrapper {
     width: 100%;
-    /* margin-left: auto;
-    margin-right: auto;
-    position: relative; */
 }
 .items_search_container {
     display: flex;
@@ -20,14 +17,17 @@
 }
 .items_search_container p {
     background-color: white;
-    /* text-align: right; */
-    /* padding-top: 0.5rem; */
     border-bottom: 1px solid black;
 }
 .items_list {
     display: flex;
     flex-direction: column;
-    /* gap: 1rem;    */
+}
+.item_container {
+    display: flex;
+    flex-direction: row;
+    margin-left: 0.5rem;
+    gap: 1rem;
 }
 
 /* xs */
