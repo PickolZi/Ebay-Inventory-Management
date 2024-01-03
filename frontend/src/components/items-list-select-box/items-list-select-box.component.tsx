@@ -22,7 +22,7 @@ const ItemsListSelectBox = ({role, ebayIndexesToPrint, setEbayIndexesToPrint, ma
     }
 
     return (
-        <div>
+        <div className={styles.items_list_check_box}>
             { role == "master" ? 
                 <input type="checkbox" onClick={handleCheckBox} checked={masterIndex}/> 
                 : 

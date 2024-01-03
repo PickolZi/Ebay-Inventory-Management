@@ -29,7 +29,9 @@
     margin-left: 0.5rem;
     gap: 1rem;
 }
-
+.bulk_print_text {
+    display: none;
+}
 /* xs */
 /* @media (min-width: 475px) {} */
 
@@ -46,6 +48,9 @@
     }
     .items_search_container {
         margin-left: 0.50rem;
+    }
+    .bulk_print_text {
+        display: block;
     }
 }
 

@@ -144,7 +144,7 @@ const ItemsList = ({status, sortKeyword}) => {
                             masterIndex={masterIndex}
                             setMasterIndex={setMasterIndex}
                             index="N/A" />
-                        <h1>Select All</h1>
+                        <h1 className={styles.bulk_print_text}>Select All</h1>
                         <BulkPrintButton ebayIndexesToPrint={ebayIndexesToPrint} ebayItems={tempItems}/>
                     </div>
                     {tempItems ? tempItems.map((item, index) => {

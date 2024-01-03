@@ -1,0 +1,30 @@
+.items_list_check_box {
+    display: none;
+    margin: auto 0;
+}
+.items_list_check_box input {
+    height: 18px;
+    width: 18px;
+}
+
+/* xs */
+/* @media (min-width: 475px) {} */
+
+/* sm */
+/* @media (min-width: 640px) {} */
+
+/* md */
+@media (min-width: 768px) {
+    .items_list_check_box {
+        display: block;
+    }
+}
+
+/* lg */
+/* @media (min-width: 1024px) {} */
+
+/* xl */
+/* @media (min-width: 1280px) {} */
+
+/* 2xl */
+/* @media (min-width: 1536px) {}  */

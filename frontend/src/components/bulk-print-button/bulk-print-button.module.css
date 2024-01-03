@@ -1,5 +1,28 @@
 .bulk_print_button {
+    display: none; 
     background-color: lightgreen;
     border-radius: 6px;
     padding: 0.25rem;   
 }
+
+/* xs */
+/* @media (min-width: 475px) {} */
+
+/* sm */
+/* @media (min-width: 640px) {} */
+
+/* md */
+@media (min-width: 768px) {
+    .bulk_print_button {
+        display: block;  
+    }
+}
+
+/* lg */
+/* @media (min-width: 1024px) {} */
+
+/* xl */
+/* @media (min-width: 1280px) {} */
+
+/* 2xl */
+/* @media (min-width: 1536px) {}  */
