@@ -22,7 +22,7 @@ const ItemsList = ({status, sortKeyword}) => {
     const [tempItems, setTempItems] = useState([]);
     const [searchBarInput, setSearchBarInput] = useState("");
     const [excludeBarInput, setExcludeBarInput] = useState("");
-    const [locationBarInput, setLocationBarInput] = useState("");
+    const [locationBarInput, setLocationBarInput] = useState([]);
     const [ebayIDBarInput, setEbayIDBarInput] = useState("");
     const [isMobileFilterBar, setMobileFilterBar] = useState(false);
 
@@ -79,19 +79,11 @@ const ItemsList = ({status, sortKeyword}) => {
                 }
             }
 
-            // Location bar filter.
-            if (locationBarInput == "n/a") {
-                if (itemLocation != null) {
-                    return false;
-                }
-            } else if (locationBarInput != "") {
-                if (itemLocation == null) {
-                    return false;
-                }
-
-                if (locationBarInput.trim() != itemLocation.toLowerCase().trim()) {
-                    return false;
-                }
+            // Location bar filter. v2
+            if (itemLocation == null && locationBarInput.includes("")) {
+            }
+            else if (locationBarInput.length > 0 && !locationBarInput.includes(itemLocation)) {
+                return false;
             }
 
             // Ebay ID bar filter.

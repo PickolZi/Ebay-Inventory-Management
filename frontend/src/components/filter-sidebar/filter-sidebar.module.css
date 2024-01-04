@@ -7,9 +7,8 @@
     background-color: white;
     gap: 1rem;
     padding: 1rem 0.25rem;
-    /* margin-top: 1rem; */
-    /* border: 1px solid black; */
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    height: 90vh;
 }
 .mobile_filter_container {
     display: flex;
@@ -33,6 +32,10 @@
 .filter__input_container input {
     width: 100%;
 }
+.filter__location_container {
+    border: 1px solid black;
+    overflow-y: scroll;
+}
 .filter__location_checkbox {
     display: flex;
     flex-direction: row;
@@ -47,6 +50,25 @@
     width: 80%;
 }
 
+/* Scroll bar */
+.filter__location_container {
+    scrollbar-width: thin;
+    scrollbar-color: #000000 #ffffff;
+}
+/* Chrome, Edge, and Safari */
+.filter__location_container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.filter__location_container::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+.filter__location_container::-webkit-scrollbar-thumb {
+    background-color: #000000;
+    border-radius: 16px;
+    border: 3px none #ffffff;
+}
 
 /* xs */
 /* @media (min-width: 475px) {} */

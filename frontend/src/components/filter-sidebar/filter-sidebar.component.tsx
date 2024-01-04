@@ -1,18 +1,21 @@
 import Image from "next/image";
 import axios from 'axios';
+import { useEffect, useState } from "react";
 
 import styles from "./filter-sidebar.module.css";
 import closeButtonSVG from "../../../public/assets/svg/close_button.svg";
-import { useEffect, useState } from "react";
 
 
 const MACHINE_IP = "http://68.190.242.157:5000/";
 const FilterSideBar = ({excludeBarInput, setExcludeBarInput, locationBarInput, setLocationBarInput, isMobileFilterBar, setMobileFilterBar, ebayIDBarInput, setEbayIDBarInput}) => {
     const [locations, setLocations] = useState([])
+    const [locationBooleanValues, setLocationBooleanValues] = useState([]);
 
     useEffect(() => {
         axios.get(MACHINE_IP + "/api/getAllLocations").then((res) => {
             setLocations(res.data["locations"]);
+
+            setLocationBooleanValues(res.data["locations"].map(() => {return false}))
         })
     }, []);
 
@@ -24,14 +27,19 @@ const FilterSideBar = ({excludeBarInput, setExcludeBarInput, locationBarInput, s
     }
 
     const locationCheckBoxHandler = (event) => {
-        console.log(event.target)
-    }
+        const index = event.target.getAttribute("data-index")
+        
+        let tmpLocationBooleans = [...locationBooleanValues];
+        tmpLocationBooleans[index] = !tmpLocationBooleans[index];
+        setLocationBooleanValues(tmpLocationBooleans);
 
-    const locationBarEventHandler = (event) => {
-        if (event.key === "Enter") {
-            const locationBarText = event.target.value.toLowerCase();
-            setLocationBarInput(locationBarText);
+        let tmpLocationBarInput = [...locationBarInput];
+        if (tmpLocationBooleans[index]) {
+            tmpLocationBarInput.push(locations[index]);
+        } else {
+            tmpLocationBarInput.splice(tmpLocationBarInput.indexOf(locations[index]), 1);
         }
+        setLocationBarInput(tmpLocationBarInput);
     }
 
     const ebayIDBarEventHandler = (event) => {
@@ -74,23 +82,28 @@ const FilterSideBar = ({excludeBarInput, setExcludeBarInput, locationBarInput, s
                 />
             </div>
 
-            <div className={styles.filter__input_container}>
+            <div className={`${styles.filter__input_container} ${styles.filter__location_container}`}>
                 <h2>Locations:</h2>
-                {/* {locations.map((location) => {
+                {locations.map((location, index) => {
                     return (
                         <div className={styles.filter__location_checkbox}>
-                            <input onClick={locationCheckBoxHandler} type="checkbox" name="testing" id={`styles.location_${location}`} disabled/>
-                            <label onClick={locationCheckBoxHandler} htmlFor={`styles.location_${location}`}>{location != "" ? location : "N/A"}</label>
+                            <input 
+                                onClick={locationCheckBoxHandler} 
+                                id={`styles.location_${location}`} 
+                                type="checkbox" 
+                                data-index={index} 
+                                value={locationBooleanValues[index]}
+                                />
+                            <label 
+                                onClick={locationCheckBoxHandler} 
+                                htmlFor={`styles.location_${location}`}
+                                data-index={index} 
+                                >
+                                    {location != "" ? location : "N/A"}
+                            </label>
                         </div>
                     )
-                })} */}
-                <input 
-                    type="search" 
-                    id="location_search_bar" 
-                    name="location_search_bar" 
-                    placeholder="Location here..." 
-                    onKeyDown={locationBarEventHandler}
-                />
+                })}
             </div>
 
         </div>
