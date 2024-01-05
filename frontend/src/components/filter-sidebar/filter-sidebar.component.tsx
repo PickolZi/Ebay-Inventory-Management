@@ -2,17 +2,18 @@ import Image from "next/image";
 import axios from 'axios';
 import { useEffect, useState } from "react";
 
+import { MACHINE_IP } from "@/utils/machine-ip";
+
 import styles from "./filter-sidebar.module.css";
 import closeButtonSVG from "../../../public/assets/svg/close_button.svg";
 
 
-const MACHINE_IP = "http://68.190.242.157:5000/";
 const FilterSideBar = ({excludeBarInput, setExcludeBarInput, locationBarInput, setLocationBarInput, isMobileFilterBar, setMobileFilterBar, ebayIDBarInput, setEbayIDBarInput}) => {
     const [locations, setLocations] = useState([])
     const [locationBooleanValues, setLocationBooleanValues] = useState([]);
 
     useEffect(() => {
-        axios.get(MACHINE_IP + "/api/getAllLocations").then((res) => {
+        axios.get(MACHINE_IP + ":5000" + "/api/getAllLocations").then((res) => {
             setLocations(res.data["locations"]);
 
             setLocationBooleanValues(res.data["locations"].map(() => {return false}))
@@ -86,7 +87,7 @@ const FilterSideBar = ({excludeBarInput, setExcludeBarInput, locationBarInput, s
                 <h2>Locations:</h2>
                 {locations.map((location, index) => {
                     return (
-                        <div className={styles.filter__location_checkbox}>
+                        <div key={location} className={styles.filter__location_checkbox}>
                             <input 
                                 onClick={locationCheckBoxHandler} 
                                 id={`styles.location_${location}`} 

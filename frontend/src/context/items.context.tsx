@@ -1,9 +1,7 @@
 'use client'
 import { createContext, useState, useEffect } from "react";
 import axios from 'axios';
-
-
-const MACHINE_IP = "http://68.190.242.157:5000/";
+import { MACHINE_IP } from "../utils/machine-ip";
 
 export const ItemsContext = createContext({
     items: [],
@@ -15,7 +13,7 @@ export const ItemsProvider = ({children}) => {
     const value = {items, setItems};
 
     const callBackendToSetItems = () => {
-        axios.get(MACHINE_IP + "/api/getAllItems").then((res) => {
+        axios.get(MACHINE_IP + ":5000" + "/api/getAllItems").then((res) => {
             setItems(res.data["items"]);
         })
     }

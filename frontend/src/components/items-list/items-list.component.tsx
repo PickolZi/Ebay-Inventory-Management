@@ -8,12 +8,10 @@ import Item from '../item/item.component';
 import SearchBar from '../search-bar/search-bar.component';
 import FilterSideBar from '../filter-sidebar/filter-sidebar.component';
 import ItemsListSelectBox from '../items-list-select-box/items-list-select-box.component';
-
-import styles from './items-list.module.css';
 import BulkPrintButton from '../bulk-print-button/bulk-print-button.component';
 import LabelQRCode from '../label-qr-code/label-qr-code.component';
 
-const MACHINE_IP = "http://68.190.242.157"
+import styles from './items-list.module.css';
 
 const ItemsList = ({status, sortKeyword}) => {
     const {items, setItems} = useContext(ItemsContext);
@@ -141,7 +139,7 @@ const ItemsList = ({status, sortKeyword}) => {
                     </div>
                     {tempItems ? tempItems.map((item, index) => {
                         return (
-                            <div className={styles.item_container}>
+                            <div key={item["id"]} className={styles.item_container}>
                                 <ItemsListSelectBox 
                                     role="basic" 
                                     ebayIndexesToPrint={ebayIndexesToPrint} 
@@ -150,13 +148,13 @@ const ItemsList = ({status, sortKeyword}) => {
                                     setMasterIndex={setMasterIndex}
                                     index={index} />
 
-                                <Item key={item["id"]} item={item} />
+                                <Item item={item} />
 
                                 {/* Invisible QR code is needed for printing qr codes with label. */}
                                 {
                                     ebayIndexesToPrint[index] &&
                                     <div id={`labelQRCode_${index}`} style={{display: 'none'}}>
-                                        <LabelQRCode machineIP={MACHINE_IP} itemID={item["id"]}/>
+                                        <LabelQRCode itemID={item["id"]}/>
                                     </div>
                                 }
                             </div>

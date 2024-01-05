@@ -1,5 +1,6 @@
 'use client'
 import axios from "axios";
+import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 
 import ImageGallery from "react-image-gallery";
@@ -8,9 +9,8 @@ import DeletedButton from "../deleted-button/deleted-button.component";
 import DetailedItemForm from "../detailed-item-form/detailed-item-form.component";
 import PrintLabelButton from "../print-label-button/print-label-button.component";
 
+import { MACHINE_IP } from "../../utils/machine-ip";
 import styles from "./detailed-item.module.css"
-
-import dayjs from "dayjs";
 
 
 const dateFormatter = (date) => {
@@ -24,9 +24,6 @@ const dateFormatter = (date) => {
     const date_format = date_array.join(" ");
     return date_format;
 }
-
-const MACHINE_IP = "http://68.190.242.157:5000/";
-// const MACHINE_IP = "http://127.0.0.1:5000/";
 
 const getLowerResEbayImage = (ebay_url) => {
     // Given original ebay image url, format it to request the smaller formatted ebay image.
@@ -43,7 +40,7 @@ const DetailedItems = ({params}) => {
 
     // Calls backend API to retrieve Item information given the item id.
     useEffect(() => {
-        axios.get(MACHINE_IP + "/api/getItem/" + itemsID).then((res) => {
+        axios.get(MACHINE_IP + ":5000" + "/api/getItem/" + itemsID).then((res) => {
             setItemData(res.data);
         })
     }, [itemsID]);
@@ -72,11 +69,11 @@ const DetailedItems = ({params}) => {
 
                     {
                         itemData["status"] == "Completed" && 
-                        <DeletedButton itemID={itemData["id"]} MACHINE_IP={MACHINE_IP} itemData={itemData} setItemData={setItemData}/>
+                        <DeletedButton itemID={itemData["id"]} itemData={itemData} setItemData={setItemData}/>
                     }
                     {
                         itemData["status"] == "Completed" && 
-                        <ShippedButton itemID={itemData["id"]} MACHINE_IP={MACHINE_IP} itemData={itemData} setItemData={setItemData}/>
+                        <ShippedButton itemID={itemData["id"]} itemData={itemData} setItemData={setItemData}/>
                     }
 
                     <div>

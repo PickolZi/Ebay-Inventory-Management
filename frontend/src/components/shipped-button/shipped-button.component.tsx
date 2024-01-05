@@ -1,10 +1,12 @@
 import axios from "axios";
 
+import { MACHINE_IP } from "@/utils/machine-ip";
+
 import styles from "./shipped-button.module.css";
 
-const ShippedButton = ({itemID, MACHINE_IP, itemData, setItemData}) => {
+const ShippedButton = ({itemID, itemData, setItemData}) => {
     const handleShippedButton = () => {
-        axios.post(MACHINE_IP + "/api/shipItem/" + itemID).then((res) => {
+        axios.post(MACHINE_IP + ":5000" + "/api/shipItem/" + itemID).then((res) => {
             console.log(res.data)
             if (res.data.includes("Status 200")) {
                 setItemData({...itemData, status: "Shipped"})

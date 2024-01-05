@@ -1,5 +1,4 @@
 
-import { useEffect } from "react";
 import styles from "./items-list-selet-box.module.css"
 
 const ItemsListSelectBox = ({role, ebayIndexesToPrint, setEbayIndexesToPrint, masterIndex, setMasterIndex, index}) => {
@@ -24,9 +23,9 @@ const ItemsListSelectBox = ({role, ebayIndexesToPrint, setEbayIndexesToPrint, ma
     return (
         <div className={styles.items_list_check_box}>
             { role == "master" ? 
-                <input type="checkbox" onClick={handleCheckBox} checked={masterIndex}/> 
+                <input type="checkbox" onChange={handleCheckBox} checked={masterIndex || false }/> 
                 : 
-                <input type="checkbox" onClick={handleCheckBox} checked={ebayIndexesToPrint[index]}/> 
+                <input type="checkbox" onChange={handleCheckBox} checked={ebayIndexesToPrint[index] || false }/> 
             }
         </div>
     )

@@ -1,12 +1,11 @@
+import dayjs from "dayjs";
+
 import LabelQRCode from "../label-qr-code/label-qr-code.component";
 
 import styles from "./print-label-button.module.css";
 
-import dayjs from "dayjs";
 
 const PrintLabelButton = ({itemData}) => {
-    const MACHINE_IP = "http://68.190.242.157"
-
     const handlePrint = () => {
         // Window Settings
         // const labelWidth = 567;
@@ -72,7 +71,7 @@ const PrintLabelButton = ({itemData}) => {
             <button className={styles.print_label_button} onClick={handlePrint}>Print Label</button>
             
             <div id="labelQRCode" style={{display: 'none'}}>
-                <LabelQRCode machineIP={MACHINE_IP} itemID={itemData["id"]} />
+                <LabelQRCode itemID={itemData["id"]} />
             </div>
         </div>
     )

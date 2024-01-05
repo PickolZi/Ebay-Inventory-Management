@@ -1,10 +1,12 @@
 import axios from "axios";
 
+import { MACHINE_IP } from "@/utils/machine-ip";
+
 import styles from "./deleted-button.module.css";
 
-const DeletedButton = ({itemID, MACHINE_IP, itemData, setItemData}) => {
+const DeletedButton = ({itemID, itemData, setItemData}) => {
     const handleDeletedButton = () => {
-        axios.post(MACHINE_IP + "/api/deleteItem/" + itemID).then((res) => {
+        axios.post(MACHINE_IP + ":5000" + "/api/deleteItem/" + itemID).then((res) => {
             console.log(res.data)
             if (res.data.includes("Status 200")) {
                 setItemData({...itemData, status: "Deleted"})

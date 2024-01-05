@@ -5,10 +5,9 @@ import { useContext } from "react";
 
 import { ItemsContext } from "@/context/items.context";
 
-import styles from "./detailed-item-form.module.css";
+import { MACHINE_IP } from "@/utils/machine-ip";
 
-const MACHINE_IP = "http://68.190.242.157:5000/";
-// const MACHINE_IP = "http://127.0.0.1:5000/";
+import styles from "./detailed-item-form.module.css";
 
 const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
     const {items, setItems} = useContext(ItemsContext);
@@ -40,7 +39,7 @@ const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
             "item__form-weight-data": weight,
         }
 
-        const endpoint = MACHINE_IP + "/api/editItem/" + itemsID;
+        const endpoint = MACHINE_IP + ":5000" + "/api/editItem/" + itemsID;
         axios.post(endpoint, body).then(() => {
             setItemData({
                 ...itemData,   

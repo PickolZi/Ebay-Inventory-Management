@@ -75,6 +75,110 @@ def getAllItemsAndData():
 
     return jsonify({'items': output, 'total': len(output)})
 
+@main.route("/api/getAllActiveItems")
+def getAllActiveItemsAndData():
+    # Returns the json of every single ACTIVE ebay item from the database including all of its attributes.
+    items = Item.query.filter(Item.status == "Active").all()
+    output = []
+    for item in items:
+        image_urls = [image_url.image_url for image_url in item.image_url]
+        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
+        output.append(
+            {
+                'id': item.id,
+                'title': item.title,
+                'price': item.price,
+                'status': item.status,
+                'sku': item.sku,
+                'listed_date': item.listed_date,
+                'ebay_url': item.ebay_url,
+                'location': item.location,
+                'last_updated_date': item.last_updated_date,
+                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
+                'image_urls': image_urls,
+            }
+        )
+
+    return jsonify({'items': output, 'total': len(output)})
+
+@main.route("/api/getAllSoldItems")
+def getAllSoldItemsAndData():
+    # Returns the json of every single SOLD ebay item from the database including all of its attributes.
+    items = Item.query.filter(Item.status == "Completed").all()
+    output = []
+    for item in items:
+        image_urls = [image_url.image_url for image_url in item.image_url]
+        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
+        output.append(
+            {
+                'id': item.id,
+                'title': item.title,
+                'price': item.price,
+                'status': item.status,
+                'sku': item.sku,
+                'listed_date': item.listed_date,
+                'ebay_url': item.ebay_url,
+                'location': item.location,
+                'last_updated_date': item.last_updated_date,
+                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
+                'image_urls': image_urls,
+            }
+        )
+
+    return jsonify({'items': output, 'total': len(output)})
+
+@main.route("/api/getAllShippedItems")
+def getAllShippedItemsAndData():
+    # Returns the json of every single SHIPPED ebay item from the database including all of its attributes.
+    items = Item.query.filter(Item.status == "Shipped").all()
+    output = []
+    for item in items:
+        image_urls = [image_url.image_url for image_url in item.image_url]
+        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
+        output.append(
+            {
+                'id': item.id,
+                'title': item.title,
+                'price': item.price,
+                'status': item.status,
+                'sku': item.sku,
+                'listed_date': item.listed_date,
+                'ebay_url': item.ebay_url,
+                'location': item.location,
+                'last_updated_date': item.last_updated_date,
+                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
+                'image_urls': image_urls,
+            }
+        )
+
+    return jsonify({'items': output, 'total': len(output)})
+
+@main.route("/api/getAllDeletedItems")
+def getAllDeletedItemsAndData():
+    # Returns the json of every single Deleted ebay item from the database including all of its attributes.
+    items = Item.query.filter(Item.status == "Deleted").all()
+    output = []
+    for item in items:
+        image_urls = [image_url.image_url for image_url in item.image_url]
+        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
+        output.append(
+            {
+                'id': item.id,
+                'title': item.title,
+                'price': item.price,
+                'status': item.status,
+                'sku': item.sku,
+                'listed_date': item.listed_date,
+                'ebay_url': item.ebay_url,
+                'location': item.location,
+                'last_updated_date': item.last_updated_date,
+                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
+                'image_urls': image_urls,
+            }
+        )
+
+    return jsonify({'items': output, 'total': len(output)})
+
 
 @main.route("/api/getItem/<int:id>")
 def getItem(id):
