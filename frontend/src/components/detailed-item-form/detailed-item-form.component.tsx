@@ -1,17 +1,12 @@
 import axios from "axios";
 
 import { useEffect, useState } from "react";
-import { useContext } from "react";
-
-import { ItemsContext } from "@/context/items.context";
 
 import { MACHINE_IP } from "@/utils/machine-ip";
 
 import styles from "./detailed-item-form.module.css";
 
 const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
-    const {items, setItems} = useContext(ItemsContext);
-
     const [length, setLength] = useState();
     const [width, setWidth] = useState();
     const [height, setHeight] = useState();

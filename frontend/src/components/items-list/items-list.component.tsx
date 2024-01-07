@@ -1,8 +1,7 @@
 'use client'
 import dayjs from 'dayjs';
+import axios from 'axios';
 import { useEffect, useState, useContext } from 'react';
-
-import { ItemsContext } from '@/context/items.context';
 
 import Item from '../item/item.component';
 import SearchBar from '../search-bar/search-bar.component';
@@ -11,13 +10,16 @@ import ItemsListSelectBox from '../items-list-select-box/items-list-select-box.c
 import BulkPrintButton from '../bulk-print-button/bulk-print-button.component';
 import LabelQRCode from '../label-qr-code/label-qr-code.component';
 
+import { MACHINE_IP } from '@/utils/machine-ip';
+
 import styles from './items-list.module.css';
 
 const ItemsList = ({status, sortKeyword}) => {
-    const {items, setItems} = useContext(ItemsContext);
+    const [items, setItems] = useState();
 
     const [filteredItems, setFilteredItems] = useState([]);
     const [tempItems, setTempItems] = useState([]);
+
     const [searchBarInput, setSearchBarInput] = useState("");
     const [excludeBarInput, setExcludeBarInput] = useState("");
     const [locationBarInput, setLocationBarInput] = useState([]);
@@ -28,12 +30,23 @@ const ItemsList = ({status, sortKeyword}) => {
     const [masterIndex, setMasterIndex] = useState(false);
 
     useEffect(() => {
-        // Filters items into Active, Sold, Shipped.
-        // Sorts filtered items by listed_date or date_sold.
-        if (!items) return;
+        const ebayItemsEndPoints = {
+            Active: "getAllActiveItems",
+            Completed: "getAllSoldItems",
+            Shipped: "getAllShippedItems",
+            Deleted: "getAllDeletedItems"
+        }
         
-        let tmpItems = items.filter((item) => {return item["status"] == status});
-        tmpItems.sort((a,b) => {
+        axios.get(MACHINE_IP + ":5000" + "/api/" + ebayItemsEndPoints[status]).then((res) => {
+            setItems(res.data["items"]);
+        })
+    }, []);
+
+    useEffect(() => {
+        if (!items) return;
+
+        // Sorts filtered items by listed_date or date_sold.
+        items.sort((a,b) => {
             const dateAinSec = dayjs(a[sortKeyword]).unix();
             const dateBinSec = dayjs(b[sortKeyword]).unix();
             if (dateAinSec < dateBinSec) {
@@ -44,8 +57,8 @@ const ItemsList = ({status, sortKeyword}) => {
                 return 0;
             }
         })
-        setFilteredItems(tmpItems);
-    }, [items]);
+        setFilteredItems(items);
+    },[items])
 
     useEffect(() => {
         setTempItems(filteredItems);
@@ -77,7 +90,7 @@ const ItemsList = ({status, sortKeyword}) => {
                 }
             }
 
-            // Location bar filter. v2
+            // Location checkbox filter. 
             if (itemLocation == null && locationBarInput.includes("")) {
             }
             else if (locationBarInput.length > 0 && !locationBarInput.includes(itemLocation)) {
@@ -90,13 +103,13 @@ const ItemsList = ({status, sortKeyword}) => {
             }
 
             return true;
-
         }))
     }, [searchBarInput, excludeBarInput, locationBarInput, ebayIDBarInput]);
 
     useEffect(() => {
         // Sets all the checkboxes to false whenever tempItems is changed.
         setEbayIndexesToPrint(tempItems.map(() => { return false }))
+        setMasterIndex(false);
     }, [tempItems])
 
     return (
