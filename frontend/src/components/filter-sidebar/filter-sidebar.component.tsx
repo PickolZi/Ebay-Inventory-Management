@@ -96,7 +96,6 @@ const FilterSideBar = ({excludeBarInput, setExcludeBarInput, locationBarInput, s
                                 value={locationBooleanValues[index]}
                                 />
                             <label 
-                                onClick={locationCheckBoxHandler} 
                                 htmlFor={`styles.location_${location}`}
                                 data-index={index} 
                                 >
