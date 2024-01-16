@@ -2,3 +2,5 @@ SECRETS.json
 __pycache__
 *.pyc
 db.sqlite3
+instance/backups/*
+!instance/backups/.gitkeep
