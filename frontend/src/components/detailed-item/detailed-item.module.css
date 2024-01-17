@@ -15,6 +15,11 @@
     margin: 1rem;
     /* margin-top: 1rem; */
 }
+.item_status_buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
 .detailed_items__ebay_url {
     text-decoration: underline;
     color: blue

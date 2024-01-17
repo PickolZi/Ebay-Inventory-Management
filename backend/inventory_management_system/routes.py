@@ -127,6 +127,58 @@ def getAllSoldItemsAndData():
 
     return jsonify({'items': output, 'total': len(output)})
 
+@main.route("/api/getAllNotPaidItems")
+def getAllNotPaidItemsAndData():
+    # Returns the json of every single SOLD BUT NOT PAID ebay item from the database including all of its attributes.
+    items = Item.query.filter(Item.status == "Not Paid").all()
+    output = []
+    for item in items:
+        image_urls = [image_url.image_url for image_url in item.image_url]
+        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
+        output.append(
+            {
+                'id': item.id,
+                'title': item.title,
+                'price': item.price,
+                'status': item.status,
+                'sku': item.sku,
+                'listed_date': item.listed_date,
+                'ebay_url': item.ebay_url,
+                'location': item.location,
+                'last_updated_date': item.last_updated_date,
+                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
+                'image_urls': image_urls,
+            }
+        )
+
+    return jsonify({'items': output, 'total': len(output)})
+
+@main.route("/api/getAllFoundItems")
+def getAllFoundItemsAndData():
+    # Returns the json of every single SOLD AND FOUND ebay item from the database including all of its attributes.
+    items = Item.query.filter(Item.status == "Found").all()
+    output = []
+    for item in items:
+        image_urls = [image_url.image_url for image_url in item.image_url]
+        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
+        output.append(
+            {
+                'id': item.id,
+                'title': item.title,
+                'price': item.price,
+                'status': item.status,
+                'sku': item.sku,
+                'listed_date': item.listed_date,
+                'ebay_url': item.ebay_url,
+                'location': item.location,
+                'last_updated_date': item.last_updated_date,
+                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
+                'image_urls': image_urls,
+            }
+        )
+
+    return jsonify({'items': output, 'total': len(output)})
+
 @main.route("/api/getAllShippedItems")
 def getAllShippedItemsAndData():
     # Returns the json of every single SHIPPED ebay item from the database including all of its attributes.
@@ -234,36 +286,24 @@ def editItem(id):
         return "Itemiz) Status 300: Failed to update item into database. No post data given to API endpoint."
     # return redirect(url_for('main.item', id=id, message="Successfully edited item!"))
 
-@main.route('/api/shipItem/<int:id>', methods=["POST"])
-def shipItem(id):
-    # Given ebay item id. If the item's status is a "Completed" or "sold" item. Change the status to shipped.
+@main.route('/api/updateItemStatus/<int:id>', methods=["POST"])
+def updateItemStatus(id):
+    # Given ebay item id and status to change the ebay item to. Update ebay item status.
+    # Ebay items with status "active" can not be changed. Only one of the possible ebay statuses below can be changed to the other.
     # Else return a 404.
+
+    new_item_status = request.json["status"]
+
+    possible_statuses = ["completed", "not paid", "found", "shipped", "deleted"]
+    # Completed means sold.
 
     item = Item.query.get_or_404(id)
 
-    if item.status.lower() == "completed":
-        item.status = "Shipped"
+    if item.status.lower() == "active":
+        return f"Itemiz ERROR) Status 300: Item #{id}, Title: '{item.title}' status is marked as active and therefore status can not be changed unless item is removed or sold from the ebay platform. You can not forcefully take down this item otherwise."  
+    elif item.status.lower() in possible_statuses and new_item_status.lower() in possible_statuses:
+        item.status = new_item_status
         db.session.commit()
-
-        return f"Itemiz) Status 200: Item #{id}, Title: '{item.title}' status has been updated to Shipped"
-    elif item.status.lower() == "shipped":
-        return f"Itemiz ERROR) Status 300: Item #{id}, Title: '{item.title}' status is already marked as shipped"
+        return f"Itemiz) Status 200: Item #{id}, Title: '{item.title}' status has been updated to {new_item_status}"
     else:
-        return f"Itemiz ERROR) Status 300: Item #{id}, Title: '{item.title}' status could not be updated likely due to item being still active or deleted."
-
-@main.route('/api/deleteItem/<int:id>', methods=["POST"])
-def deleteItem(id):
-    # Given ebay item id. If the item's status is a "Completed" or "sold" item. Change the status to deleted.
-    # Else return a 404.
-
-    item = Item.query.get_or_404(id)
-
-    if item.status.lower() == "completed":
-        item.status = "Deleted"
-        db.session.commit()
-
-        return f"Itemiz) Status 200: Item #{id}, Title: '{item.title}' status has been updated to Deleted"
-    elif item.status.lower() == "deleted":
-        return f"Itemiz ERROR) Status 300: Item #{id}, Title: '{item.title}' status is already marked as deleted"
-    else:
-        return f"Itemiz ERROR) Status 300: Item #{id}, Title: '{item.title}' status could not be updated likely due to item being still active or shipped."
+        return f"Itemiz ERROR) Status 300: Unexpected error. Item #{id}, Title: '{item.title}' status could not be updated. No json post data sent or the status the item is trying to be updated to does not exist."

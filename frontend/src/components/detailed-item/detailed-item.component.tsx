@@ -4,13 +4,12 @@ import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 
 import ImageGallery from "react-image-gallery";
-import ShippedButton from "../shipped-button/shipped-button.component";
-import DeletedButton from "../deleted-button/deleted-button.component";
 import DetailedItemForm from "../detailed-item-form/detailed-item-form.component";
 import PrintLabelButton from "../print-label-button/print-label-button.component";
 
 import { MACHINE_IP } from "../../utils/machine-ip";
 import styles from "./detailed-item.module.css"
+import ItemStatusUpdateButton from "../item-status-update-button/item-status-update-button.component";
 
 
 const dateFormatter = (date) => {
@@ -66,15 +65,68 @@ const DetailedItems = ({params}) => {
 
             {itemData ? 
                 <div className={styles.detailed_items__text_content}>
-
                     {
-                        itemData["status"] == "Completed" && 
-                        <DeletedButton itemID={itemData["id"]} itemData={itemData} setItemData={setItemData}/>
+                        itemData["status"] != "Active" && 
+                        <div className={styles.item_status_buttons}>
+                            {
+                                itemData["status"] != "Completed" &&
+                                <ItemStatusUpdateButton 
+                                    itemID={itemData["id"]} 
+                                    itemData={itemData} 
+                                    setItemData={setItemData} 
+                                    status="Completed" 
+                                    buttonText="Mark as Sold!"
+                                    backgroundColor="#00d5ff"
+                                    />
+                            }
+                            {
+                                itemData["status"] != "Not Paid" &&
+                                <ItemStatusUpdateButton 
+                                    itemID={itemData["id"]} 
+                                    itemData={itemData} 
+                                    setItemData={setItemData} 
+                                    status="Not Paid" 
+                                    buttonText="Mark as Not Paid!"
+                                    backgroundColor="#8800ff"
+                                    />
+                            }
+                            {
+                                itemData["status"] != "Found" &&
+                                <ItemStatusUpdateButton 
+                                    itemID={itemData["id"]} 
+                                    itemData={itemData} 
+                                    setItemData={setItemData} 
+                                    status="Found" 
+                                    buttonText="Mark as Found!"
+                                    backgroundColor="#ff8800"
+                                    />
+                            }
+                            {
+                                itemData["status"] != "Shipped" &&
+                                <ItemStatusUpdateButton 
+                                    itemID={itemData["id"]} 
+                                    itemData={itemData} 
+                                    setItemData={setItemData} 
+                                    status="Shipped" 
+                                    buttonText="Mark as Shipped!"
+                                    backgroundColor="#00ff5e"
+                                    />
+                            }
+                            {
+                                itemData["status"] != "Deleted" &&
+                                <ItemStatusUpdateButton 
+                                    itemID={itemData["id"]} 
+                                    itemData={itemData} 
+                                    setItemData={setItemData} 
+                                    status="Deleted" 
+                                    buttonText="Mark as Deleted!"
+                                    backgroundColor="#ff4400"
+                                    />
+                            }
+                            
+                        </div>
                     }
-                    {
-                        itemData["status"] == "Completed" && 
-                        <ShippedButton itemID={itemData["id"]} itemData={itemData} setItemData={setItemData}/>
-                    }
+                    
 
                     <div>
                         <h1 className={styles.detailed_items__title}>Title: {itemData["title"]}</h1>

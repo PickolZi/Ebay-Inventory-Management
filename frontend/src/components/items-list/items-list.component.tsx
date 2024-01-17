@@ -33,6 +33,8 @@ const ItemsList = ({status, sortKeyword}) => {
         const ebayItemsEndPoints = {
             Active: "getAllActiveItems",
             Completed: "getAllSoldItems",
+            NotPaid: "getAllNotPaidItems",
+            Found: "getAllFoundItems",
             Shipped: "getAllShippedItems",
             Deleted: "getAllDeletedItems"
         }
