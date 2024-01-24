@@ -17,7 +17,7 @@ const Navbar = () => {
                 <Link href="/pages/map">Map</Link>
             </div>
             <div className={styles.right_nav}>
-                {/* <UserAuthButton buttonStatus="signin"/> */}
+                <UserAuthButton buttonStatus="signin"/>
             </div>
         </nav>
     )
