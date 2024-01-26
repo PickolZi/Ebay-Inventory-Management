@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -17,29 +17,38 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
 export const signUpUserWithEmailAndPassword = (email, password) => {
-  createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
-    console.log("Creating User")
-    const user = userCredential.user;
-    console.log(`User: ${user}`);
+  const user = createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
+    return userCredential.user;
   }).catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
     console.log(`Error Code: ${errorCode}`);
     console.log(`Error Message: ${errorMessage}`);
+    return null;
   })
+  return user;
 }
 
 export const signInUserWithEmailAndPassword = async (email, password) => {
-  signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
-    const user = userCredential.user;
-    console.log("User signed in...")
-    console.log(user);
-    return user;
+  const user = signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+    return userCredential.user;
   }).catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
     console.log(`Error Code: ${errorCode}`);
     console.log(`Error Message: ${errorMessage}`);
+    return null;
+  })
+  return user;
+}
+
+export const signOutUser = async () => {
+  signOut(auth).then(() =>{
+    console.log("signed out.")
+    return true;
+  }).catch(() => {
     return false;
   })
 }
+
+// Moved logic for authUser state to user.context.tsx
