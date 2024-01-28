@@ -1,9 +1,16 @@
+'use client'
 import Link from "next/link";
+import { useContext } from "react";
 
-import styles from "./navbar.module.css"
+import { UserAuthContext } from "@/app/context/user.context";
+
 import UserAuthButton from "../user-auth-button/user-auth-button.component";
 
+import styles from "./navbar.module.css"
+
+
 const Navbar = () => {    
+    const { userAuth } = useContext(UserAuthContext);
     return (
         <nav className={styles.navbar}>
             <div className={styles.left_nav}></div>
@@ -17,7 +24,10 @@ const Navbar = () => {
                 <Link href="/pages/map">Map</Link>
             </div>
             <div className={styles.right_nav}>
-                <UserAuthButton buttonStatus="signin"/>
+                { !userAuth ? 
+                    <UserAuthButton buttonStatus="signin"/> :
+                    <UserAuthButton buttonStatus="signout"/>
+                 }
             </div>
         </nav>
     )

@@ -1,24 +1,29 @@
+import Link from "next/link";
 
-import { signUpUserWithEmailAndPassword, signInUserWithEmailAndPassword } from "../../utils/firebase";
+import { signOutUser } from "@/utils/firebase";
 
 import styles from "./user-auth-button.module.css";
 
-const UserAuthButton = ({ buttonStatus }) => {
-    const email = "pickol876@gmail.com";
-    const password = "tEstpAsswOrd123!@#";
-    
-    // signUpUserWithEmailAndPassword(email, password);
-    // signInUserWithEmailAndPassword(email, password);
 
+const UserAuthButton = ({ buttonStatus }) => {
     return (
         <div className={styles.button_container}>
             {
                 buttonStatus == "signin" && 
-                <button className={`${styles.button__user_auth_button} ${styles.button__signin}`}>Sign In</button>
+                <Link href="/signin">
+                    <button 
+                        className={`${styles.button__user_auth_button} ${styles.button__signin}`}
+                        >Sign In
+                    </button>
+                </Link>
             }
             {
                 buttonStatus == "signout" && 
-                <button className={`${styles.button__user_auth_button} ${styles.button__signout}`}>Sign Out</button>
+                <button 
+                    className={`${styles.button__user_auth_button} ${styles.button__signout}`} 
+                    onClick={signOutUser}
+                    >Sign Out
+                </button>
             }
         </div>
     )

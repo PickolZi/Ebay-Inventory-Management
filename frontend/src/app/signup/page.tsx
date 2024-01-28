@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useContext } from "react";
+import { redirect } from "next/navigation";
 
 import { signUpUserWithEmailAndPassword, signOutUser } from "@/utils/firebase";
 
@@ -7,23 +8,45 @@ import styles from "./signup.module.css";
 
 import { UserAuthContext } from "../context/user.context";
 
+
 const SignUp = () => {
-    const { userAuth, setUserAuth } = useContext(UserAuthContext);
+    const { userAuth } = useContext(UserAuthContext);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    const handleSubmit = async (event) => {
+    const handleSignUp = async (event) => {
         event.preventDefault();
-        // TODO: Use regex to verify that email formatting is correct.
-        // TODO: Have a password requirement validation.
+
+        if (!email.match(/^\S+@\S+\.\S+$/)) {
+            console.log("email is not valid.")
+            return;
+        }
         if (password != confirmPassword) {
             console.log("Passwords do not match.");
             return;
         }
-        signUpUserWithEmailAndPassword(email, password);
-        // TODO: Redirect to homepage after a successful login.
+        if (password.length < 8) {
+            console.log("Password is too short. Must be atleast 8 characters long.")
+            return;
+        }
+
+        signUpUserWithEmailAndPassword(email, password).then((user) => {
+            if (!user) {
+                console.log("Email already in use, try logging in or trying a different email.");
+                return;
+            } else {
+                console.log("User created successfully.");
+            }
+        });
     }
+
+    useEffect(() => {
+        // If user is logged in, redirect them to home page.
+        if (userAuth) {
+            redirect("/pages/active");
+        }
+    }, [userAuth])
 
     return (
         <div className={styles.form__container}>        
@@ -65,13 +88,9 @@ const SignUp = () => {
 
                 <input 
                     type="submit" 
-                    onClick={handleSubmit}
-                    className={styles.submit_signin} />
+                    onClick={handleSignUp}
+                    className={styles.signup_button} />
             </form>
-            <h1>{
-                    userAuth ? `User is signed in ${userAuth["email"]}` : "User is not signed in"
-                }</h1>
-            <button onClick={signOutUser}>Sign out</button>
         </div>
     )
 }

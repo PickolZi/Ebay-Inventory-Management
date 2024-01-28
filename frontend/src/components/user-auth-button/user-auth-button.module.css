@@ -1,8 +1,15 @@
 .button_container {
     display: flex;
+    position: absolute;
     justify-content: center;
     align-items: center;
+    /* height: 100%; */
+    /* outline: 1px solid red; */
+    /* width: 100%; */
     height: 100%;
+    top: 0;
+    right: 0rem;
+    margin-right: 1rem;
 }
 .button__user_auth_button {
     

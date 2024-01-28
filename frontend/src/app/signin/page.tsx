@@ -1,14 +1,17 @@
 'use client'
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
+import { UserAuthContext } from "../context/user.context";
 
 import { signInUserWithEmailAndPassword, signOutUser } from "@/utils/firebase";
 
 import styles from "./signin.module.css";
 
-import { UserAuthContext } from "../context/user.context";
 
 const SignIn = () => {
-    const { userAuth, setUserAuth } = useContext(UserAuthContext);
+    const { userAuth } = useContext(UserAuthContext);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -18,8 +21,13 @@ const SignIn = () => {
             console.log("user signed in successfully!")
             console.log(user);
         });
-        // TODO: Redirect to homepage after a successful login.
     }
+    
+    useEffect(() => {
+        if (userAuth) {
+            redirect("/pages/active");
+        }
+    }, [userAuth])
 
     return (
         <div className={styles.form__container}>        
@@ -49,16 +57,14 @@ const SignIn = () => {
                         id="password_signin" />
                 </div>
 
+                <Link href="/signup">Create an account?</Link>
+
                 <input 
                     type="submit"
                     value="Login" 
                     onClick={handleLogin}
                     className={styles.login_button} />
             </form>
-            <h1>{
-                    userAuth ? `User is signed in ${userAuth["email"]}` : "User is not signed in"
-                }</h1>
-            <button onClick={signOutUser}>Sign out</button>
         </div>
     )
 }
