@@ -58,6 +58,10 @@ def updateDatabaseActiveAndSoldEbayItems():
 
         # Adds item to database
         try:
+            title = list(title)
+            while '"' in title:
+                title.remove('"')
+            title = "".join(title)
             cur.execute(f"""
                 INSERT INTO item 
                 (id, title, price, status, sku, listed_date, ebay_url, last_updated_date, last_checked_on_ebay_date) VALUES 
@@ -67,6 +71,10 @@ def updateDatabaseActiveAndSoldEbayItems():
         except sqlite3.IntegrityError:
             print(f"Item ID: {ebay_id} already in database... skipping")
             continue
+        except sqlite3.OperationalError as e:
+            print("Error has occured.")
+            print(e)
+            print(f'({id}, "{title}", {price}, "{status}", "{sku}", "{listed_date}", "{ebay_url}", "{datetime.now()}", "{datetime.now()}")')
 
         # Adds images to database
         for image_index, image_url in enumerate(ebay_image_urls):
