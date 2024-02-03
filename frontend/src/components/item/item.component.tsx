@@ -47,7 +47,11 @@ const Item = ({item}) => {
                 </div>
             </div>
 
-            <div className={styles.item__location_container}>
+            <div 
+                className=
+                    {`${styles.item__location_container} 
+                      ${!item["location"] && styles.item__location_na}` 
+                    }>
                 <p className={styles.item__location}>
                     {item["location"] ? item["location"] : "N/A"}
                 </p>
