@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import select
 from flask_cors import cross_origin
 from flask import Flask, render_template, request, Blueprint, request, redirect, url_for, jsonify
-from .models import Item, Url
+from .models import Item, Url, Users
 from . import db
 
 main = Blueprint('main', __name__)
@@ -307,3 +307,11 @@ def updateItemStatus(id):
         return f"Itemiz) Status 200: Item #{id}, Title: '{item.title}' status has been updated to {new_item_status}"
     else:
         return f"Itemiz ERROR) Status 300: Unexpected error. Item #{id}, Title: '{item.title}' status could not be updated. No json post data sent or the status the item is trying to be updated to does not exist."
+
+
+# Endpoints for firebase to add new users to the database.
+@main.route("/api/firebase/addUser", methods=["GET", "POST"])
+def firebaseAddUser():
+    users = db.session.execute(db.select(Users)).scalars()
+    print(list(users))
+    return "Adding user"

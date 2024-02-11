@@ -50,4 +50,14 @@ class Url(db.Model):
     def __repr__(self):
         return f"Url: {self.image_url}"
 
+class Users(db.Model):
+    # Holds all the registered users including their: UID, email, and role.
+    uid = Column("uid", Integer, primary_key=True)
+    email = Column("email", String)
+    role = Column("role", String)
+
+
+    def __repr__(self):
+        return f"User: {self.uid}, email: {self.email}, role: {self.role}"
+
     
