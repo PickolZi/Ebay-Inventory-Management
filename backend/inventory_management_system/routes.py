@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 from sqlalchemy import select
@@ -5,6 +6,10 @@ from flask_cors import cross_origin
 from flask import Flask, render_template, request, Blueprint, request, redirect, url_for, jsonify
 from .models import Item, Url, Users
 from . import db
+
+import firebase_admin
+from firebase_admin import auth, credentials
+
 
 main = Blueprint('main', __name__)
 
@@ -313,5 +318,20 @@ def updateItemStatus(id):
 @main.route("/api/firebase/addUser", methods=["GET", "POST"])
 def firebaseAddUser():
     users = db.session.execute(db.select(Users)).scalars()
+
+    # TODO: Figure out how React will send me the JWT_TOKEN
+
+    dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+    cred = credentials.Certificate(dir_path + "/firebase_secret.json")
+    default_app = firebase_admin.initialize_app(cred)
+    auth = firebase_admin.auth
+    try:
+        decoded_token = auth.verify_id_token(JWT_TOKEN)
+        uid = decoded_token['uid']
+    except firebase_admin.auth.InvalidIdTokenError:
+        return "Bad JWT Token!", 400
+
+    # TODO: Add new UID to database.
+
     print(list(users))
     return "Adding user"
