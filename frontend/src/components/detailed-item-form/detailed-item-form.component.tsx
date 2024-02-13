@@ -14,6 +14,7 @@ const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
     const [weight, setWeight] = useState();
     const [location, setLocation] = useState();
     const [itemChange, setItemChange] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const { userJWTToken } = useContext(UserAuthContext);
 
@@ -40,6 +41,7 @@ const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
 
         const endpoint = MACHINE_IP + ":5000" + "/api/editItem/" + itemsID;
         axios.post(endpoint, body).then(() => {
+            console.log("The item has been successfully updated.")
             setItemData({
                 ...itemData,   
                 location: location,
@@ -48,6 +50,10 @@ const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
                 height: height,
                 weight: weight
             });            
+        }).catch((err) => {
+            setErrorMessage("Failed to update item. Please sign in to an administrative user.")
+            console.log("Failed to update the item.")
+            console.log(err)
         });
     }
 
@@ -96,6 +102,10 @@ const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
                 <label htmlFor="input_location">Location: </label>
                 <input id="input_location" type="text" value={location} onChange={inputHandler} name="input_location"/>
             </div>
+
+            { errorMessage &&
+                <p>{errorMessage}</p>
+            }
 
             { itemChange &&
                 <input type="submit" className={styles.detailed_items__save_button} value="Save Changes" onClick=  {handleFormSubmit} />

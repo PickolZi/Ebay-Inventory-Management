@@ -273,6 +273,10 @@ def editItem(id):
     # The only info that SHOULD be updated are: location, last_updated_date, length, width, height, and weight.
     # id, title, price, status, listed_date, and ebay_url SHOULD NOT BE UPDATED THROUGH FLASK, SHOULD BE UPDATED FROM EBAY API.
 
+    authorized_users = list(db.session.execute(db.select(Users).where(Users.role=="admin")).scalars())
+    authorized_uids = [user.uid for user in authorized_users]
+    print(authorized_uids)
+
     item = Item.query.get_or_404(id)
 
     post_data = request.json
@@ -287,6 +291,9 @@ def editItem(id):
     try:
         decoded_token = auth.verify_id_token(JWT_TOKEN)
         uid = decoded_token['uid']
+
+        if uid not in authorized_uids:
+            return "Bad JWT Token!", 400
 
     except (firebase_admin.auth.InvalidIdTokenError, ValueError):
         return "Bad JWT Token!", 400
