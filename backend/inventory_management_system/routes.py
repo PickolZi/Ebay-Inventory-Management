@@ -11,6 +11,12 @@ import firebase_admin
 from firebase_admin import auth, credentials
 
 
+# Had to move outside of endpoint because a new firebase app kept being created..
+dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+cred = credentials.Certificate(dir_path + "/firebase_secret.json")
+default_app = firebase_admin.initialize_app(cred)
+auth = firebase_admin.auth
+
 main = Blueprint('main', __name__)
 
 # Flask temporary frontend routes
@@ -275,6 +281,15 @@ def editItem(id):
     width = post_data['item__form-width-data']
     height = post_data['item__form-height-data']
     weight = post_data['item__form-weight-data']
+    JWT_TOKEN = post_data['JWT_TOKEN']
+    print(JWT_TOKEN)
+
+    try:
+        decoded_token = auth.verify_id_token(JWT_TOKEN)
+        uid = decoded_token['uid']
+
+    except (firebase_admin.auth.InvalidIdTokenError, ValueError):
+        return "Bad JWT Token!", 400
 
     item.location = location 
     item.length = length if length != "" else 0
@@ -315,23 +330,29 @@ def updateItemStatus(id):
 
 
 # Endpoints for firebase to add new users to the database.
-@main.route("/api/firebase/addUser", methods=["GET", "POST"])
+@main.route("/api/firebase/addUser", methods=["POST"])
 def firebaseAddUser():
-    users = db.session.execute(db.select(Users)).scalars()
+    users = list(db.session.execute(db.select(Users)).scalars())
+    users_uids = [user.uid for user in users]
 
-    # TODO: Figure out how React will send me the JWT_TOKEN
+    JWT_TOKEN = ""
 
-    dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
-    cred = credentials.Certificate(dir_path + "/firebase_secret.json")
-    default_app = firebase_admin.initialize_app(cred)
-    auth = firebase_admin.auth
+    if "JWT_TOKEN" in request.json:
+        JWT_TOKEN = request.json["JWT_TOKEN"]
+    
     try:
         decoded_token = auth.verify_id_token(JWT_TOKEN)
         uid = decoded_token['uid']
+        email = decoded_token['email']
     except firebase_admin.auth.InvalidIdTokenError:
         return "Bad JWT Token!", 400
 
-    # TODO: Add new UID to database.
+    if uid in users_uids:
+        return "User is already in database!", 400
 
+    db.session.add(Users(uid=uid, email=email, role="user"))
+    db.session.commit()
     print(list(users))
-    return "Adding user"
+    print(f"UID: {uid}, email: {email}")
+    return "Adding user", 200
+

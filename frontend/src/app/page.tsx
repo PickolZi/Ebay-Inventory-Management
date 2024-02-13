@@ -2,6 +2,6 @@
 export default function Home() {
 
   return (
-    <div>Nyahallo</div>
+    <div>Welcome to Itemiz!</div>
   )
 }

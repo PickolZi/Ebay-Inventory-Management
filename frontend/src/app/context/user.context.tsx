@@ -6,20 +6,26 @@ import { useState } from "react";
 
 export const UserAuthContext = createContext({
     userAuth: null,
-    setUserAuth: () => {}
+    setUserAuth: () => {},
+    userJWTToken: null,
+    setUserJWTToken: () => {}
 });
 
 export const UserAuthProvider = ({children}) => {
     const [userAuth, setUserAuth] = useState("");
-    const value = {userAuth, setUserAuth}
+    const [userJWTToken, setUserJWTToken ] = useState("")
+    const value = {userAuth, setUserAuth, userJWTToken, setUserJWTToken}
 
     useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             // Observor that updates userAuth state variable whenever the user logs in or out.
             if (user) {
                 setUserAuth(user);
+                setUserJWTToken(await user.getIdToken());
+                console.log("User signed in");
             } else {
                 setUserAuth(null);
+                setUserJWTToken("");
             }
         });
     }, [])

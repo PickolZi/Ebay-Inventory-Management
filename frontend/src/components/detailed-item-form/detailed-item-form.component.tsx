@@ -1,6 +1,7 @@
 import axios from "axios";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { UserAuthContext } from "@/app/context/user.context";
 
 import { MACHINE_IP } from "@/utils/machine-ip";
 
@@ -14,6 +15,8 @@ const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
     const [location, setLocation] = useState();
     const [itemChange, setItemChange] = useState(false);
 
+    const { userJWTToken } = useContext(UserAuthContext);
+
     useEffect(() => {
         setLength(itemData["length"]);
         setWidth(itemData["width"]);
@@ -25,13 +28,14 @@ const DetailedItemForm = ({itemsID, itemData, setItemData}) => {
     const handleFormSubmit = (event) => {
         event.preventDefault();
         setItemChange(false);
-
+        
         const body = {
             "item__form-location-data": location,
             "item__form-length-data": length,
             "item__form-width-data": width,
             "item__form-height-data": height,
             "item__form-weight-data": weight,
+            "JWT_TOKEN": userJWTToken
         }
 
         const endpoint = MACHINE_IP + ":5000" + "/api/editItem/" + itemsID;

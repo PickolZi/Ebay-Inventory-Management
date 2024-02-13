@@ -2,11 +2,14 @@
 import { useEffect, useState, useContext } from "react";
 import { redirect } from "next/navigation";
 
+import { UserAuthContext } from "../context/user.context";
+
+import axios from "axios";
+
 import { signUpUserWithEmailAndPassword, signOutUser } from "@/utils/firebase";
 
 import styles from "./signup.module.css";
-
-import { UserAuthContext } from "../context/user.context";
+import { MACHINE_IP } from "@/utils/machine-ip";
 
 
 const SignUp = () => {
@@ -31,7 +34,7 @@ const SignUp = () => {
             return;
         }
 
-        signUpUserWithEmailAndPassword(email, password).then((user) => {
+        signUpUserWithEmailAndPassword(email, password).then(async (user) => {
             if (!user) {
                 console.log("Email already in use, try logging in or trying a different email.");
                 return;
@@ -44,6 +47,17 @@ const SignUp = () => {
     useEffect(() => {
         // If user is logged in, redirect them to home page.
         if (userAuth) {
+            const getUserJWT = async (userAuth) => {
+                return await userAuth.getIdToken();
+            }
+
+            // Adds user to database.
+            getUserJWT(userAuth).then((JWT_TOKEN) => {
+                axios.post(MACHINE_IP + ":5000" + "/api/firebase/addUser", {
+                    JWT_TOKEN: JWT_TOKEN
+                });
+            });
+
             redirect("/pages/active");
         }
     }, [userAuth])

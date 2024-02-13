@@ -51,4 +51,8 @@ export const signOutUser = async () => {
   })
 }
 
+export const getUserAuthToken = async () => {
+  return await auth.currentUser.getIdToken();
+}
+
 // Moved logic for authUser state to user.context.tsx
