@@ -340,8 +340,102 @@ def firebaseAddUser():
     db.session.commit()
     return "Adding user to firebase", 200
 
+@main.route("/api/firebase/getUsers", methods=["GET"])
+def firebaseGetUsers():
+    # users = list(db.session.execute(db.select(Users)).scalars())
+    users_query = db.session.execute(db.select(Users).order_by(Users.role)).scalars().all()
+    users = []
+
+    for user in users_query:
+        users.append({
+            "uid": user.uid,
+            "email": user.email,
+            "role": user.role
+        })
+
+    return jsonify({"users": users})
+
+@main.route("/api/firebase/updateUserRole", methods=["POST"])
+def firebaseUpdateUserRole():
+    # POSSIBLE_ROLES = ["user", "admin", "owner"]  # owner role should only be changed through the database for security purposes.
+    POSSIBLE_ROLES = ["user", "admin"]
+
+    post_request = request.json
+
+    JWT_TOKEN = ""
+    uid = post_request["uid"]
+    role = post_request["role"]
+
+    if "JWT_TOKEN" in post_request:
+        JWT_TOKEN = post_request["JWT_TOKEN"]
+    
+    if not isValidJWTToken(JWT_TOKEN):
+        return "Invalid JWT Token!", 400
+
+    JWT_TOKEN_USER = getUserInfoByJWTToken(JWT_TOKEN)[0]
+    if JWT_TOKEN_USER not in get_owners_user_uids():
+        return "This user does not have access to the admin dashboard.", 404
+
+    if role not in POSSIBLE_ROLES:
+        return "Tried changing user to an unavailable role.", 400
+
+    user = None
+    try:
+        user = db.session.execute(db.select(Users).where(Users.uid==uid)).scalar_one()
+    except:
+        return "This user does not exist", 400
+    
+    if user.role == "owner":
+        return "Owner role can not be taken away unless demoted manually through the database.", 400
+
+    user.role = role
+    db.session.commit()
+
+    return f"User: {uid} role successfully changed to {role}"
+
+@main.route("/api/firebase/deleteUser", methods=["POST"])
+def firebasedeleteUser():
+    post_request = request.json
+
+    JWT_TOKEN = ""
+    uid = post_request["uid"]
+
+    if "JWT_TOKEN" in post_request:
+        JWT_TOKEN = post_request["JWT_TOKEN"]
+    
+    if not isValidJWTToken(JWT_TOKEN):
+        return "Invalid JWT Token!", 400
+
+    JWT_TOKEN_USER = getUserInfoByJWTToken(JWT_TOKEN)[0]
+    if JWT_TOKEN_USER not in get_owners_user_uids():
+        return "This user does not have access to the admin dashboard.", 404
+
+    user = None
+    try:
+        user = db.session.execute(db.select(Users).where(Users.uid==uid)).scalar_one()
+    except:
+        return "This user does not exist", 400
+    
+    if user.role == "owner":
+        return "This user can not be deleted.", 400
+
+    # Remove user from firebase
+    auth.delete_user(uid)
+
+    # Removing user from database
+    db.session.delete(user)
+    db.session.commit()
+
+    return f"User: {user.uid}, {user.email} has been deleted."
+
 
 # Helper functions
+def get_owners_user_uids():
+    authorized_users = list(db.session.execute(db.select(Users).where(Users.role=="owner")).scalars())
+    authorized_uids = [user.uid for user in authorized_users]
+
+    return authorized_uids
+
 def get_authorized_user_uids():
     # User uids with role "admin" are returned.
     authorized_users = list(db.session.execute(db.select(Users).where(Users.role=="admin")).scalars())
