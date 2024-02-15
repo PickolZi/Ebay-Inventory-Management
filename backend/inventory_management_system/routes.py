@@ -38,7 +38,6 @@ def item(id):
 @main.route("/api/getAllItemIDs")
 @cross_origin()
 def getAllItems():
-    # Returns the ids off all ebay items
     items = Item.query.all()
     return jsonify({
             'ids': [item.id for item in items], 
@@ -47,7 +46,6 @@ def getAllItems():
 
 @main.route("/api/getAllLocations")
 def getAllLocations():
-    # Returns all the different locations
     locations = db.session.query(Item.location).distinct().all()
     locations = [location[0] for location in locations]
     locations.remove(None)
@@ -59,7 +57,6 @@ def getAllLocations():
 
 @main.route("/api/getAllItems")
 def getAllItemsAndData():
-    # Returns the json of every single ebay item from the database including all of its attributes.
     items = Item.query.all()
     output = []
     for item in items:
@@ -88,7 +85,6 @@ def getAllItemsAndData():
 
 @main.route("/api/getAllActiveItems")
 def getAllActiveItemsAndData():
-    # Returns the json of every single ACTIVE ebay item from the database including all of its attributes.
     items = Item.query.filter(Item.status == "Active").all()
     output = []
     for item in items:
@@ -114,7 +110,6 @@ def getAllActiveItemsAndData():
 
 @main.route("/api/getAllSoldItems")
 def getAllSoldItemsAndData():
-    # Returns the json of every single SOLD ebay item from the database including all of its attributes.
     items = Item.query.filter(Item.status == "Completed").all()
     output = []
     for item in items:
@@ -140,7 +135,6 @@ def getAllSoldItemsAndData():
 
 @main.route("/api/getAllNotPaidItems")
 def getAllNotPaidItemsAndData():
-    # Returns the json of every single SOLD BUT NOT PAID ebay item from the database including all of its attributes.
     items = Item.query.filter(Item.status == "Not Paid").all()
     output = []
     for item in items:
@@ -166,7 +160,6 @@ def getAllNotPaidItemsAndData():
 
 @main.route("/api/getAllFoundItems")
 def getAllFoundItemsAndData():
-    # Returns the json of every single SOLD AND FOUND ebay item from the database including all of its attributes.
     items = Item.query.filter(Item.status == "Found").all()
     output = []
     for item in items:
@@ -192,7 +185,6 @@ def getAllFoundItemsAndData():
 
 @main.route("/api/getAllShippedItems")
 def getAllShippedItemsAndData():
-    # Returns the json of every single SHIPPED ebay item from the database including all of its attributes.
     items = Item.query.filter(Item.status == "Shipped").all()
     output = []
     for item in items:
@@ -218,7 +210,6 @@ def getAllShippedItemsAndData():
 
 @main.route("/api/getAllDeletedItems")
 def getAllDeletedItemsAndData():
-    # Returns the json of every single Deleted ebay item from the database including all of its attributes.
     items = Item.query.filter(Item.status == "Deleted").all()
     output = []
     for item in items:
@@ -242,11 +233,9 @@ def getAllDeletedItemsAndData():
 
     return jsonify({'items': output, 'total': len(output)})
 
-
 @main.route("/api/getItem/<int:id>")
 def getItem(id):
-    # Use id from API endpoint, to know which ebay item information to grab from the database
-    # Returns all JSON item for given ebay item id.
+    # id: ebay id number.
     item = Item.query.get_or_404(id)
     image_urls = [image_url.image_url for image_url in item.image_url]
 
@@ -271,12 +260,6 @@ def getItem(id):
 @main.route('/api/editItem/<int:id>', methods=["POST"])
 def editItem(id):
     # The only info that SHOULD be updated are: location, last_updated_date, length, width, height, and weight.
-    # id, title, price, status, listed_date, and ebay_url SHOULD NOT BE UPDATED THROUGH FLASK, SHOULD BE UPDATED FROM EBAY API.
-
-    authorized_users = list(db.session.execute(db.select(Users).where(Users.role=="admin")).scalars())
-    authorized_uids = [user.uid for user in authorized_users]
-    print(authorized_uids)
-
     item = Item.query.get_or_404(id)
 
     post_data = request.json
@@ -286,17 +269,10 @@ def editItem(id):
     height = post_data['item__form-height-data']
     weight = post_data['item__form-weight-data']
     JWT_TOKEN = post_data['JWT_TOKEN']
-    print(JWT_TOKEN)
 
-    try:
-        decoded_token = auth.verify_id_token(JWT_TOKEN)
-        uid = decoded_token['uid']
+    if not isValidAndAuthorizedJWTToken(JWT_TOKEN):
+        return "Bad or unauthorized JWT Token.", 400
 
-        if uid not in authorized_uids:
-            return "Bad JWT Token!", 400
-
-    except (firebase_admin.auth.InvalidIdTokenError, ValueError):
-        return "Bad JWT Token!", 400
 
     item.location = location 
     item.length = length if length != "" else 0
@@ -311,27 +287,32 @@ def editItem(id):
         return "Itemiz) Status 200: Item updated into database."
     else:
         return "Itemiz) Status 300: Failed to update item into database. No post data given to API endpoint."
-    # return redirect(url_for('main.item', id=id, message="Successfully edited item!"))
 
 @main.route('/api/updateItemStatus/<int:id>', methods=["POST"])
 def updateItemStatus(id):
     # Given ebay item id and status to change the ebay item to. Update ebay item status.
     # Ebay items with status "active" can not be changed. Only one of the possible ebay statuses below can be changed to the other.
-    # Else return a 404.
+    JWT_TOKEN = "" 
 
-    new_item_status = request.json["status"]
+    if "JWT_TOKEN" in request.json:
+        JWT_TOKEN = request.json['JWT_TOKEN']
 
-    possible_statuses = ["completed", "not paid", "found", "shipped", "deleted"]
-    # Completed means sold.
+    if not isValidAndAuthorizedJWTToken(JWT_TOKEN):
+        return "Bad or unauthorized JWT Token.", 400
 
+
+    possible_statuses = ["completed", "not paid", "found", "shipped", "deleted"]  # Completed means sold.
+
+    updated_item_status = request.json["status"]
     item = Item.query.get_or_404(id)
+    item_status = item.status.lower()
 
-    if item.status.lower() == "active":
+    if item_status == "active":
         return f"Itemiz ERROR) Status 300: Item #{id}, Title: '{item.title}' status is marked as active and therefore status can not be changed unless item is removed or sold from the ebay platform. You can not forcefully take down this item otherwise."  
-    elif item.status.lower() in possible_statuses and new_item_status.lower() in possible_statuses:
-        item.status = new_item_status
+    elif item_status in possible_statuses and updated_item_status.lower() in possible_statuses:
+        item.status = updated_item_status
         db.session.commit()
-        return f"Itemiz) Status 200: Item #{id}, Title: '{item.title}' status has been updated to {new_item_status}"
+        return f"Itemiz) Status 200: Item #{id}, Title: '{item.title}' status has been updated to {updated_item_status}"
     else:
         return f"Itemiz ERROR) Status 300: Unexpected error. Item #{id}, Title: '{item.title}' status could not be updated. No json post data sent or the status the item is trying to be updated to does not exist."
 
@@ -347,19 +328,52 @@ def firebaseAddUser():
     if "JWT_TOKEN" in request.json:
         JWT_TOKEN = request.json["JWT_TOKEN"]
     
-    try:
-        decoded_token = auth.verify_id_token(JWT_TOKEN)
-        uid = decoded_token['uid']
-        email = decoded_token['email']
-    except firebase_admin.auth.InvalidIdTokenError:
+    if not isValidJWTToken(JWT_TOKEN):
         return "Bad JWT Token!", 400
+
+    uid, email = getUserInfoByJWTToken(JWT_TOKEN)
 
     if uid in users_uids:
         return "User is already in database!", 400
 
     db.session.add(Users(uid=uid, email=email, role="user"))
     db.session.commit()
-    print(list(users))
-    print(f"UID: {uid}, email: {email}")
-    return "Adding user", 200
+    return "Adding user to firebase", 200
 
+
+# Helper functions
+def get_authorized_user_uids():
+    # User uids with role "admin" are returned.
+    authorized_users = list(db.session.execute(db.select(Users).where(Users.role=="admin")).scalars())
+    authorized_uids = [user.uid for user in authorized_users]
+
+    return authorized_uids
+
+def isValidJWTToken(JWT_TOKEN):
+    try:
+        decoded_token = auth.verify_id_token(JWT_TOKEN)
+        uid = decoded_token['uid']
+    except (firebase_admin.auth.InvalidIdTokenError, ValueError):
+        return False
+
+    return uid
+
+def getUserInfoByJWTToken(JWT_TOKEN):
+    if not isValidJWTToken(JWT_TOKEN):
+        return None
+
+    decoded_token = auth.verify_id_token(JWT_TOKEN)
+    uid = decoded_token['uid']
+    email = decoded_token['email']
+
+    return (uid, email)
+    
+def isValidAndAuthorizedJWTToken(JWT_TOKEN):
+    if not isValidJWTToken(JWT_TOKEN):
+        return False
+
+    uid, email = getUserInfoByJWTToken(JWT_TOKEN)
+    if uid not in get_authorized_user_uids():
+        return False
+    
+    return True

@@ -1,23 +1,27 @@
 import axios from "axios";
+import { useContext } from "react";
 
 import { MACHINE_IP } from "@/utils/machine-ip";
 
+import { UserAuthContext } from "@/app/context/user.context";
+
 import styles from "./item-status-update-button.module.css";
 
-const ItemStatusUpdateButton = ({itemID, itemData, setItemData, status, buttonText, backgroundColor}) => {
+const ItemStatusUpdateButton = ({itemID, itemData, setItemData, setErrorMessage, status, buttonText, backgroundColor}) => {
+    const { userJWTToken } = useContext(UserAuthContext);
+
     const handleItemStatusButton = () => {
         const data = {
-            status
+            status,
+            "JWT_TOKEN": userJWTToken
         }
 
         axios.post(MACHINE_IP + ":5000" + "/api/updateItemStatus/" + itemID, data).then((res) => {
-            console.log(res.data)
             if (res.data.includes("Status 200")) {
                 setItemData({...itemData, status})
-                console.log("Successfully updated status to " + status)
-            } else (
-                console.log("Did not successfully update status to " + status)
-            )
+            } 
+        }).catch((err) => {
+            setErrorMessage("Failed to update item status. Please sign in to an administrative user.")
         });
     }
 

@@ -36,6 +36,7 @@ const DetailedItems = ({params}) => {
     const [itemsID, setItemsID] = useState(params.itemsID);
     const [itemData, setItemData] = useState();
     const [itemImages, setItemImages] = useState();
+    const [errorMessage, setErrorMessage] = useState("");
 
     // Calls backend API to retrieve Item information given the item id.
     useEffect(() => {
@@ -73,7 +74,8 @@ const DetailedItems = ({params}) => {
                                 <ItemStatusUpdateButton 
                                     itemID={itemData["id"]} 
                                     itemData={itemData} 
-                                    setItemData={setItemData} 
+                                    setItemData={setItemData}
+                                    setErrorMessage={setErrorMessage} 
                                     status="Completed" 
                                     buttonText="Mark as Sold!"
                                     backgroundColor="#00d5ff"
@@ -84,7 +86,8 @@ const DetailedItems = ({params}) => {
                                 <ItemStatusUpdateButton 
                                     itemID={itemData["id"]} 
                                     itemData={itemData} 
-                                    setItemData={setItemData} 
+                                    setItemData={setItemData}
+                                    setErrorMessage={setErrorMessage} 
                                     status="Not Paid" 
                                     buttonText="Mark as Not Paid!"
                                     backgroundColor="#8800ff"
@@ -95,7 +98,8 @@ const DetailedItems = ({params}) => {
                                 <ItemStatusUpdateButton 
                                     itemID={itemData["id"]} 
                                     itemData={itemData} 
-                                    setItemData={setItemData} 
+                                    setItemData={setItemData}
+                                    setErrorMessage={setErrorMessage} 
                                     status="Found" 
                                     buttonText="Mark as Found!"
                                     backgroundColor="#ff8800"
@@ -106,7 +110,8 @@ const DetailedItems = ({params}) => {
                                 <ItemStatusUpdateButton 
                                     itemID={itemData["id"]} 
                                     itemData={itemData} 
-                                    setItemData={setItemData} 
+                                    setItemData={setItemData}
+                                    setErrorMessage={setErrorMessage} 
                                     status="Shipped" 
                                     buttonText="Mark as Shipped!"
                                     backgroundColor="#00ff5e"
@@ -117,7 +122,8 @@ const DetailedItems = ({params}) => {
                                 <ItemStatusUpdateButton 
                                     itemID={itemData["id"]} 
                                     itemData={itemData} 
-                                    setItemData={setItemData} 
+                                    setItemData={setItemData}
+                                    setErrorMessage={setErrorMessage} 
                                     status="Deleted" 
                                     buttonText="Mark as Deleted!"
                                     backgroundColor="#ff4400"
@@ -142,9 +148,18 @@ const DetailedItems = ({params}) => {
                         <a href={itemData["ebay_url"]} className={styles.detailed_items__ebay_url} target="_blank">Ebay item page</a>
                     </div>
 
-                    <DetailedItemForm itemsID={itemsID} itemData={itemData} setItemData={setItemData} />
+                    <DetailedItemForm 
+                        itemsID={itemsID} 
+                        itemData={itemData} 
+                        setItemData={setItemData} 
+                        setErrorMessage={setErrorMessage} />
+
+                    { 
+                        errorMessage && <p>{errorMessage}</p>
+                    }
 
                     <PrintLabelButton itemData={itemData} />
+
                 </div> :
                 <h1>Item not available....</h1>
             }
