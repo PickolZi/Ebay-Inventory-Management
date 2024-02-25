@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from sqlalchemy import select
+from sqlalchemy import select, and_, or_
 from flask_cors import cross_origin
 from flask import Flask, render_template, request, Blueprint, request, redirect, url_for, jsonify
 from .models import Item, Url, Users
@@ -438,7 +438,7 @@ def get_owners_user_uids():
 
 def get_authorized_user_uids():
     # User uids with role "admin" are returned.
-    authorized_users = list(db.session.execute(db.select(Users).where(Users.role=="admin")).scalars())
+    authorized_users = list(db.session.execute(db.select(Users).where(or_(Users.role=="admin", Users.role=="owner"))).scalars())
     authorized_uids = [user.uid for user in authorized_users]
 
     return authorized_uids
