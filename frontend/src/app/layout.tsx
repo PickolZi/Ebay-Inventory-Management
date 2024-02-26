@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import Navbar from './../components/navbar/navbar.component'
+import Navbar from '../components/global/navbar/navbar.component'
+import Header from '@/components/global/header/header.component'
 import { UserAuthProvider } from './context/user.context'
 
 import { Inter } from 'next/font/google'
@@ -21,10 +22,11 @@ export default function RootLayout({
     <UserAuthProvider>
       <html lang="en">
         <body className={inter.className}>
-            <Navbar />
+            <Header />
             <div id="page_content">
               {children}
             </div>
+            <Navbar />
           </body>
       </html>
     </UserAuthProvider>

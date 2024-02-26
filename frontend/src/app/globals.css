@@ -10,10 +10,14 @@
   box-sizing: border-box;
 }
 
+body {
+  height: 100vh;
+}
+
 #page_content {
   /* background-color: red; */
   padding-top: 3rem;
-  height: 100vh;
+  height: auto;
 }
 
 :root {
