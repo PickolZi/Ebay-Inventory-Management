@@ -1,5 +1,7 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+
+import { UserAuthContext } from '../context/user.context';
 
 import axios from 'axios';
 
@@ -32,11 +34,16 @@ const columns = [
         field: 'role',
         headerName: 'Role',
         type: 'singleSelect',
-        valueOptions: [
-            {value: "owner", label: "Owner"},
-            {value: "admin", label: "Admin"},
-            {value: "user", label: "User"}
-        ],
+        valueOptions: ({ row }) => {
+            if (row.role == "owner") {
+                return [{value: "owner", label: "Owner"}]
+            } else {
+                return [
+                    {value: "admin", label: "Admin"},
+                    {value: "user", label: "User"}
+                ]
+            }
+        },
         value: 'hi',
         flex: 1,
         editable: true,
@@ -45,9 +52,15 @@ const columns = [
     },
 ];  
 
+
+
 const Admin = () => {
     const [users, setUsers] = useState([]);
+    const [errors, setErrors] = useState([]);
+    const [wasRoleUpdated, setWasRoleUpdated] = useState(false);
+    const { userJWTToken } = useContext(UserAuthContext);
 
+    // Sets the rows for the datagrid.
     useEffect(() => {
         axios.get(MACHINE_IP + ":5000" + "/api/firebase/getUsers").then((res) => {
             let tmpUsers = res.data["users"];
@@ -56,10 +69,54 @@ const Admin = () => {
                 delete user["uid"]
                 return user
             });
-            console.log(tmpUsers);
+
             setUsers(tmpUsers);
         })
     }, []);
+
+    const onCellEditCommit = (newRow, oldRow) => {    
+        let updatedUsers = users.map((user) => {
+            if (user.id == newRow.id) {
+                setWasRoleUpdated(true);
+                user.role = newRow.role;
+                user.updated = true;
+            }
+            return user;
+        })
+        setUsers(updatedUsers);
+        return newRow;
+    }
+
+    const handleRoleUpdates = () => {
+        console.log(users)
+        users.map((user) => {
+            if (user.updated) {
+                let data = {
+                    JWT_TOKEN: userJWTToken,
+                    uid: user.id,
+                    role: user.role
+                }
+                axios.post(MACHINE_IP + ":5000" + "/api/firebase/updateUserRole", data).then(() => {
+                    setWasRoleUpdated(false);
+                    console.log("Updated user role successfully.")
+                }).catch((err) => {
+                    let statusCode = err.response.status;
+                    if (statusCode == 403) {
+                        setErrors([...errors, "Permission denied. Please login."])
+                        console.log("Permission denied.")
+                    } else if (statusCode == 400 ) {
+                        setErrors([...errors, "Invalid request. Please refresh and try again."])
+                        console.log("Invalid option. Please refresh and try again.")
+                    } else {
+                        setErrors([...errors, "Failed to update user's role. Contact james."])
+                        console.log("Failed to update user's role. Contact james.", err)
+                    }  
+                })
+            }
+        })
+    }
+
+
     return (
         <Box sx={{ margin: "auto",width: "66vw", height: "75vh", position: "relative"}}>
             Welcome to the Admin Dashboard!
@@ -68,11 +125,14 @@ const Admin = () => {
                 columns={columns}
                 autoPageSize
                 disableRowSelectionOnClick
-                isCellEditable={(params) => params.row.role != "owner"}
+                processRowUpdate={onCellEditCommit}
+                onProcessRowUpdateError={(error) => {console.log("Error occurred trying to update role value,", error)}}
                 sx={{ display: 'flex', justifyContent: 'left', alignItems: 'left' }}
             />
             <Button 
+                onClick={handleRoleUpdates}
                 variant="outlined"
+                disabled={!wasRoleUpdated}
                 sx={{position: "absolute", right: 0, marginTop: "1rem"}}
                 >
                     UPDATE ROLES

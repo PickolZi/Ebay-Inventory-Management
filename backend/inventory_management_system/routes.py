@@ -370,11 +370,11 @@ def firebaseUpdateUserRole():
         JWT_TOKEN = post_request["JWT_TOKEN"]
     
     if not isValidJWTToken(JWT_TOKEN):
-        return "Invalid JWT Token!", 400
+        return "Invalid JWT Token!", 403
 
     JWT_TOKEN_USER = getUserInfoByJWTToken(JWT_TOKEN)[0]
     if JWT_TOKEN_USER not in get_owners_user_uids():
-        return "This user does not have access to the admin dashboard.", 404
+        return "This user does not have access to the admin dashboard.", 403
 
     if role not in POSSIBLE_ROLES:
         return "Tried changing user to an unavailable role.", 400
