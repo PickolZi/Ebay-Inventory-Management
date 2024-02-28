@@ -62,7 +62,7 @@ const FilterSideBar = ({
                 sx={{
                     display: 'flex', 
                     flexDirection: 'column',
-                    pt: '64px',
+                    pt: mobileView ? '48px' : '64px',
                     px: '1rem',
                     height: '100vh',
                     width: '400px',

@@ -12,6 +12,8 @@ import ItemsListSelectBox from '../items-list-select-box/items-list-select-box.c
 import BulkPrintButton from '../bulk-print-button/bulk-print-button.component';
 import LabelQRCode from '../label-qr-code/label-qr-code.component';
 
+import { getSidebarSettings } from '@/app/context/sidebar.context';
+
 import { MACHINE_IP } from '@/utils/machine-ip';
 
 import styles from './items-list.module.css';
@@ -29,6 +31,8 @@ const ItemsList = ({status, sortKeyword}) => {
 
     const [ebayIndexesToPrint, setEbayIndexesToPrint] = useState([]);
     const [masterIndex, setMasterIndex] = useState(false);
+
+    const { mobileView } = getSidebarSettings();
 
     // Gets item based on page status.
     useEffect(() => {
@@ -120,7 +124,7 @@ const ItemsList = ({status, sortKeyword}) => {
     }, [tempItems])
 
     return (
-        <Box sx={{display: 'flex', justifyContent:'center'}}>  {/* Items-dashboard */}
+        <Box sx={{width: '100%', display: 'flex', justifyContent:'center'}}>  {/* Items-dashboard */}
             <FilterSideBar 
                 excludeBarInput={excludeBarInput} 
                 setExcludeBarInput={setExcludeBarInput} 
@@ -130,7 +134,7 @@ const ItemsList = ({status, sortKeyword}) => {
                 setEbayIDBarInput={setEbayIDBarInput}
             />
 
-            <Box sx={{}}>  {/* Items-list-searchbar__container */}
+            <Box width={mobileView ? "100%" : undefined}>  {/* Items-list-searchbar__container */}
                 <TextField 
                     value={searchBarInput}
                     onChange={(event) => {setSearchBarInput(event.target.value)}}
@@ -139,7 +143,7 @@ const ItemsList = ({status, sortKeyword}) => {
                     autoComplete='off'
                     fullWidth 
                     label="Search by item title..."
-                    sx={{mt: '1rem'}} 
+                    sx={{mt: mobileView ? undefined : '16px'}} 
                 />
                 <Typography>{tempItems ? tempItems.length : 0} items found...</Typography>
 

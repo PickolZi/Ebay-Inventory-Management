@@ -2,12 +2,15 @@
 import { useState, useContext, useEffect } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import Image from "next/image";
+
+import bassetLogo from "../../../public/assets/bassetLogo.jpg"
 
 import { UserAuthContext } from "../context/user.context";
 
-import { signInUserWithEmailAndPassword, signOutUser } from "@/utils/firebase";
+import { signInUserWithEmailAndPassword } from "@/utils/firebase";
 
-import styles from "./signin.module.css";
+import { Box, TextField, Typography, Button } from "@mui/material";
 
 
 const SignIn = () => {
@@ -30,42 +33,48 @@ const SignIn = () => {
     }, [userAuth])
 
     return (
-        <div className={styles.form__container}>        
-            <form className={styles.form}>
-                <div className={styles.form__heading}>
-                    <h1>Itemiz</h1>
-                    <p>Please sign in to have full access to Itemiz's features.</p>
-                </div>
+        <Box
+            component="form"
+            sx={{
+                display: 'flex', 
+                flexDirection: 'column', 
+                maxWidth: 'sm',
+                mx: 'auto',
+                mt: '8rem', 
+                gap: '1rem'
+            }}
+        >        
+            <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <Image 
+                    alt="Basset Auto Wreckers Logo"
+                    width={64}
+                    height={64}
+                    src={bassetLogo}
+                    style={{borderRadius: '50%'}}  
+                />
+                <Typography component='h3'>Sign in</Typography>
+            </Box>
 
-                <div className={styles.form__email}>
-                    <label htmlFor="email_signin">Email: </label>
-                    <input 
-                        type="text"
-                        value={email}
-                        onChange={(e) => {setEmail(e.target.value)}}
-                        className={styles.form__input_field}
-                        id="email_signin"/>
-                </div>
+            <TextField
+                required
+                label="Email Address"
+                value={email}
+                onChange={(e) => {setEmail(e.target.value)}}
+            />
 
-                <div className={styles.form__password}>
-                    <label htmlFor="password_signin">Password: </label>
-                    <input 
-                        type="password" 
-                        value={password}
-                        onChange={(e) => {setPassword(e.target.value)}}
-                        className={styles.form__input_field} 
-                        id="password_signin" />
-                </div>
+            <TextField
+                required
+                type="password"
+                label="Password"
+                value={password}
+                onChange={(e) => {setPassword(e.target.value)}}
+            />
 
-                <Link href="/signup">Create an account?</Link>
+            <Link href="/signup">Create an account?</Link>
 
-                <input 
-                    type="submit"
-                    value="Login" 
-                    onClick={handleLogin}
-                    className={styles.login_button} />
-            </form>
-        </div>
+            <Button variant="contained" onClick={handleLogin}>Login</Button>
+
+        </Box>
     )
 }
 
