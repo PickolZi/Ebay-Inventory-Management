@@ -3,8 +3,10 @@ import dayjs from 'dayjs';
 import axios from 'axios';
 import { useEffect, useState, useContext } from 'react';
 
+import { Box, Typography } from '@mui/material';
+import {TextField} from '@mui/material';
+
 import Item from '../item/item.component';
-import SearchBar from '../search-bar/search-bar.component';
 import FilterSideBar from '../filter-sidebar/filter-sidebar.component';
 import ItemsListSelectBox from '../items-list-select-box/items-list-select-box.component';
 import BulkPrintButton from '../bulk-print-button/bulk-print-button.component';
@@ -22,13 +24,13 @@ const ItemsList = ({status, sortKeyword}) => {
 
     const [searchBarInput, setSearchBarInput] = useState("");
     const [excludeBarInput, setExcludeBarInput] = useState("");
-    const [locationBarInput, setLocationBarInput] = useState([]);
     const [ebayIDBarInput, setEbayIDBarInput] = useState("");
-    const [isMobileFilterBar, setMobileFilterBar] = useState(false);
+    const [chosenLocations, setChosenLocations] = useState([]);
 
     const [ebayIndexesToPrint, setEbayIndexesToPrint] = useState([]);
     const [masterIndex, setMasterIndex] = useState(false);
 
+    // Gets item based on page status.
     useEffect(() => {
         const ebayItemsEndPoints = {
             Active: "getAllActiveItems",
@@ -44,6 +46,7 @@ const ItemsList = ({status, sortKeyword}) => {
         })
     }, []);
 
+    // Sorts items by date.
     useEffect(() => {
         if (!items) return;
 
@@ -66,6 +69,7 @@ const ItemsList = ({status, sortKeyword}) => {
         setTempItems(filteredItems);
     },[filteredItems])
 
+    // Filters item based on user input.
     useEffect(() => {
         // Filter items depending on search field(s).
         setTempItems(filteredItems.filter((item) => {
@@ -76,7 +80,7 @@ const ItemsList = ({status, sortKeyword}) => {
             if (searchBarInput != "") {
                 const searchBarKeywords = searchBarInput.split(" ");
                 for (let i=0; i< searchBarKeywords.length; i++) {
-                    if (!itemTitle.includes(searchBarKeywords[i])) {
+                    if (!itemTitle.includes(searchBarKeywords[i].toLowerCase())) {
                         return false;
                     }
                 }
@@ -93,9 +97,9 @@ const ItemsList = ({status, sortKeyword}) => {
             }
 
             // Location checkbox filter. 
-            if (itemLocation == null && locationBarInput.includes("")) {
+            if (itemLocation == null && chosenLocations.includes("")) {
             }
-            else if (locationBarInput.length > 0 && !locationBarInput.includes(itemLocation)) {
+            else if (chosenLocations.length > 0 && !chosenLocations.includes(itemLocation)) {
                 return false;
             }
 
@@ -106,8 +110,9 @@ const ItemsList = ({status, sortKeyword}) => {
 
             return true;
         }))
-    }, [searchBarInput, excludeBarInput, locationBarInput, ebayIDBarInput]);
+    }, [searchBarInput, excludeBarInput, chosenLocations, ebayIDBarInput]);
 
+    // Resets checkboxes 
     useEffect(() => {
         // Sets all the checkboxes to false whenever tempItems is changed.
         setEbayIndexesToPrint(tempItems.map(() => { return false }))
@@ -115,33 +120,31 @@ const ItemsList = ({status, sortKeyword}) => {
     }, [tempItems])
 
     return (
-        <div className={styles.items_list_container}>
+        <Box sx={{display: 'flex', justifyContent:'center'}}>  {/* Items-dashboard */}
             <FilterSideBar 
                 excludeBarInput={excludeBarInput} 
                 setExcludeBarInput={setExcludeBarInput} 
-                locationBarInput={locationBarInput} 
-                setLocationBarInput={setLocationBarInput} 
-                isMobileFilterBar={isMobileFilterBar} 
-                setMobileFilterBar={setMobileFilterBar} 
+                chosenLocations={chosenLocations} 
+                setChosenLocations={setChosenLocations} 
                 ebayIDBarInput={ebayIDBarInput} 
                 setEbayIDBarInput={setEbayIDBarInput}
             />
 
-            <div className={styles.items_list_wrapper}>
-                <div className={styles.items_search_container}>
-                    <SearchBar 
-                        searchbarInput={searchBarInput} 
-                        setSearchBarInput={setSearchBarInput} 
-                        isMobileFilterBar={isMobileFilterBar} 
-                        setMobileFilterBar={setMobileFilterBar} 
-                    />
-                    <p>
-                        {tempItems ? tempItems.length : 0} results...
-                    </p>
-                </div>
+            <Box sx={{}}>  {/* Items-list-searchbar__container */}
+                <TextField 
+                    value={searchBarInput}
+                    onChange={(event) => {setSearchBarInput(event.target.value)}}
+                    variant="filled"
+                    color={tempItems.length == 0 ? "warning" : "success"}
+                    autoComplete='off'
+                    fullWidth 
+                    label="Search by item title..."
+                    sx={{mt: '1rem'}} 
+                />
+                <Typography>{tempItems ? tempItems.length : 0} items found...</Typography>
 
-                <div className={styles.items_list}>
-                    <div className={styles.item_container}>
+                <Box>  {/* Items-list__container */}
+                    <Box>
                         <ItemsListSelectBox 
                             role="master" 
                             ebayIndexesToPrint={ebayIndexesToPrint} 
@@ -151,7 +154,7 @@ const ItemsList = ({status, sortKeyword}) => {
                             index="N/A" />
                         <h1 className={styles.bulk_print_text}>Select All</h1>
                         <BulkPrintButton ebayIndexesToPrint={ebayIndexesToPrint} ebayItems={tempItems}/>
-                    </div>
+                    </Box>
                     {tempItems ? tempItems.map((item, index) => {
                         return (
                             <div key={item["id"]} className={styles.item_container}>
@@ -177,9 +180,9 @@ const ItemsList = ({status, sortKeyword}) => {
                     }) :
                         <h1>Loading items...</h1>
                     }
-                </div>
-            </div>
-        </div>
+                </Box>
+            </Box>
+        </Box>
     )
 }
 

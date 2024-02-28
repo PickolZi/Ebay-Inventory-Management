@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import Navbar from '../components/global/navbar/navbar.component'
 import Header from '@/components/global/header/header.component'
 import { UserAuthProvider } from './context/user.context'
+import { SidebarProvider } from './context/sidebar.context'
+
+import { Box } from '@mui/material'
 
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -20,15 +23,17 @@ export default function RootLayout({
 }) {
   return (
     <UserAuthProvider>
-      <html lang="en">
-        <body className={inter.className}>
-            <Header />
-            <div id="page_content">
-              {children}
-            </div>
-            <Navbar />
-          </body>
-      </html>
+      <SidebarProvider>      
+        <html lang="en">
+          <body className={inter.className}>
+              <Header />
+              <Box sx={{ my: "64px" }}>
+                {children}
+              </Box>
+              <Navbar />
+            </body>
+        </html>
+      </SidebarProvider>
     </UserAuthProvider>
   )
 }

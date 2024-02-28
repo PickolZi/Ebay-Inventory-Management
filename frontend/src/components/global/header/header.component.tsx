@@ -1,31 +1,61 @@
 'use client'
-import Link from "next/link";
-
-import { useState, useEffect, useContext } from "react";
+import { useContext } from "react";
 import { UserAuthContext } from "@/app/context/user.context";
+import { getSidebarSettings } from "@/app/context/sidebar.context";
 
+import { 
+    Typography,
+    AppBar,
+    Toolbar,
+    IconButton
+} from "@mui/material";
 
 import UserAuthButton from "../../user-auth-button/user-auth-button.component";
 
-import styles from "./header.module.css"
+import MenuIcon from '@mui/icons-material/Menu';
 
 
 const Header = () => {    
     const { userAuth } = useContext(UserAuthContext);
+    const { toggleSidebar } = getSidebarSettings();
 
     return (
-        <nav className={styles.navbar}>
-            <div className={styles.left_nav}></div>
-            <div className={styles.mid_nav}>
-                
-            </div>
-            <div className={styles.right_nav}>
-                { !userAuth ? 
-                    <UserAuthButton buttonStatus="signin"/> :
-                    <UserAuthButton buttonStatus="signout"/>
-                 }
-            </div>
-        </nav>
+        <AppBar 
+            sx={{position: 'fixed', zIndex: 9999, width: '100%', top:0, left: 0}}
+        >
+            <Toolbar 
+                disableGutters
+                sx={{ display: 'flex', justifyContent: 'center'}}
+            >
+                <IconButton 
+                    onClick={() => toggleSidebar()}
+                    sx={{position: 'absolute', left: 0}}
+                >
+                    <MenuIcon sx={{color: 'white'}} />
+                </IconButton>
+
+                <Typography
+                    variant="h5"
+                    component="a"
+                    href="/"
+                    sx={{
+                        fontFamily: 'monospace',
+                        fontWeight: 700,
+                        letterSpacing: '.1rem',
+                        color: 'inherit',
+                    }}
+                >
+                ITEMIZ
+                </Typography>
+
+                {
+                    userAuth ? 
+                    <UserAuthButton buttonStatus="signout"/> :
+                    <UserAuthButton buttonStatus="signin"/>
+                }
+
+            </Toolbar>
+        </AppBar>
     )
 }
 

@@ -1,7 +1,7 @@
 'use client'
 import Link from "next/link";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { BottomNavigation } from "@mui/material";
 import { BottomNavigationAction } from "@mui/material";
@@ -20,11 +20,30 @@ import MapIcon from '@mui/icons-material/Map';
 
 
 const Navbar = () => {    
-    const [pageNum, setPageNum] = useState(0)
+    const [pageNum, setPageNum] = useState(999)
+
+    // Fixes bug where the bottom navbar icon would always reset to Active when the page is refreshed.
+    useEffect(() => {
+        let path = window.location.pathname;
+        let pathRef = {
+            "/pages/active": 0,
+            "/pages/sold": 1,
+            "/pages/notpaid": 2,
+            "/pages/found": 3,
+            "/pages/shipped": 4,
+            "/pages/map": 5,
+        }
+
+        if (path in pathRef) {
+            setPageNum(pathRef[path])
+        } else {
+            setPageNum(999)
+        }
+
+    },[])
 
     return (
     <>
-        <BottomNavigation />
         <BottomNavigation 
             showLabels
             value={pageNum}
