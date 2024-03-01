@@ -4,19 +4,21 @@ import { UserAuthContext } from "@/app/context/user.context";
 import { getSidebarSettings } from "@/app/context/sidebar.context";
 
 import { 
+    Box,
     Typography,
     AppBar,
     Toolbar,
     IconButton
 } from "@mui/material";
 
-import UserAuthButton from "../../user-auth-button/user-auth-button.component";
+import SignInOutButton from "./sign-in-out-button.component";
+import Avatar from "./avatar.component";
 
 import MenuIcon from '@mui/icons-material/Menu';
 
 
 const Header = () => {    
-    const { userAuth } = useContext(UserAuthContext);
+    const { userAuth, userInfo } = useContext(UserAuthContext);
     const { toggleSidebar } = getSidebarSettings();
 
     return (
@@ -48,12 +50,14 @@ const Header = () => {
                 ITEMIZ
                 </Typography>
 
-                {
-                    userAuth ? 
-                    <UserAuthButton buttonStatus="signout"/> :
-                    <UserAuthButton buttonStatus="signin"/>
-                }
-
+                <Box sx={{position: 'absolute', right: '8px'}}>
+                    {
+                        userAuth ? 
+                        <Avatar userInfo={userInfo} /> :
+                        <SignInOutButton buttonType="signin"/>
+                    }
+                </Box>
+                
             </Toolbar>
         </AppBar>
     )

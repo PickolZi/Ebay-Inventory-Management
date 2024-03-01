@@ -22,7 +22,6 @@ const SignIn = () => {
         event.preventDefault();
         await signInUserWithEmailAndPassword(email, password).then((user) => {
             console.log("user signed in successfully!")
-            console.log(user);
         });
     }
     
