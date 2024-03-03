@@ -65,7 +65,7 @@ const FilterSideBar = ({
                     pt: mobileView ? '48px' : '64px',
                     px: '1rem',
                     height: '95vh',
-                    width: '400px',
+                    width: mobileView ? '280px' : '400px',
                 }}
             >
                 <Typography mt='24px'>Filters:</Typography>
