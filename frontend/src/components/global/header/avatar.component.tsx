@@ -24,7 +24,7 @@ const AvatarDropdown = ({anchor, setAnchor, email, role}) => {
                 <Typography>{role.toUpperCase()}</Typography>
                 {                        
                     role == "admin" ?
-                    <SupervisedUserCircleIcon sx={{width: '96px', height: '96px', backgroundColor: 'red'}} />
+                    <SupervisedUserCircleIcon sx={{width: '96px', height: '96px'}} />
                 : role == "owner" ?
                     // <AccountCircleIcon sx={{width: '96px', height: '96px'}} />
                     <Image width={96} height={96} alt="Basset Owner Role" src={BassetLogo} />    
@@ -63,6 +63,7 @@ const Avatar = ({userInfo}) => {
                 <MUIAvatar
                     onClick={handleClick}
                     alt="User Avatar"
+                    sx={{cursor: 'pointer'}}
                 >
                     {                        
                       role == "admin" ?

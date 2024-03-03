@@ -64,11 +64,11 @@ const FilterSideBar = ({
                     flexDirection: 'column',
                     pt: mobileView ? '48px' : '64px',
                     px: '1rem',
-                    height: '100vh',
+                    height: '95vh',
                     width: '400px',
                 }}
             >
-                <Typography mt='16px'>Filters:</Typography>
+                <Typography mt='24px'>Filters:</Typography>
                 <TextField
                     label="Exclude keywords"
                     size="small"
@@ -86,7 +86,7 @@ const FilterSideBar = ({
                     onChange={(event) => setEbayIDBarInput(event.target.value)}
                 />
 
-                <Box mt='8px' width="100%" height="calc(100% - 150px)">  {/* 104px is the height of the text + 2 textfields above. */}
+                <Box mt='8px' width="100%" height="calc(100% - 164px)">  {/* 104px is the height of the text + 2 textfields above. */}
                     <FormControl sx={{width: '100%', height: '100%'}}>  
                         <FormLabel>Locations:</FormLabel>
                         <FormGroup
