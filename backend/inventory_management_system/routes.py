@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from sqlalchemy import select, and_, or_
+from sqlalchemy import select, and_, or_, func
 from flask_cors import cross_origin
 from flask import Flask, render_template, request, Blueprint, request, redirect, url_for, jsonify
 from .models import Item, Url, Users
@@ -316,6 +316,16 @@ def updateItemStatus(id):
     else:
         return f"Itemiz ERROR) Status 300: Unexpected error. Item #{id}, Title: '{item.title}' status could not be updated. No json post data sent or the status the item is trying to be updated to does not exist."
 
+# Utility endpoints
+@main.route('/api/getNumberOfItemsPerStatus')
+def getNumberOfItemsPerStatus():
+    data = db.session.execute(db.select(Item.status, func.count(Item.id)).group_by(Item.status))
+    res = {}
+
+    for status, count in data.all():
+        res[status] = count
+
+    return res
 
 # Endpoints for firebase to add new users to the database.
 @main.route("/api/firebase/addUser", methods=["POST"])
@@ -354,6 +364,25 @@ def firebaseGetUsers():
         })
 
     return jsonify({"users": users})
+
+@main.route("/api/firebase/getCurrentUser", methods=["POST"])
+def firebaseGetCurrentUser():
+    if "uid" not in request.json:
+        return "UID not provided in request body.", 401
+    
+    uid = request.json["uid"]
+    user = db.session.execute(db.select(Users).where(Users.uid==uid)).scalars().first()
+
+    if not user:
+        return "User not in database.", 404
+
+    user_data = {
+        "uid": user.uid,
+        "email": user.email,
+        "role": user.role
+    }
+
+    return jsonify(user_data)
 
 @main.route("/api/firebase/updateUserRole", methods=["POST"])
 def firebaseUpdateUserRole():
