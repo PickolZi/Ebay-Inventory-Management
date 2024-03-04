@@ -1,9 +1,8 @@
-import ItemsList from "@/components/items-list/items-list.component";
-
+import ItemsDashboard from "@/components/items-dashboard.component";
 
 const NotPaid = () => {
     return (
-        <ItemsList status="NotPaid" sortKeyword="last_checked_on_ebay_date"/>
+        <ItemsDashboard status="NotPaid" sortKeyword="last_checked_on_ebay_date"/>
     )
 }
 

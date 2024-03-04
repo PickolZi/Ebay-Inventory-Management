@@ -19,7 +19,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 const Header = () => {    
     const { userAuth, userInfo } = useContext(UserAuthContext);
-    const { toggleSidebar } = getSidebarSettings();
+    const { mobileView, toggleSidebar } = getSidebarSettings();
+
 
     return (
         <AppBar 
@@ -31,7 +32,7 @@ const Header = () => {
             >
                 <IconButton 
                     onClick={() => toggleSidebar()}
-                    sx={{position: 'absolute', left: 0}}
+                    sx={{position: 'absolute', left: 0, display: mobileView ? undefined : 'none'}}
                 >
                     <MenuIcon sx={{color: 'white'}} />
                 </IconButton>

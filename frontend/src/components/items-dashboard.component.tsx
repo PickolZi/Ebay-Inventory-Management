@@ -1,25 +1,20 @@
 'use client'
 import dayjs from 'dayjs';
 import axios from 'axios';
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Box, Typography } from '@mui/material';
-import {TextField} from '@mui/material';
+import { Box } from '@mui/material';
 
-import Item from '../item/item.component';
-import FilterSideBar from '../filter-sidebar/filter-sidebar.component';
-import ItemsListSelectBox from '../items-list-select-box/items-list-select-box.component';
-import BulkPrintButton from '../bulk-print-button/bulk-print-button.component';
-import LabelQRCode from '../label-qr-code/label-qr-code.component';
+import FilterSideBar from './filter-sidebar.component';
+import ItemsList from './items-list.component';
 
 import { getSidebarSettings } from '@/app/context/sidebar.context';
 
 import { MACHINE_IP } from '@/utils/machine-ip';
 
-import styles from './items-list.module.css';
 
-const ItemsList = ({status, sortKeyword}) => {
-    const [items, setItems] = useState();
+const ItemsDashboard = ({status, sortKeyword}) => {
+    const [items, setItems] = useState([]);
 
     const [filteredItems, setFilteredItems] = useState([]);
     const [tempItems, setTempItems] = useState([]);
@@ -122,9 +117,9 @@ const ItemsList = ({status, sortKeyword}) => {
         setEbayIndexesToPrint(tempItems.map(() => { return false }))
         setMasterIndex(false);
     }, [tempItems])
-
+    
     return (
-        <Box sx={{width: '100%', display: 'flex', justifyContent:'center'}}>  {/* Items-dashboard */}
+        <Box sx={{width: '100%', display: 'flex'}}>  {/* Items-dashboard */}
             <FilterSideBar 
                 excludeBarInput={excludeBarInput} 
                 setExcludeBarInput={setExcludeBarInput} 
@@ -134,63 +129,17 @@ const ItemsList = ({status, sortKeyword}) => {
                 setEbayIDBarInput={setEbayIDBarInput}
             />
 
-            <Box width={mobileView ? "100%" : undefined}>  {/* Items-list-searchbar__container */}
-                <TextField 
-                    value={searchBarInput}
-                    onChange={(event) => {setSearchBarInput(event.target.value)}}
-                    variant="filled"
-                    color={tempItems.length == 0 ? "warning" : "success"}
-                    autoComplete='off'
-                    fullWidth 
-                    label="Search by item title..."
-                    sx={{mt: mobileView ? undefined : '16px'}} 
-                />
-                <Typography sx={{textAlign: 'end'}}>{tempItems.length} items found...</Typography>
-
-                <Box>  {/* Items-list__container */}
-                    <Box sx={{display: 'flex', gap: '1rem'}}>
-                        <ItemsListSelectBox 
-                            role="master" 
-                            ebayIndexesToPrint={ebayIndexesToPrint} 
-                            setEbayIndexesToPrint={setEbayIndexesToPrint}
-                            masterIndex={masterIndex}
-                            setMasterIndex={setMasterIndex}
-                            index="N/A" 
-                        />
-                        <Typography>Select All</Typography>
-                        <BulkPrintButton ebayIndexesToPrint={ebayIndexesToPrint} ebayItems={tempItems}/>
-                    </Box>
-                    <Box sx={{display: 'flex', flexDirection: 'column', gap:'8px'}}>
-                        {tempItems ? tempItems.map((item, index) => {
-                            return (
-                                <Box key={item["id"]} sx={{display: 'flex'}}>
-                                    <ItemsListSelectBox 
-                                        role="basic" 
-                                        ebayIndexesToPrint={ebayIndexesToPrint} 
-                                        setEbayIndexesToPrint={setEbayIndexesToPrint}
-                                        masterIndex={masterIndex}
-                                        setMasterIndex={setMasterIndex}
-                                        index={index} 
-                                    />
-                                    <Item item={item} />
-
-                                    {/* Invisible QR code is needed for printing qr codes with label. */}
-                                    {
-                                        ebayIndexesToPrint[index] &&
-                                        <div id={`labelQRCode_${index}`} style={{display: 'none'}}>
-                                            <LabelQRCode itemID={item["id"]}/>
-                                        </div>
-                                    }
-                                </Box>
-                            )
-                        }) :
-                            <Typography>Loading items...</Typography>
-                        }
-                    </Box>
-                </Box>
-            </Box>
+            <ItemsList 
+                items={tempItems} 
+                searchBarInput={searchBarInput} 
+                setSearchBarInput={setSearchBarInput} 
+                ebayIndexesToPrint={ebayIndexesToPrint} 
+                setEbayIndexesToPrint={setEbayIndexesToPrint} 
+                masterIndex={masterIndex} 
+                setMasterIndex={setMasterIndex}
+            />
         </Box>
-    )
+    );
 }
 
-export default ItemsList;
+export default ItemsDashboard;

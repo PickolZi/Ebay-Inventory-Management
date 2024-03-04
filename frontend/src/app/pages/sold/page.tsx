@@ -1,9 +1,9 @@
-import ItemsList from "@/components/items-list/items-list.component";
+import ItemsDashboard from "@/components/items-dashboard.component";
 
 
 const Sold = () => {
     return (
-        <ItemsList status="Completed" sortKeyword="last_checked_on_ebay_date"/>
+        <ItemsDashboard status="Completed" sortKeyword="last_checked_on_ebay_date"/>
     )
 }
 

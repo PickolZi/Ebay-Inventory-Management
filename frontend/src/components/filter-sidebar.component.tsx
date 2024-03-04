@@ -35,7 +35,7 @@ const FilterSideBar = ({
     }, []);
 
     const locationHandler = (event, index) => {
-        // If checked, include location in chosenLocations[]
+        // If checkbox is checked, include location in chosenLocations[]
         // Else, remove location from chosenLocations[].
         let chosenLocation = locations[index];
         let checked = event.target.checked
@@ -55,14 +55,15 @@ const FilterSideBar = ({
             onOpen={() => {setIsSidebarOpen(true)}}
             onClose={() => {setIsSidebarOpen(false)}}
             open={isSidebarOpen}
-            variant={mobileView ? "temporary" : "persistent"}
+            variant={mobileView ? "temporary" : "permanent"}
             swipeAreaWidth={50}
         >
             <Box
                 sx={{
                     display: 'flex', 
                     flexDirection: 'column',
-                    pt: mobileView ? '48px' : '64px',
+                    boxSizing: 'border-box',
+                    pt: mobileView ? '48px' : '56px',
                     px: '1rem',
                     height: '95vh',
                     width: mobileView ? '280px' : '400px',

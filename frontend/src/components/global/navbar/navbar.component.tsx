@@ -62,7 +62,7 @@ const Navbar = () => {
             showLabels
             value={pageNum}
             onChange={(event, newValue) => {setPageNum(newValue)}}
-            sx={{position: 'fixed', zIndex: 999, bottom: 0, width: "100%"}}
+            sx={{position: 'fixed', zIndex: 1999, bottom: 0, width: "100%"}}
         >
             <BottomNavigationAction 
                 component={Link}
