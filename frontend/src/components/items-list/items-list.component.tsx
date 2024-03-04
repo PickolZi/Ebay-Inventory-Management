@@ -145,45 +145,48 @@ const ItemsList = ({status, sortKeyword}) => {
                     label="Search by item title..."
                     sx={{mt: mobileView ? undefined : '16px'}} 
                 />
-                <Typography>{tempItems ? tempItems.length : 0} items found...</Typography>
+                <Typography sx={{textAlign: 'end'}}>{tempItems.length} items found...</Typography>
 
                 <Box>  {/* Items-list__container */}
-                    <Box>
+                    <Box sx={{display: 'flex', gap: '1rem'}}>
                         <ItemsListSelectBox 
                             role="master" 
                             ebayIndexesToPrint={ebayIndexesToPrint} 
                             setEbayIndexesToPrint={setEbayIndexesToPrint}
                             masterIndex={masterIndex}
                             setMasterIndex={setMasterIndex}
-                            index="N/A" />
-                        <h1 className={styles.bulk_print_text}>Select All</h1>
+                            index="N/A" 
+                        />
+                        <Typography>Select All</Typography>
                         <BulkPrintButton ebayIndexesToPrint={ebayIndexesToPrint} ebayItems={tempItems}/>
                     </Box>
-                    {tempItems ? tempItems.map((item, index) => {
-                        return (
-                            <div key={item["id"]} className={styles.item_container}>
-                                <ItemsListSelectBox 
-                                    role="basic" 
-                                    ebayIndexesToPrint={ebayIndexesToPrint} 
-                                    setEbayIndexesToPrint={setEbayIndexesToPrint}
-                                    masterIndex={masterIndex}
-                                    setMasterIndex={setMasterIndex}
-                                    index={index} />
+                    <Box sx={{display: 'flex', flexDirection: 'column', gap:'8px'}}>
+                        {tempItems ? tempItems.map((item, index) => {
+                            return (
+                                <Box key={item["id"]} sx={{display: 'flex'}}>
+                                    <ItemsListSelectBox 
+                                        role="basic" 
+                                        ebayIndexesToPrint={ebayIndexesToPrint} 
+                                        setEbayIndexesToPrint={setEbayIndexesToPrint}
+                                        masterIndex={masterIndex}
+                                        setMasterIndex={setMasterIndex}
+                                        index={index} 
+                                    />
+                                    <Item item={item} />
 
-                                <Item item={item} />
-
-                                {/* Invisible QR code is needed for printing qr codes with label. */}
-                                {
-                                    ebayIndexesToPrint[index] &&
-                                    <div id={`labelQRCode_${index}`} style={{display: 'none'}}>
-                                        <LabelQRCode itemID={item["id"]}/>
-                                    </div>
-                                }
-                            </div>
-                        )
-                    }) :
-                        <h1>Loading items...</h1>
-                    }
+                                    {/* Invisible QR code is needed for printing qr codes with label. */}
+                                    {
+                                        ebayIndexesToPrint[index] &&
+                                        <div id={`labelQRCode_${index}`} style={{display: 'none'}}>
+                                            <LabelQRCode itemID={item["id"]}/>
+                                        </div>
+                                    }
+                                </Box>
+                            )
+                        }) :
+                            <Typography>Loading items...</Typography>
+                        }
+                    </Box>
                 </Box>
             </Box>
         </Box>

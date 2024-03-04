@@ -1,6 +1,7 @@
 import Link from 'next/link';
+import { getSidebarSettings } from '@/app/context/sidebar.context';
 
-import styles from "./item.module.css";
+import { Box, Typography, Paper } from '@mui/material';
 
 import dayjs from "dayjs";
 
@@ -20,43 +21,61 @@ const getLowerResEbayImage = (ebay_url) => {
 }
 
 const Item = ({item}) => {
+    const {mobileView} = getSidebarSettings();
+
     return (
-        <div className={styles.item}>
-            <div className={styles.item__sub_container}>
-                <img className={styles.item__img} src={getLowerResEbayImage(item["image_urls"])} alt={`${item["title"]} image`} />
-                <div className={styles.items__text}>
-                    <div className={styles.items__text_top}>
+        <Box sx={{width: '100%'}}>
+            <Paper elevation={8} sx={{width: '100%', display: 'flex', position: 'relative'}}>
+                <Box 
+                    component="img" 
+                    src={getLowerResEbayImage(item["image_urls"])} 
+                    alt={`${item["title"]} image`}
+                    sx={{
+                        width: 200,
+                        height: 200
+                    }}
+                >
+                </Box>
+                <Box sx={{width: '100%', p: '8px'}}>
                         <Link 
                             href={`/pages/items/${item["id"]}`} 
-                            target="_blank">
-                            <p className={styles.item__title}>{item["title"]}</p>
+                            target="_blank"
+                        >
+                            <Typography style={{ lineHeight: "16px" }} sx={{wordWrap: 'wrap', wordBreak: 'break-word'}}>{item["title"]}</Typography>
                         </Link>
-                        {/* <p className={styles.item__title}>{item["title"]}</p> */}
-                        {/* <p className={styles.item__status}>Status: {item["status"]}</p> */}
-                        <p className={styles.item__price}>${item["price"]}</p>
-                    </div>
-
-                    <div className={styles.items__text_bottom}>
-                        <p className={styles.item__sku}>SKU: {item["sku"]}</p>
-                        <p className={styles.item__listed_date}>Listed: {dateFormatter(item["listed_date"])}</p>
-                        {item["status"] != "Active" &&  
-                        <p className={styles.item__date_sold}>Sold: {dateFormatter(item["last_checked_on_ebay_date"])}</p>
+                        <Typography><b>ID:</b> {item["id"]}</Typography>
+                        <Typography><b>Listed:</b> {dateFormatter(item["listed_date"])}</Typography>
+                        {
+                            item["status"] != "Active" &&  
+                            <Typography><b>Sold:</b> {dateFormatter(item["last_checked_on_ebay_date"])}</Typography>
                         }
-                        <p className={styles.item__id}>Ebay ID: {item["id"]}</p>
-                    </div>
-                </div>
-            </div>
+                        <Typography sx={{width: '100%', wordWrap: 'wrap', wordBreak: 'break-word'}}><b>SKU:</b> {item["sku"]}</Typography>
+                        <Typography><b>Price: </b>${item["price"]}</Typography>
+                </Box>
+                <Box 
+                    sx={{ 
+                        position: 'absolute',  
+                        right: mobileView ? 0 : '1rem',
+                        bottom: mobileView ? 0 : undefined,
+                        top: mobileView ? undefined : '50%',
+                        translate: mobileView ? undefined : '0 -50%'
+                    }}
+                >
+                    <Paper 
+                        elevation={24} 
+                        sx={{
+                            backgroundColor: item["location"] ? "#828ce5" : "red", 
+                            p: mobileView ? '8px' : '16px', 
+                            m: '8px', 
+                            border: '1px solid black'
+                        }}
+                    >
+                        <Typography>{ item["location"] ? item["location"] : "N/A" }</Typography>
+                    </Paper>
+                </Box>
+            </Paper>
 
-            <div 
-                className=
-                    {`${styles.item__location_container} 
-                      ${!item["location"] && styles.item__location_na}` 
-                    }>
-                <p className={styles.item__location}>
-                    {item["location"] ? item["location"] : "N/A"}
-                </p>
-            </div>
-        </div>
+        </Box>
     )
 }
 
