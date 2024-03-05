@@ -112,11 +112,13 @@ def getItemsAndData(status, page):
 
     # Where conditions. Title includes, title excludes, locations.
     search_include = request.headers["Search-Include"].strip().lower() if "Search-Include" in request.headers else False
+    ebayID_include = request.headers["EbayID-Include"].strip() if "EbayID-Include" in request.headers else False
     search_exclude = request.headers["Search-Exclude"].strip().lower() if "Search-Exclude" in request.headers else False
     locations = request.headers["Locations"].strip().lower() if "Locations" in request.headers else False
 
     conditions_status = True
     conditions_include = True
+    conditions_ebayID_include = True
     conditions_exclude = True
     conditions_locations = True
 
@@ -124,16 +126,18 @@ def getItemsAndData(status, page):
         conditions_status = (Item.status == ITEM_STATUSES[status])
     if search_include:
         conditions_include = and_(*[Item.title.contains(include_item) for include_item in search_include.split(" ")])
+    if ebayID_include:
+        conditions_ebayID_include = Item.id.contains(ebayID_include)
     if search_exclude:
         conditions_exclude = not_(or_(*[Item.title.contains(include_item) for include_item in search_exclude.split(" ")]))
     if locations:
-        locations = [location for location in locations.split(" ")]
+        locations = [location for location in locations.split(",")]
         if "n/a" in locations:
             locations[locations.index("n/a")] = None
             locations.append("")
         conditions_locations = or_(*[func.lower(Item.location) == location for location in locations])
     
-    conditions = and_(conditions_status, conditions_include, conditions_exclude, conditions_locations)
+    conditions = and_(conditions_status, conditions_include, conditions_ebayID_include, conditions_exclude, conditions_locations)
 
     items = db.paginate(
         db.select(Item)
@@ -164,156 +168,6 @@ def getItemsAndData(status, page):
         )
 
     return jsonify({'items': output, 'total': items.total, 'total_pages': items.pages})
-
-@main.route("/api/getAllActiveItems")
-def getAllActiveItemsAndData():
-    items = Item.query.filter(Item.status == "Active").all()
-    output = []
-    for item in items:
-        image_urls = [image_url.image_url for image_url in item.image_url]
-        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
-        output.append(
-            {
-                'id': item.id,
-                'title': item.title,
-                'price': item.price,
-                'status': item.status,
-                'sku': item.sku,
-                'listed_date': item.listed_date,
-                'ebay_url': item.ebay_url,
-                'location': item.location,
-                'last_updated_date': item.last_updated_date,
-                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
-                'image_urls': image_urls,
-            }
-        )
-
-    return jsonify({'items': output, 'total': len(output)})
-
-@main.route("/api/getAllSoldItems")
-def getAllSoldItemsAndData():
-    items = Item.query.filter(Item.status == "Completed").all()
-    output = []
-    for item in items:
-        image_urls = [image_url.image_url for image_url in item.image_url]
-        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
-        output.append(
-            {
-                'id': item.id,
-                'title': item.title,
-                'price': item.price,
-                'status': item.status,
-                'sku': item.sku,
-                'listed_date': item.listed_date,
-                'ebay_url': item.ebay_url,
-                'location': item.location,
-                'last_updated_date': item.last_updated_date,
-                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
-                'image_urls': image_urls,
-            }
-        )
-
-    return jsonify({'items': output, 'total': len(output)})
-
-@main.route("/api/getAllNotPaidItems")
-def getAllNotPaidItemsAndData():
-    items = Item.query.filter(Item.status == "Not Paid").all()
-    output = []
-    for item in items:
-        image_urls = [image_url.image_url for image_url in item.image_url]
-        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
-        output.append(
-            {
-                'id': item.id,
-                'title': item.title,
-                'price': item.price,
-                'status': item.status,
-                'sku': item.sku,
-                'listed_date': item.listed_date,
-                'ebay_url': item.ebay_url,
-                'location': item.location,
-                'last_updated_date': item.last_updated_date,
-                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
-                'image_urls': image_urls,
-            }
-        )
-
-    return jsonify({'items': output, 'total': len(output)})
-
-@main.route("/api/getAllFoundItems")
-def getAllFoundItemsAndData():
-    items = Item.query.filter(Item.status == "Found").all()
-    output = []
-    for item in items:
-        image_urls = [image_url.image_url for image_url in item.image_url]
-        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
-        output.append(
-            {
-                'id': item.id,
-                'title': item.title,
-                'price': item.price,
-                'status': item.status,
-                'sku': item.sku,
-                'listed_date': item.listed_date,
-                'ebay_url': item.ebay_url,
-                'location': item.location,
-                'last_updated_date': item.last_updated_date,
-                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
-                'image_urls': image_urls,
-            }
-        )
-
-    return jsonify({'items': output, 'total': len(output)})
-
-@main.route("/api/getAllShippedItems")
-def getAllShippedItemsAndData():
-    items = Item.query.filter(Item.status == "Shipped").all()
-    output = []
-    for item in items:
-        image_urls = [image_url.image_url for image_url in item.image_url]
-        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
-        output.append(
-            {
-                'id': item.id,
-                'title': item.title,
-                'price': item.price,
-                'status': item.status,
-                'sku': item.sku,
-                'listed_date': item.listed_date,
-                'ebay_url': item.ebay_url,
-                'location': item.location,
-                'last_updated_date': item.last_updated_date,
-                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
-                'image_urls': image_urls,
-            }
-        )
-
-    return jsonify({'items': output, 'total': len(output)})
-
-@main.route("/api/getAllDeletedItems")
-def getAllDeletedItemsAndData():
-    items = Item.query.filter(Item.status == "Deleted").all()
-    output = []
-    for item in items:
-        image_urls = [image_url.image_url for image_url in item.image_url]
-        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else []
-        output.append(
-            {
-                'id': item.id,
-                'title': item.title,
-                'price': item.price,
-                'status': item.status,
-                'sku': item.sku,
-                'listed_date': item.listed_date,
-                'ebay_url': item.ebay_url,
-                'location': item.location,
-                'last_updated_date': item.last_updated_date,
-                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
-                'image_urls': image_urls,
-            }
-        )
-
-    return jsonify({'items': output, 'total': len(output)})
 
 @main.route("/api/getItem/<int:id>")
 def getItem(id):

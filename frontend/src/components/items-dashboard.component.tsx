@@ -1,7 +1,6 @@
 'use client'
-import dayjs from 'dayjs';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Box } from '@mui/material';
 
@@ -15,13 +14,15 @@ import { MACHINE_IP } from '@/utils/machine-ip';
 
 const ItemsDashboard = ({status, sortKeyword}) => {
     const [items, setItems] = useState([]);
+    const [totalItems, setTotalItems] = useState(-1);
 
-    const [filteredItems, setFilteredItems] = useState([]);
-    const [tempItems, setTempItems] = useState([]);
+    const [pageNum, setPageNum] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(50);
 
-    const [searchBarInput, setSearchBarInput] = useState("");
-    const [excludeBarInput, setExcludeBarInput] = useState("");
-    const [ebayIDBarInput, setEbayIDBarInput] = useState("");
+    const searchBarInput = useRef("");
+    const excludeBarInput = useRef("");
+    const ebayIDBarInput = useRef("");
     const [chosenLocations, setChosenLocations] = useState([]);
 
     const [ebayIndexesToPrint, setEbayIndexesToPrint] = useState([]);
@@ -31,112 +32,65 @@ const ItemsDashboard = ({status, sortKeyword}) => {
 
     // Gets item based on page status.
     useEffect(() => {
-        const ebayItemsEndPoints = {
-            Active: "getAllActiveItems",
-            Completed: "getAllSoldItems",
-            NotPaid: "getAllNotPaidItems",
-            Found: "getAllFoundItems",
-            Shipped: "getAllShippedItems",
-            Deleted: "getAllDeletedItems"
+        fetchItemsFromDatabase();
+    }, [pageNum, itemsPerPage, chosenLocations]);
+
+    const fetchItemsFromDatabase = () => {
+        const ebayStatusEndpoints = ["active", "completed", "notpaid", "found", "shipped", "deleted"]
+
+        if (!ebayStatusEndpoints.includes(status.toLowerCase())) {
+            return;
         }
-        
-        axios.get(MACHINE_IP + ":5000" + "/api/" + ebayItemsEndPoints[status]).then((res) => {
+
+        let config = {
+            headers: {
+                "Search-Include": searchBarInput.current.value,
+                "Search-Exclude": excludeBarInput.current.value,
+                "ebayID-Include": ebayIDBarInput.current.value,
+                "Locations": chosenLocations
+            }
+        } 
+
+        let itemsAndDataURL = `${MACHINE_IP}:5000/api/getItemsAndData/${status}/${pageNum}?per_page=${itemsPerPage}`
+        axios.get(itemsAndDataURL, config).then((res) => {
             setItems(res.data["items"]);
+            setTotalItems(res.data["total"]);
+            setTotalPages(res.data["total_pages"])
         })
-    }, []);
-
-    // Sorts items by date.
-    useEffect(() => {
-        if (!items) return;
-
-        // Sorts filtered items by listed_date or date_sold.
-        items.sort((a,b) => {
-            const dateAinSec = dayjs(a[sortKeyword]).unix();
-            const dateBinSec = dayjs(b[sortKeyword]).unix();
-            if (dateAinSec < dateBinSec) {
-                return 1;
-            } else if (dateAinSec > dateBinSec) {
-                return -1;
-            } else {
-                return 0;
-            }
-        })
-        setFilteredItems(items);
-    },[items])
-
-    useEffect(() => {
-        setTempItems(filteredItems);
-    },[filteredItems])
-
-    // Filters item based on user input.
-    useEffect(() => {
-        // Filter items depending on search field(s).
-        setTempItems(filteredItems.filter((item) => {
-            const itemTitle = item["title"].toLowerCase();
-            const itemLocation = item["location"];
-
-            // Search bar filter.
-            if (searchBarInput != "") {
-                const searchBarKeywords = searchBarInput.split(" ");
-                for (let i=0; i< searchBarKeywords.length; i++) {
-                    if (!itemTitle.includes(searchBarKeywords[i].toLowerCase())) {
-                        return false;
-                    }
-                }
-            }
-
-            // Exclude bar filter.
-            if (excludeBarInput != "") {
-                const excludeBarKeywords = excludeBarInput.split(" ");
-                for (let i=0; i< excludeBarKeywords.length; i++) {
-                    if (itemTitle.includes(excludeBarKeywords[i])) {
-                        return false;
-                    }
-                }
-            }
-
-            // Location checkbox filter. 
-            if (itemLocation == null && chosenLocations.includes("")) {
-            }
-            else if (chosenLocations.length > 0 && !chosenLocations.includes(itemLocation)) {
-                return false;
-            }
-
-            // Ebay ID bar filter.
-            if (ebayIDBarInput != "" && !item["id"].toString().includes(ebayIDBarInput)) {
-                return false;
-            }
-
-            return true;
-        }))
-    }, [searchBarInput, excludeBarInput, chosenLocations, ebayIDBarInput]);
+    }
 
     // Resets checkboxes 
     useEffect(() => {
         // Sets all the checkboxes to false whenever tempItems is changed.
-        setEbayIndexesToPrint(tempItems.map(() => { return false }))
+        setEbayIndexesToPrint(items.map(() => { return false }))
         setMasterIndex(false);
-    }, [tempItems])
+    }, [items])
     
     return (
-        <Box sx={{width: '100%', display: 'flex'}}>  {/* Items-dashboard */}
+        <Box sx={{width: '100%', display: 'flex', flexDirection: 'column'}}>  {/* Items-dashboard */}
             <FilterSideBar 
                 excludeBarInput={excludeBarInput} 
-                setExcludeBarInput={setExcludeBarInput} 
                 chosenLocations={chosenLocations} 
                 setChosenLocations={setChosenLocations} 
                 ebayIDBarInput={ebayIDBarInput} 
-                setEbayIDBarInput={setEbayIDBarInput}
+                handleSubmit={fetchItemsFromDatabase}
             />
 
             <ItemsList 
-                items={tempItems} 
+                items={items}
+                totalItems={totalItems}
                 searchBarInput={searchBarInput} 
-                setSearchBarInput={setSearchBarInput} 
+                // setSearchBarInput={setSearchBarInput} 
                 ebayIndexesToPrint={ebayIndexesToPrint} 
                 setEbayIndexesToPrint={setEbayIndexesToPrint} 
                 masterIndex={masterIndex} 
                 setMasterIndex={setMasterIndex}
+                handleSubmit={fetchItemsFromDatabase}
+                pageNum={pageNum}
+                setPageNum={setPageNum}
+                itemsPerPage={itemsPerPage}
+                setItemsPerPage={setItemsPerPage}
+                totalPages={totalPages}
             />
         </Box>
     );

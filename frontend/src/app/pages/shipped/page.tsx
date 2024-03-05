@@ -3,7 +3,7 @@ import ItemsDashboard from "@/components/items-dashboard.component";
 
 const Shipped = () => {
     return (
-        <ItemsDashboard status="Shipped" sortKeyword="last_checked_on_ebay_date"/>
+        <ItemsDashboard status="shipped" sortKeyword="last_checked_on_ebay_date"/>
     )
 }
 

@@ -1,5 +1,4 @@
-import { Box, Typography } from '@mui/material';
-import {TextField} from '@mui/material';
+import { Box, Typography, TextField, Stack, Pagination } from '@mui/material';
 
 import Item from './item.component';
 import ItemsListSelectBox from './items-list-select-box/items-list-select-box.component';
@@ -10,13 +9,20 @@ import { getSidebarSettings } from '@/app/context/sidebar.context';
 
 
 const ItemsList = ({
-    items, 
+    items,
+    totalItems,
     searchBarInput, 
-    setSearchBarInput, 
+    // setSearchBarInput, 
     ebayIndexesToPrint, 
     setEbayIndexesToPrint, 
     masterIndex, 
-    setMasterIndex
+    setMasterIndex,
+    handleSubmit,
+    pageNum,
+    setPageNum,
+    itemsPerPage,
+    setItemsPerPage,
+    totalPages
 }) => {
     const {mobileView} = getSidebarSettings();
 
@@ -27,12 +33,15 @@ const ItemsList = ({
                 position: 'absolute',
                 left: mobileView ? undefined : '400px',
                 ml: mobileView ? undefined : '1rem',
-                pb: '64px'
+                pb: '80px'
             }}
         >
             <TextField 
-                value={searchBarInput}
-                onChange={(event) => {setSearchBarInput(event.target.value)}}
+                // value={searchBarInput}
+                // onChange={(event) => {setSearchBarInput(event.target.value)}}
+                // id="searchBarInput"
+                inputRef={searchBarInput}
+                onKeyDown={(event) => {event.key === 'Enter' && handleSubmit(event)}}
                 variant="filled"
                 color={items.length == 0 ? "warning" : "success"}
                 autoComplete='off'
@@ -40,7 +49,7 @@ const ItemsList = ({
                 label="Search by item title..."
                 sx={{mt: mobileView ? undefined : '16px'}} 
             />
-            <Typography sx={{textAlign: 'end'}}>{items.length} items found...</Typography>
+            <Typography sx={{textAlign: 'end'}}>{totalItems} items found...</Typography>
 
             <Box>
                 <Box sx={{display: 'flex', gap: '1rem'}}>
@@ -83,6 +92,20 @@ const ItemsList = ({
                     }
                 </Box>
             </Box>
+
+            <Stack spacing={2}>
+                <Pagination 
+                    count={totalPages}
+                    color="primary"
+                    onChange={(event, newPageNum) => {setPageNum(newPageNum)}}
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        pt: '16px'
+                    }}
+                />
+            </Stack>
+
         </Box>
     )
 }

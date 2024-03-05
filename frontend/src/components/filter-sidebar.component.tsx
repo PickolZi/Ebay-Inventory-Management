@@ -18,12 +18,11 @@ import { MACHINE_IP } from "@/utils/machine-ip";
 
 
 const FilterSideBar = ({
-    excludeBarInput, 
-    setExcludeBarInput, 
+    excludeBarInput,  
     chosenLocations, 
     setChosenLocations, 
     ebayIDBarInput, 
-    setEbayIDBarInput
+    handleSubmit
 }) => {
     const {mobileView, isSidebarOpen, setIsSidebarOpen} = getSidebarSettings();
     const [locations, setLocations] = useState([])
@@ -39,6 +38,10 @@ const FilterSideBar = ({
         // Else, remove location from chosenLocations[].
         let chosenLocation = locations[index];
         let checked = event.target.checked
+
+        if (chosenLocation == "") {
+            chosenLocation = "N/A";
+        }
 
         let tmpLocations = [...chosenLocations]
         if (checked && !tmpLocations.includes(chosenLocation)) {
@@ -73,18 +76,18 @@ const FilterSideBar = ({
                 <TextField
                     label="Exclude keywords"
                     size="small"
-                    value={excludeBarInput}
                     sx={{mt:'8px'}}
-                    onChange={(event) => setExcludeBarInput(event.target.value.toLowerCase())}
+                    inputRef={excludeBarInput}
+                    onKeyDown={(event) => {event.key === 'Enter' && handleSubmit()}}
                 />
 
                 <TextField
                     label="Search by Ebay ID"
                     type="number"
                     size="small"
-                    value={ebayIDBarInput}
                     sx={{mt:'8px'}}
-                    onChange={(event) => setEbayIDBarInput(event.target.value)}
+                    onKeyDown={(event) => {event.key === 'Enter' && handleSubmit()}}
+                    inputRef={ebayIDBarInput}
                 />
 
                 <Box mt='8px' width="100%" height="calc(100% - 164px)">  {/* 104px is the height of the text + 2 textfields above. */}
