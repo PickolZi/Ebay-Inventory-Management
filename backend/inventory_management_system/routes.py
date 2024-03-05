@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from sqlalchemy import select, and_, or_, func
+from sqlalchemy import select, not_, and_, or_, func, desc
 from flask_cors import cross_origin
 from flask import Flask, render_template, request, Blueprint, request, redirect, url_for, jsonify
 from .models import Item, Url, Users
@@ -82,6 +82,88 @@ def getAllItemsAndData():
         )
 
     return jsonify({'items': output, 'total': len(output)})
+
+@main.route("/api/getItemsAndData/<string:status>/<int:page>")
+def getItemsAndData(status, page):
+    ITEM_STATUSES = {
+        "active": "Active", 
+        "completed": "Completed", 
+        "notpaid": "Not Paid", 
+        "found": "Found", 
+        "shipped": "Shipped", 
+        "deleted": "Deleted"
+    }  # Values in k,v pair represents status string in database. Has to be exact, couldn't have used .capitalize() method on 'not paid' without writing messy code.
+
+    status = status.lower()
+    if status not in ITEM_STATUSES.keys():
+        return "Invalid item status provided", 404
+
+    per_page=25
+    if "per_page" in request.args:
+        try:
+            per_page = int(request.args["per_page"])
+        except Exception:
+            pass
+
+    # Order by conditions. Order by listed date or sold/deleted date
+    sorting = Item.listed_date
+    if status != "active":
+        sorting = Item.last_checked_on_ebay_date
+
+    # Where conditions. Title includes, title excludes, locations.
+    search_include = request.headers["Search-Include"].strip().lower() if "Search-Include" in request.headers else False
+    search_exclude = request.headers["Search-Exclude"].strip().lower() if "Search-Exclude" in request.headers else False
+    locations = request.headers["Locations"].strip().lower() if "Locations" in request.headers else False
+
+    conditions_status = True
+    conditions_include = True
+    conditions_exclude = True
+    conditions_locations = True
+
+    if status:
+        conditions_status = (Item.status == ITEM_STATUSES[status])
+    if search_include:
+        conditions_include = and_(*[Item.title.contains(include_item) for include_item in search_include.split(" ")])
+    if search_exclude:
+        conditions_exclude = not_(or_(*[Item.title.contains(include_item) for include_item in search_exclude.split(" ")]))
+    if locations:
+        locations = [location for location in locations.split(" ")]
+        if "n/a" in locations:
+            locations[locations.index("n/a")] = None
+            locations.append("")
+        conditions_locations = or_(*[func.lower(Item.location) == location for location in locations])
+    
+    conditions = and_(conditions_status, conditions_include, conditions_exclude, conditions_locations)
+
+    items = db.paginate(
+        db.select(Item)
+            .where(conditions)
+            .order_by(desc(sorting)),
+        per_page=per_page,
+        page=page
+    )
+
+    output = []
+    for item in items.items:
+        # image_urls = [image_url.image_url for image_url in item.image_url]
+        image_urls = item.image_url[0].image_url if len(item.image_url) >= 1 else ""
+        output.append(
+            {
+                'id': item.id,
+                'title': item.title,
+                'price': item.price,
+                'status': item.status,
+                'sku': item.sku,
+                'listed_date': item.listed_date,
+                'ebay_url': item.ebay_url,
+                'location': item.location,
+                'last_updated_date': item.last_updated_date,
+                'last_checked_on_ebay_date': item.last_checked_on_ebay_date,
+                'image_urls': image_urls,
+            }
+        )
+
+    return jsonify({'items': output, 'total': items.total, 'total_pages': items.pages})
 
 @main.route("/api/getAllActiveItems")
 def getAllActiveItemsAndData():

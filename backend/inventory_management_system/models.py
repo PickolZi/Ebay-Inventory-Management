@@ -17,8 +17,8 @@ class Item(db.Model):
 
     # Will be given default values
     location = Column("location", String, default="")
-    last_updated_date = Column("last_updated_date", db.DateTime, default=datetime.now)
-    last_checked_on_ebay_date = Column("last_checked_on_ebay_date", db.DateTime, default=datetime.now)
+    last_updated_date = Column("last_updated_date", db.DateTime, default=datetime.now)  # updated each time an attribute such as the item location or dimensions is updated from the frontend.
+    last_checked_on_ebay_date = Column("last_checked_on_ebay_date", db.DateTime, default=datetime.now)  # updated each time cronjob script is ran, checking if the item is still active on ebay.
     length = Column("length", Float, default=0)
     width = Column("width", Float, default=0)
     height = Column("height", Float, default=0)
