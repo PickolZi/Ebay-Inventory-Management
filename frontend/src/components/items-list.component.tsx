@@ -12,7 +12,6 @@ const ItemsList = ({
     items,
     totalItems,
     searchBarInput, 
-    // setSearchBarInput, 
     ebayIndexesToPrint, 
     setEbayIndexesToPrint, 
     masterIndex, 
@@ -37,9 +36,6 @@ const ItemsList = ({
             }}
         >
             <TextField 
-                // value={searchBarInput}
-                // onChange={(event) => {setSearchBarInput(event.target.value)}}
-                // id="searchBarInput"
                 inputRef={searchBarInput}
                 onKeyDown={(event) => {event.key === 'Enter' && handleSubmit(event)}}
                 variant="filled"

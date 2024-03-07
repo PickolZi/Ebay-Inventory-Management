@@ -2,7 +2,8 @@
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 
-import { Box } from '@mui/material';
+import { Box, Fab } from '@mui/material';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 import FilterSideBar from './filter-sidebar.component';
 import ItemsList from './items-list.component';
@@ -92,6 +93,18 @@ const ItemsDashboard = ({status, sortKeyword}) => {
                 setItemsPerPage={setItemsPerPage}
                 totalPages={totalPages}
             />
+
+            <Fab color="primary"
+                sx={{position: 'fixed', right: '2rem', bottom: 'calc(2rem + 56px)', zIndex: 9999}}
+                onClick={() => {window.scrollTo({
+                    top: 0,
+                    left: 0,
+                    behavior: "smooth"
+                  })}}
+            >
+                <ArrowUpwardIcon />
+            </Fab>
+
         </Box>
     );
 }

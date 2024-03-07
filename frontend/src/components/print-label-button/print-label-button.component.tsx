@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 
 import LabelQRCode from "../label-qr-code/label-qr-code.component";
 
-import styles from "./print-label-button.module.css";
+import { Box, Button } from "@mui/material";
 
 
 const PrintLabelButton = ({itemData}) => {
@@ -67,13 +67,13 @@ const PrintLabelButton = ({itemData}) => {
 
 
     return (
-        <div>
-            <button className={styles.print_label_button} onClick={handlePrint}>Print Label</button>
+        <Box>
+            <Button variant="contained" onClick={handlePrint}>Print Label</Button>
             
-            <div id="labelQRCode" style={{display: 'none'}}>
+            <Box id="labelQRCode" style={{display: 'none'}}>
                 <LabelQRCode itemID={itemData["id"]} />
-            </div>
-        </div>
+            </Box>
+        </Box>
     )
 }
 

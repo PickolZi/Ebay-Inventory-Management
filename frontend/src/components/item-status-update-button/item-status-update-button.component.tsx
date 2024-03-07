@@ -1,11 +1,10 @@
 import axios from "axios";
 import { useContext } from "react";
-
+import { UserAuthContext } from "@/app/context/user.context";
 import { MACHINE_IP } from "@/utils/machine-ip";
 
-import { UserAuthContext } from "@/app/context/user.context";
+import { Button } from "@mui/material";
 
-import styles from "./item-status-update-button.module.css";
 
 const ItemStatusUpdateButton = ({itemID, itemData, setItemData, setErrorMessage, status, buttonText, backgroundColor}) => {
     const { userJWTToken } = useContext(UserAuthContext);
@@ -26,12 +25,9 @@ const ItemStatusUpdateButton = ({itemID, itemData, setItemData, setErrorMessage,
     }
 
     return (
-        <button 
-            className={styles.deleted_button} 
-            onClick={handleItemStatusButton} 
-            style={{backgroundColor}}>
-                {buttonText}
-        </button>
+        <Button variant="outlined" onClick={handleItemStatusButton} sx={{backgroundColor: backgroundColor, color: 'black'}}>
+            {buttonText}
+        </Button>
     )
 }
 

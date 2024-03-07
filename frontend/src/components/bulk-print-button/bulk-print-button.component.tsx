@@ -1,7 +1,7 @@
-
-import styles from "./bulk-print-button.module.css";
-
 import dayjs from "dayjs";
+
+import { Button } from "@mui/material";
+
 
 const BulkPrintButton = ({ebayIndexesToPrint, ebayItems}) => {
 
@@ -76,7 +76,7 @@ const BulkPrintButton = ({ebayIndexesToPrint, ebayItems}) => {
     }
 
     return (
-        <button className={styles.bulk_print_button} onClick={handlePrint}>Bulk Print Labels</button>
+        <Button variant="contained" onClick={handlePrint}>Bulk Print Labels</Button>
     )
 }
 
