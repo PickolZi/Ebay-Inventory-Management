@@ -1,4 +1,4 @@
-import ItemsDashboard from "@/components/items-dashboard.component";
+import ItemsDashboard from "@/components/items-dashboard/items-dashboard.component";
 
 
 const Sold = () => {

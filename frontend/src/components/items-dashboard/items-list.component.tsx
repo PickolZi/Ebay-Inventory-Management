@@ -2,8 +2,8 @@ import { Box, Typography, TextField, Stack, Pagination } from '@mui/material';
 
 import Item from './item.component';
 import ItemsListSelectBox from './items-list-select-box/items-list-select-box.component';
-import BulkPrintButton from './bulk-print-button/bulk-print-button.component';
-import LabelQRCode from './label-qr-code/label-qr-code.component';
+import BulkPrintButton from './bulk-print-button.component';
+import LabelQRCode from '../global/label-qr-code.component';
 
 import { getSidebarSettings } from '@/app/context/sidebar.context';
 
@@ -48,22 +48,30 @@ const ItemsList = ({
             <Typography sx={{textAlign: 'end'}}>{totalItems} items found...</Typography>
 
             <Box>
-                <Box sx={{display: 'flex', gap: '1rem'}}>
-                    <ItemsListSelectBox 
-                        role="master" 
-                        ebayIndexesToPrint={ebayIndexesToPrint} 
-                        setEbayIndexesToPrint={setEbayIndexesToPrint}
-                        masterIndex={masterIndex}
-                        setMasterIndex={setMasterIndex}
-                        index="N/A" 
-                    />
-                    <Typography>Select All</Typography>
-                    <BulkPrintButton ebayIndexesToPrint={ebayIndexesToPrint} ebayItems={items}/>
-                </Box>
-                <Box sx={{display: 'flex', flexDirection: 'column', gap:'8px'}}>
+                {   
+                    !mobileView &&
+                    <Box sx={{display: 'flex', gap: '1rem', mb: '0.5rem'}}>
+                        <ItemsListSelectBox 
+                            role="master" 
+                            ebayIndexesToPrint={ebayIndexesToPrint} 
+                            setEbayIndexesToPrint={setEbayIndexesToPrint}
+                            masterIndex={masterIndex}
+                            setMasterIndex={setMasterIndex}
+                            index="N/A" 
+                        />
+                        {/* <Typography>Select All</Typography> */}
+                        <BulkPrintButton ebayIndexesToPrint={ebayIndexesToPrint} ebayItems={items} />
+                    </Box>
+                }
+                <Box 
+                    sx={{
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        gap:'0.25rem',
+                    }}>
                     {items ? items.map((item, index) => {
                         return (
-                            <Box key={item["id"]} sx={{display: 'flex'}}>
+                            <Box key={item["id"]} sx={{display: 'flex', gap: '1rem'}}>
                                 <ItemsListSelectBox 
                                     role="basic" 
                                     ebayIndexesToPrint={ebayIndexesToPrint} 

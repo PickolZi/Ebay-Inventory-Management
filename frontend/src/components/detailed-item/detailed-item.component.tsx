@@ -5,13 +5,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 import ImageGallery from "react-image-gallery";
-import DetailedItemForm from "../detailed-item-form.component";
-import PrintLabelButton from "../print-label-button/print-label-button.component";
+import DetailedItemForm from "./detailed-item-form.component";
+import PrintLabelButton from "./print-label-button.component";
 
 import { MACHINE_IP } from "../../utils/machine-ip";
-import styles from "./detailed-item.module.css"
-import ItemStatusUpdateButton from "../item-status-update-button/item-status-update-button.component";
-import { Box, Typography, CircularProgress  } from "@mui/material";
+
+import ItemStatusUpdateButton from "./item-status-update-button.component";
+import { Paper, Box, Typography, CircularProgress  } from "@mui/material";
 
 import { getSidebarSettings } from "@/app/context/sidebar.context";
 
@@ -38,10 +38,10 @@ const getLowerResEbayImage = (ebay_url) => {
 
 const DetailedItemsChangeStatusButtons = ({itemData, setItemData, setErrorMessage}) => {
     return (
-        <Box>
+        <Box sx={{my: '1rem'}}>
             {
                 itemData["status"] != "Active" && 
-                <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
                     {
                         itemData["status"] != "Completed" &&
                         <ItemStatusUpdateButton 
@@ -143,17 +143,28 @@ const DetailedItems = ({params}) => {
     }, [itemData])
 
     return (
-        <Box sx={{display: 'flex', flexDirection: mobileView ? 'column' : undefined}}>
+        <Paper elevation={4} 
+            sx={{
+                display: 'flex', 
+                flexDirection: mobileView ? 'column' : undefined,
+                pb: '6rem'
+            }}
+        >
             {loading && <CircularProgress size={'5rem'}/>}
             
             {itemImages && 
-                <Box sx={{width: mobileView ? '100%' :'50%'}}>
+                <Box 
+                    sx={{
+                        width: mobileView ? '100%' :'50%', 
+                        my: mobileView ? '-0.5rem' : '1rem',
+                        ml: mobileView ? '' : '0.5rem'
+                    }}>
                     <ImageGallery items={itemImages} />
                 </Box>
             }
 
             {itemData && 
-                <Box sx={{width: mobileView ? '100%' : '50%', px: '1rem', boxSizing: 'border-box'}}>
+                <Box sx={{width: mobileView ? '100%' : '50%', px: '0.5rem', boxSizing: 'border-box'}}>
                     <DetailedItemsChangeStatusButtons 
                         itemData={itemData}
                         setItemData={setItemData}
@@ -161,16 +172,16 @@ const DetailedItems = ({params}) => {
                     />                   
 
                     <Box>
-                        <Typography>Title: {itemData["title"]}</Typography>
-                        <Typography>Status: {itemData["status"]}</Typography>
-                        <Typography>Price: {itemData["price"]}</Typography>
-                        <Typography>Listed Date: {dateFormatter(itemData["listed_date"])}</Typography>
+                        <Typography><b>Title:</b> {itemData["title"]}</Typography>
+                        <Typography><b>Status:</b> {itemData["status"]}</Typography>
+                        <Typography><b>Price:</b> {itemData["price"]}</Typography>
+                        <Typography><b>Listed Date:</b> {dateFormatter(itemData["listed_date"])}</Typography>
                         {
                             itemData["status"] != "Active" &&
-                            <Typography>Date Sold: {dateFormatter(itemData["last_checked_on_ebay_date"])}</Typography>
+                            <Typography><b>Date Sold:</b> {dateFormatter(itemData["last_checked_on_ebay_date"])}</Typography>
                         }
-                        <Typography>SKU: {itemData["sku"]}</Typography>
-                        <Typography>Ebay ID: {itemData["id"]}</Typography>
+                        <Typography><b>SKU:</b> {itemData["sku"]}</Typography>
+                        <Typography><b>Ebay ID:</b> {itemData["id"]}</Typography>
                         <Link href={itemData["ebay_url"]} target="_blank">Ebay item page</Link>
                     </Box>
 
@@ -181,17 +192,16 @@ const DetailedItems = ({params}) => {
                         setErrorMessage={setErrorMessage} 
                     />
 
-                    { errorMessage && <p>{errorMessage}</p> }
+                    { errorMessage && <Typography>{errorMessage}</Typography> }
 
                     { !mobileView && <PrintLabelButton itemData={itemData} /> }
                     
-
                 </Box>
             }
 
-            { (!itemData && !loading) && <h1>no item data</h1> }
+            { (!itemData && !loading) && <h1>No item data exists for this ebay ID.</h1> }
 
-        </Box>
+        </Paper>
     )
 }
 

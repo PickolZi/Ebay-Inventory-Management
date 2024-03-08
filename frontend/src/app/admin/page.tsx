@@ -5,7 +5,7 @@ import { UserAuthContext } from '../context/user.context';
 
 import axios from 'axios';
 
-import { Box, Button } from '@mui/material';
+import { Typography, Box, Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 import { MACHINE_IP } from "@/utils/machine-ip";
@@ -118,8 +118,8 @@ const Admin = () => {
 
 
     return (
-        <Box sx={{ margin: "auto",width: "66vw", height: "75vh", position: "relative"}}>
-            Welcome to the Admin Dashboard!
+        <Box sx={{ margin: "auto", width: "66vw", height: "75vh", position: "relative", pb: '8rem'}}>
+            <Typography>Welcome to the Admin Dashboard!</Typography>
             <DataGrid 
                 rows={users}
                 columns={columns}

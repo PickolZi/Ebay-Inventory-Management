@@ -55,7 +55,7 @@ const DetailedItemForm = ({itemsID, itemData, setItemData, setErrorMessage}) => 
     }
 
     return (
-        <Box sx={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+        <Box sx={{display: 'flex', flexDirection: 'column', gap: '8px', mt:'16px'}}>
             <TextField 
                 autoComplete="off" 
                 label="length (in.)" 

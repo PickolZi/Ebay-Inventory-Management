@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-import LabelQRCode from "../label-qr-code/label-qr-code.component";
+import LabelQRCode from "../global/label-qr-code.component";
 
 import { Box, Button } from "@mui/material";
 
@@ -67,7 +67,7 @@ const PrintLabelButton = ({itemData}) => {
 
 
     return (
-        <Box>
+        <Box sx={{mt: '8px'}}>
             <Button variant="contained" onClick={handlePrint}>Print Label</Button>
             
             <Box id="labelQRCode" style={{display: 'none'}}>
