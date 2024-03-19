@@ -1,27 +1,35 @@
 import Link from 'next/link';
 import { getSidebarSettings } from '@/app/context/sidebar.context';
+import { ItemInterface, SideBarContextInterface } from '../interfaces';
 
 import { Box, Typography, Paper } from '@mui/material';
 
 import dayjs from "dayjs";
 
-const dateFormatter = (date) => {
+const dateFormatter = (date:string):string => {
     const date_string = dayjs(date).subtract(8, "hours").toString();
     const date_array = date_string.split(" ")
     const date_format = date_array[2] + " " + date_array[1] + ", " + date_array[3]
     return date_format;
 }
 
-const getLowerResEbayImage = (ebay_url) => {
+const getLowerResEbayImage = (ebay_url:string | string[]):string => {
     // Given original ebay image url, format it to request the smaller formatted ebay image.
+    if (ebay_url instanceof Array) {
+        ebay_url = ebay_url[0]
+    }
+
     let ebay_url_pieces = ebay_url.split("/")
     let ebay_special_code = ebay_url_pieces[7]
     let res = `https://i.ebayimg.com/images/g/${ebay_special_code}/s-l400.jpg`
     return res;
 }
 
-const Item = ({item}) => {
-    const {mobileView} = getSidebarSettings();
+const Item:React.FC<{
+    item: ItemInterface
+}> = ({item}) => {
+    const sideBarContextValue:SideBarContextInterface|null = getSidebarSettings();
+    const mobileView = sideBarContextValue !== null ? sideBarContextValue.mobileView : true;
 
     return (
         <Box sx={{width: '100%'}}>

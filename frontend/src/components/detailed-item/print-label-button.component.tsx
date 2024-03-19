@@ -4,8 +4,10 @@ import LabelQRCode from "../global/label-qr-code.component";
 
 import { Box, Button } from "@mui/material";
 
+import { ItemInterface } from "../interfaces";
 
-const PrintLabelButton = ({itemData}) => {
+
+const PrintLabelButton:React.FC<{itemData: ItemInterface}> = ({itemData}) => {
     const handlePrint = () => {
         // Window Settings
         // const labelWidth = 567;
@@ -25,10 +27,10 @@ const PrintLabelButton = ({itemData}) => {
         const stockNumber = "A_____"
         const location = itemData["location"] ? itemData["location"] : "___"
         const eBayItemNumber = itemData["id"]
-        const length = itemData["length"] && itemData["length"] != "0" ? itemData["length"] : "___"
-        const width = itemData["width"] && itemData["width"] != "0" ? itemData["width"] : "___"
-        const height = itemData["height"] && itemData["height"] != "0" ? itemData["height"] : "___"
-        const weight = itemData["weight"] && itemData["weight"] != "0" ? itemData["weight"] : "___"
+        const length = itemData["length"] ? itemData["length"] : "___"
+        const width = itemData["width"] ? itemData["width"] : "___"
+        const height = itemData["height"] ? itemData["height"] : "___"
+        const weight = itemData["weight"] ? itemData["weight"] : "___"
         const listerInitial = itemData["sku"] ? itemData["sku"][1] : "___"
 
         const allanSKU = `SKU[${listerInitial}][${month}/${day}/${year}][___][${stockNumber}]`
@@ -52,10 +54,10 @@ const PrintLabelButton = ({itemData}) => {
                     <h1>[${length}x${width}x${height}] ${weight} LBS</h1>
                     <h1>${allanSKU}</h1>
                     <div class="labelQRCode">
-                        ${document.getElementById("labelQRCode").innerHTML}
-                        ${document.getElementById("labelQRCode").innerHTML}
-                        ${document.getElementById("labelQRCode").innerHTML}
-                        ${document.getElementById("labelQRCode").innerHTML}
+                        ${document?.getElementById("labelQRCode")?.innerHTML}
+                        ${document?.getElementById("labelQRCode")?.innerHTML}
+                        ${document?.getElementById("labelQRCode")?.innerHTML}
+                        ${document?.getElementById("labelQRCode")?.innerHTML}
                     </div>
                 </div>
             `)

@@ -3,7 +3,7 @@ import ItemsDashboard from "@/components/items-dashboard/items-dashboard.compone
 
 const Active = () => {
     return (
-        <ItemsDashboard status="active" sortKeyword="listed_date"/>
+        <ItemsDashboard status="active" />
     )
 }
 

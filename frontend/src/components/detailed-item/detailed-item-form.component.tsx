@@ -7,15 +7,28 @@ import { MACHINE_IP } from "@/utils/machine-ip";
 
 import { Box, TextField, Button } from "@mui/material";
 
-const DetailedItemForm = ({itemsID, itemData, setItemData, setErrorMessage}) => {
-    const [length, setLength] = useState();
-    const [width, setWidth] = useState();
-    const [height, setHeight] = useState();
-    const [weight, setWeight] = useState();
-    const [location, setLocation] = useState();
-    const [itemChange, setItemChange] = useState(false);
+import { ItemInterface, UserAuthInterface } from "../interfaces";
 
-    const { userJWTToken } = useContext(UserAuthContext);
+const DetailedItemForm:React.FC<{
+    itemsID: string
+    itemData: ItemInterface
+    setItemData: React.Dispatch<React.SetStateAction<ItemInterface | null>>
+    setErrorMessage: React.Dispatch<React.SetStateAction<string>>
+}> = ({
+    itemsID, 
+    itemData, 
+    setItemData, 
+    setErrorMessage
+}) => {
+    const [length, setLength] = useState<number>();
+    const [width, setWidth] = useState<number>();
+    const [height, setHeight] = useState<number>();
+    const [weight, setWeight] = useState<number>();
+    const [location, setLocation] = useState<string>();
+    const [itemChange, setItemChange] = useState<boolean>(false);
+
+    const userAuthContext:UserAuthInterface|null = useContext(UserAuthContext);
+    const userJWTToken = userAuthContext ? userAuthContext.userJWTToken : null; 
 
     useEffect(() => {
         setLength(itemData["length"]);
@@ -25,7 +38,7 @@ const DetailedItemForm = ({itemsID, itemData, setItemData, setErrorMessage}) => 
         setLocation(itemData["location"]);
     }, [itemData])
 
-    const handleFormSubmit = (event) => {
+    const handleFormSubmit = (event:React.MouseEvent<HTMLElement>) => {
         event.preventDefault();
         setItemChange(false);
         
@@ -60,25 +73,25 @@ const DetailedItemForm = ({itemsID, itemData, setItemData, setErrorMessage}) => 
                 autoComplete="off" 
                 label="length (in.)" 
                 type="number" value={length} 
-                onChange={(e) => {setItemChange(true); setLength(e.target.value)}} 
+                onChange={(e) => {setItemChange(true); setLength(parseInt(e.target.value))}} 
             />
             <TextField 
                 autoComplete="off" 
                 label="width (in.)" 
                 type="number" value={width} 
-                onChange={(e) => {setItemChange(true); setWidth(e.target.value)}} 
+                onChange={(e) => {setItemChange(true); setWidth(parseInt(e.target.value))}} 
             />
             <TextField 
                 autoComplete="off" 
                 label="height (in.)" 
                 type="number" value={height} 
-                onChange={(e) => {setItemChange(true); setHeight(e.target.value)}} 
+                onChange={(e) => {setItemChange(true); setHeight(parseInt(e.target.value))}} 
             />
             <TextField 
                 autoComplete="off" 
                 label="weight (lb.)" 
                 type="number" value={weight} 
-                onChange={(e) => {setItemChange(true); setWeight(e.target.value)}} 
+                onChange={(e) => {setItemChange(true); setWeight(parseInt(e.target.value))}} 
             />
             <TextField 
                 autoComplete="off" 

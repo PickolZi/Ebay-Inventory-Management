@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,7 +12,20 @@ import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import BassetLogo from "../../../../public/assets/bassetLogo.jpg";
 
-const AvatarDropdown = ({anchor, setAnchor, email, role}) => {
+import { UserInterface } from "@/components/interfaces";
+
+
+const AvatarDropdown:React.FC<{
+    anchor: HTMLElement | null,
+    setAnchor: React.Dispatch<React.SetStateAction<HTMLElement | null>>,
+    email: string,
+    role: string,
+}> = ({
+    anchor, 
+    setAnchor, 
+    email, 
+    role
+}) => {
     return (
         <Popper
             sx={{ width: '240px', zIndex: 1200 }}
@@ -25,7 +38,7 @@ const AvatarDropdown = ({anchor, setAnchor, email, role}) => {
                 {                        
                     role == "admin" ?
                     <SupervisedUserCircleIcon sx={{width: '96px', height: '96px'}} />
-                : role == "owner" ?
+                : role == "owner" ? 
                     // <AccountCircleIcon sx={{width: '96px', height: '96px'}} />
                     <Image width={96} height={96} alt="Basset Owner Role" src={BassetLogo} />    
                 : 
@@ -45,19 +58,19 @@ const AvatarDropdown = ({anchor, setAnchor, email, role}) => {
     )
 }
 
-const Avatar = ({userInfo}) => {
-    const uid = userInfo["uid"];
-    const email = userInfo["email"];
-    const role = userInfo["role"];
+const Avatar:React.FC<{userInfo:UserInterface|null}> = ({userInfo}) => {
+    const uid = userInfo ? userInfo["uid"] : "";
+    const email = userInfo ? userInfo["email"] : "GUEST";
+    const role = userInfo ? userInfo["role"] : "USER";
 
-    const [anchor, setAnchor] = useState(null)
-    const handleClick = (event) => {
+    const [anchor, setAnchor] = useState<HTMLElement | null>(null)
+    const handleClick = (event:React.MouseEvent<HTMLElement>) => {
         setAnchor(anchor ? null : event.currentTarget);
     }
 
     return (
         <ClickAwayListener
-            onClickAway={() => {setAnchor(false)}}
+            onClickAway={() => {setAnchor(null)}}
         >
             <Box>
                 <MUIAvatar
@@ -75,7 +88,12 @@ const Avatar = ({userInfo}) => {
                     }   
                     
                 </MUIAvatar>
-                <AvatarDropdown anchor={anchor} setAnchor={setAnchor} email={email} role={role} />
+                <AvatarDropdown 
+                    anchor={anchor} 
+                    setAnchor={setAnchor} 
+                    email={email} 
+                    role={role} 
+                />
             </Box>
         </ClickAwayListener>
     )

@@ -11,14 +11,17 @@ import { UserAuthContext } from "../context/user.context";
 import { signInUserWithEmailAndPassword } from "@/utils/firebase";
 
 import { Box, TextField, Typography, Button } from "@mui/material";
+import { UserAuthInterface } from "@/components/interfaces";
 
 
 const SignIn = () => {
-    const { userAuth } = useContext(UserAuthContext);
+    const userAuthContext:UserAuthInterface|null = useContext(UserAuthContext);
+    const userAuth = userAuthContext ? userAuthContext.userAuth : null; 
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleLogin = async (event) => {
+    const handleLogin = async (event:React.MouseEvent<HTMLElement>) => {
         event.preventDefault();
         await signInUserWithEmailAndPassword(email, password).then((user) => {
             console.log("user signed in successfully!")

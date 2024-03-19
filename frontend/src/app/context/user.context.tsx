@@ -9,25 +9,17 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import { MACHINE_IP } from "@/utils/machine-ip";
 
+import { User as FirebaseUser } from "firebase/auth";
+import { UserAuthInterface, UserInfoInterface } from "@/components/interfaces";
 
-export const UserAuthContext = createContext({
-    userAuth: null,
-    setUserAuth: () => {},
-    userJWTToken: null,
-    setUserJWTToken: () => {}
-});
 
-const initalUserInfo = {
-    uid: "",
-    email: "",
-    role: ""
-}
+export const UserAuthContext = createContext<UserAuthInterface | null>(null);
 
-export const UserAuthProvider = ({children}) => {
-    const [userAuth, setUserAuth] = useState("");
-    const [userJWTToken, setUserJWTToken ] = useState("")
-    const [userInfo, setUserInfo] = useState(initalUserInfo)
-    const value = {userAuth, setUserAuth, userJWTToken, setUserJWTToken, userInfo}
+export const UserAuthProvider:React.FC<{children: React.ReactNode}> = ({children}) => {
+    const [userAuth, setUserAuth] = useState<FirebaseUser | null>(null);
+    const [userJWTToken, setUserJWTToken ] = useState<string | null>("")
+    const [userInfo, setUserInfo] = useState<UserInfoInterface | null>(null)
+    const value:UserAuthInterface = {userAuth, setUserAuth, userJWTToken, setUserJWTToken, userInfo}
 
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {

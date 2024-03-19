@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getSidebarSettings } from '@/app/context/sidebar.context';
+import { SideBarContextInterface } from '../interfaces';
 
 import { 
     Box, 
@@ -17,15 +18,25 @@ import {
 import { MACHINE_IP } from "@/utils/machine-ip";
 
 
-const FilterSideBar = ({
+const FilterSideBar:React.FC<{
+    excludeBarInput: React.MutableRefObject<HTMLInputElement | undefined>, 
+    chosenLocations: string[],
+    setChosenLocations: React.Dispatch<React.SetStateAction<string[]>>,
+    ebayIDBarInput: React.MutableRefObject<HTMLInputElement | undefined>,
+    handleSubmit: () => void,
+}> = ({
     excludeBarInput,  
     chosenLocations, 
     setChosenLocations, 
     ebayIDBarInput, 
     handleSubmit
 }) => {
-    const {mobileView, isSidebarOpen, setIsSidebarOpen} = getSidebarSettings();
-    const [locations, setLocations] = useState([])
+    const sideBarContextValue:SideBarContextInterface|null = getSidebarSettings();
+    const mobileView = sideBarContextValue !== null ? sideBarContextValue.mobileView : true;
+    const isSidebarOpen = sideBarContextValue !== null ? sideBarContextValue.isSidebarOpen : true;
+    const setIsSidebarOpen = sideBarContextValue !== null ? sideBarContextValue.setIsSidebarOpen : () => {};
+
+    const [locations, setLocations] = useState<string[]>([])
 
     useEffect(() => {
         axios.get(MACHINE_IP + ":5000" + "/api/getAllLocations").then((res) => {
@@ -33,10 +44,10 @@ const FilterSideBar = ({
         })
     }, []);
 
-    const locationHandler = (event, index) => {
+    const locationHandler = (event:React.ChangeEvent<HTMLInputElement>, index:number) => {
         // If checkbox is checked, include location in chosenLocations[]
         // Else, remove location from chosenLocations[].
-        let chosenLocation = locations[index];
+        let chosenLocation:string = locations[index];
         let checked = event.target.checked
 
         if (chosenLocation == "") {

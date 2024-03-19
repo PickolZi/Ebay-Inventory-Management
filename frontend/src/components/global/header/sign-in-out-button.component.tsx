@@ -1,10 +1,11 @@
 'use client'
+import React from "react";
 import { Box, Button } from "@mui/material"
 import Link from "next/link";
 
 import { signOutUser } from "@/utils/firebase";
 
-const SignInOutButton = ({buttonType}) => {
+const SignInOutButton:React.FC<{buttonType: string}> = ({buttonType}) => {
     return (
         <Box>
             {

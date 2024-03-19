@@ -2,11 +2,16 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useMediaQuery } from "@mui/material";
 
-const SidebarContext = createContext(true);
+import React from 'react';
 
-export const SidebarProvider = ({children}) => {
-    const mobileView = !useMediaQuery('(min-width: 1024px)')
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+import { SideBarContextInterface } from "@/components/interfaces";
+
+
+export const SidebarContext = createContext<SideBarContextInterface | null>(null);
+
+export const SidebarProvider:React.FC<{children: React.ReactNode}> = ({children}) => {
+    const mobileView = !useMediaQuery<boolean>('(min-width: 1024px)')
+    const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
     useEffect(() => {
         if (mobileView) {
@@ -20,7 +25,8 @@ export const SidebarProvider = ({children}) => {
         setIsSidebarOpen(!isSidebarOpen);
     }
 
-    const value = {mobileView, isSidebarOpen, setIsSidebarOpen, toggleSidebar}
+    const value:SideBarContextInterface = {mobileView, isSidebarOpen, setIsSidebarOpen, toggleSidebar}
+
     return (
         <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>
     )

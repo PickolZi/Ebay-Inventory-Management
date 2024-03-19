@@ -1,6 +1,6 @@
 'use client'
 import axios from 'axios';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Box, Fab } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -8,28 +8,26 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import FilterSideBar from './filter-sidebar.component';
 import ItemsList from './items-list.component';
 
-import { getSidebarSettings } from '@/app/context/sidebar.context';
-
 import { MACHINE_IP } from '@/utils/machine-ip';
 
+import { ItemInterface } from '../interfaces';
 
-const ItemsDashboard = ({status, sortKeyword}) => {
-    const [items, setItems] = useState([]);
-    const [totalItems, setTotalItems] = useState(-1);
 
-    const [pageNum, setPageNum] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(50);
+const ItemsDashboard:React.FC<{ status: string }> = ({status}) => {
+    const [items, setItems] = useState<ItemInterface[]>([]);
+    const [totalItems, setTotalItems] = useState<number>(-1);
 
-    const searchBarInput = useRef("");
-    const excludeBarInput = useRef("");
-    const ebayIDBarInput = useRef("");
-    const [chosenLocations, setChosenLocations] = useState([]);
+    const [pageNum, setPageNum] = useState<number>(1);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const [itemsPerPage, setItemsPerPage] = useState<number>(50);
 
-    const [ebayIndexesToPrint, setEbayIndexesToPrint] = useState([]);
-    const [masterIndex, setMasterIndex] = useState(false);
+    const searchBarInput = useRef<HTMLInputElement>();
+    const excludeBarInput = useRef<HTMLInputElement>();
+    const ebayIDBarInput = useRef<HTMLInputElement>();
+    const [chosenLocations, setChosenLocations] = useState<string[]>([]);
 
-    const { mobileView } = getSidebarSettings();
+    const [ebayIndexesToPrint, setEbayIndexesToPrint] = useState<boolean[]>([]);
+    const [masterIndex, setMasterIndex] = useState<boolean>(false);
 
     // Gets item based on page status.
     useEffect(() => {
@@ -45,9 +43,9 @@ const ItemsDashboard = ({status, sortKeyword}) => {
 
         let config = {
             headers: {
-                "Search-Include": searchBarInput.current.value,
-                "Search-Exclude": excludeBarInput.current.value,
-                "ebayID-Include": ebayIDBarInput.current.value,
+                "Search-Include": searchBarInput?.current?.value,
+                "Search-Exclude": excludeBarInput?.current?.value,
+                "ebayID-Include": ebayIDBarInput?.current?.value,
                 "Locations": chosenLocations
             }
         } 
@@ -62,13 +60,13 @@ const ItemsDashboard = ({status, sortKeyword}) => {
 
     // Resets checkboxes 
     useEffect(() => {
-        // Sets all the checkboxes to false whenever tempItems is changed.
+        // Sets all the checkboxes to false whenever search filters are updated.
         setEbayIndexesToPrint(items.map(() => { return false }))
         setMasterIndex(false);
     }, [items])
     
     return (
-        <Box sx={{width: '100%', display: 'flex', flexDirection: 'column'}}>  {/* Items-dashboard */}
+        <Box sx={{width: '100%', display: 'flex', flexDirection: 'column'}}>
             <FilterSideBar 
                 excludeBarInput={excludeBarInput} 
                 chosenLocations={chosenLocations} 
@@ -81,7 +79,6 @@ const ItemsDashboard = ({status, sortKeyword}) => {
                 items={items}
                 totalItems={totalItems}
                 searchBarInput={searchBarInput} 
-                // setSearchBarInput={setSearchBarInput} 
                 ebayIndexesToPrint={ebayIndexesToPrint} 
                 setEbayIndexesToPrint={setEbayIndexesToPrint} 
                 masterIndex={masterIndex} 

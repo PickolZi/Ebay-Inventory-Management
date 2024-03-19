@@ -1,11 +1,21 @@
 import dayjs from "dayjs";
+import React from "react";
 
 import { Button } from "@mui/material";
 
+import { ItemInterface } from "../interfaces";
 
-const BulkPrintButton = ({ebayIndexesToPrint, ebayItems}) => {
 
-    const generateLabelDataForIndividualEbayItem = (index, itemData, labelPrintingWindow) => {
+const BulkPrintButton:React.FC<{
+    ebayIndexesToPrint: boolean[],
+    ebayItems: ItemInterface[],
+}> = ({ebayIndexesToPrint, ebayItems}) => {
+
+    const generateLabelDataForIndividualEbayItem = (index:number, itemData:ItemInterface, labelPrintingWindow:Window|null) => {
+        if (labelPrintingWindow == null) {
+            return;
+        }
+
 
         // Item info
         const date_string = dayjs().subtract(8, "hours");
@@ -16,10 +26,10 @@ const BulkPrintButton = ({ebayIndexesToPrint, ebayItems}) => {
         const stockNumber = "A_____"
         const location = itemData["location"] ? itemData["location"] : "___"
         const eBayItemNumber = itemData["id"]
-        const length = itemData["length"] && itemData["length"] != "0" ? itemData["length"] : "___"
-        const width = itemData["width"] && itemData["width"] != "0" ? itemData["width"] : "___"
-        const height = itemData["height"] && itemData["height"] != "0" ? itemData["height"] : "___"
-        const weight = itemData["weight"] && itemData["weight"] != "0" ? itemData["weight"] : "___"
+        const length = itemData["length"] ? itemData["length"] : "___"
+        const width = itemData["width"] ? itemData["width"] : "___"
+        const height = itemData["height"] ? itemData["height"] : "___"
+        const weight = itemData["weight"] ? itemData["weight"] : "___"
         const listerInitial = itemData["sku"] ? itemData["sku"][1] : "___"
 
         const allanSKU = `SKU[${listerInitial}][${month}/${day}/${year}][___][${stockNumber}]`
@@ -40,10 +50,10 @@ const BulkPrintButton = ({ebayIndexesToPrint, ebayItems}) => {
                     <h1>[${length}x${width}x${height}] ${weight} LBS</h1>
                     <h1>${allanSKU}</h1>
                     <div class="labelQRCode">
-                        ${document.getElementById("labelQRCode_"+index).innerHTML}
-                        ${document.getElementById("labelQRCode_"+index).innerHTML}
-                        ${document.getElementById("labelQRCode_"+index).innerHTML}
-                        ${document.getElementById("labelQRCode_"+index).innerHTML}
+                        ${document?.getElementById("labelQRCode_"+index)?.innerHTML}
+                        ${document?.getElementById("labelQRCode_"+index)?.innerHTML}
+                        ${document?.getElementById("labelQRCode_"+index)?.innerHTML}
+                        ${document?.getElementById("labelQRCode_"+index)?.innerHTML}
                     </div>
                 </div>
             `)
@@ -61,7 +71,8 @@ const BulkPrintButton = ({ebayIndexesToPrint, ebayItems}) => {
         const labelDimension = `width=${labelWidth}, height=${labelHeight}, left=${left}, top=${top}`
                 
         let labelPrintingWindow = window.open("", "", labelDimension);
-        if (labelPrintingWindow) {
+
+        if (labelPrintingWindow != null) {
             labelPrintingWindow.document.open()
 
             ebayIndexesToPrint.map((ebayBoolean, index) => {

@@ -16,14 +16,20 @@ import { Box, TextField, Typography, Button } from "@mui/material";
 
 import { MACHINE_IP } from "@/utils/machine-ip";
 
+import { UserAuthInterface } from "@/components/interfaces";
+import { User as FirebaseUser } from "firebase/auth";
+
 
 const SignUp = () => {
-    const { userAuth } = useContext(UserAuthContext);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+    const userAuthContext:UserAuthInterface|null = useContext(UserAuthContext);
+    const userAuth = userAuthContext ? userAuthContext.userAuth : null; 
 
-    const handleSignUp = async (event) => {
+
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+    const handleSignUp = async (event:React.MouseEvent<HTMLElement>) => {
         event.preventDefault();
 
         if (!email.match(/^\S+@\S+\.\S+$/)) {
@@ -52,7 +58,7 @@ const SignUp = () => {
     useEffect(() => {
         // If user is logged in, redirect them to home page.
         if (userAuth) {
-            const getUserJWT = async (userAuth) => {
+            const getUserJWT = async (userAuth:FirebaseUser) => {
                 return await userAuth.getIdToken();
             }
 

@@ -1,7 +1,7 @@
 'use client'
 import axios from "axios";
 import dayjs from "dayjs";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
 import ImageGallery from "react-image-gallery";
@@ -15,7 +15,15 @@ import { Paper, Box, Typography, CircularProgress  } from "@mui/material";
 
 import { getSidebarSettings } from "@/app/context/sidebar.context";
 
-const dateFormatter = (date) => {
+import { ItemInterface, SideBarContextInterface } from "../interfaces";
+
+
+interface ItemImageInterface {
+    original: string,
+    thumbnail: string
+}
+
+const dateFormatter = (date:string) => {
     const date_string = dayjs(date).subtract(8, "hours").toString();
     let date_array = date_string.split(" ")
     let temp = date_array[1]
@@ -27,7 +35,7 @@ const dateFormatter = (date) => {
     return date_format;
 }
 
-const getLowerResEbayImage = (ebay_url) => {
+const getLowerResEbayImage = (ebay_url:string) => {
     // Given original ebay image url, format it to request the smaller formatted ebay image.
     let ebay_url_pieces = ebay_url.split("/")
     let ebay_special_code = ebay_url_pieces[7]
@@ -35,8 +43,15 @@ const getLowerResEbayImage = (ebay_url) => {
     return res;
 }
 
-
-const DetailedItemsChangeStatusButtons = ({itemData, setItemData, setErrorMessage}) => {
+const DetailedItemsChangeStatusButtons:React.FC<{
+    itemData: ItemInterface
+    setItemData: React.Dispatch<React.SetStateAction<ItemInterface | null>>,
+    setErrorMessage: React.Dispatch<React.SetStateAction<string>>
+}> = ({
+    itemData, 
+    setItemData, 
+    setErrorMessage
+}) => {
     return (
         <Box sx={{my: '1rem'}}>
             {
@@ -109,14 +124,20 @@ const DetailedItemsChangeStatusButtons = ({itemData, setItemData, setErrorMessag
     )
 }
 
-const DetailedItems = ({params}) => {
+interface SidebarSettings {
+    mobileView: boolean;
+}
+
+const DetailedItems:React.FC<{params:{itemsID:string}}> = ({params}) => {
     const [itemsID, setItemsID] = useState(params.itemsID);
     const [loading, setLoading] = useState(true);
-    const [itemData, setItemData] = useState();
-    const [itemImages, setItemImages] = useState();
-    const [errorMessage, setErrorMessage] = useState("");
+    const [itemData, setItemData] = useState<ItemInterface | null>(null);
+    const [itemImages, setItemImages] = useState<ItemImageInterface[]>();
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
-    const {mobileView} = getSidebarSettings();
+    const sideBarContextValue:SideBarContextInterface|null = getSidebarSettings();
+    const mobileView = sideBarContextValue !== null ? sideBarContextValue.mobileView : true;
+    // const {mobileView} = useContext(SidebarContext)!;
 
     // Calls backend API to retrieve Item information given the item id.
     useEffect(() => {
@@ -134,12 +155,16 @@ const DetailedItems = ({params}) => {
     // Sets all the item images.
     useEffect(() => {
         if (!itemData) return;
-        setItemImages(itemData["image_urls"].map((imageURL) => {
-            return {
-                original: imageURL,
-                thumbnail: getLowerResEbayImage(imageURL)
-            }
-        }))
+
+        if (itemData["image_urls"] instanceof Array) {
+            setItemImages(itemData["image_urls"].map((imageURL:string) => {
+                return {
+                    original: imageURL,
+                    thumbnail: getLowerResEbayImage(imageURL)
+                }
+            }))
+        }
+
     }, [itemData])
 
     return (

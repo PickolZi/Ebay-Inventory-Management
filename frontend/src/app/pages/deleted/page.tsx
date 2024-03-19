@@ -3,7 +3,7 @@ import ItemsDashboard from "@/components/items-dashboard/items-dashboard.compone
 
 const Deleted = () => {
     return (
-        <ItemsDashboard status="deleted" sortKeyword="last_checked_on_ebay_date"/>
+        <ItemsDashboard status="deleted" />
     )
 }
 

@@ -3,7 +3,7 @@ import ItemsDashboard from "@/components/items-dashboard/items-dashboard.compone
 
 const Found = () => {
     return (
-        <ItemsDashboard status="Found" sortKeyword="last_checked_on_ebay_date"/>
+        <ItemsDashboard status="Found" />
     )
 }
 

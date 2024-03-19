@@ -1,7 +1,9 @@
+import React from "react";
 
 import DetailedItems from "@/components/detailed-item/detailed-item.component";
 
-const ItemPage = ({ params }) => {
+
+const ItemPage:React.FC<{params:{itemsID:string}}> = ({ params }) => {
 
     return (
         <DetailedItems params={params} />

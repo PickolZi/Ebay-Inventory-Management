@@ -5,9 +5,27 @@ import { MACHINE_IP } from "@/utils/machine-ip";
 
 import { Button } from "@mui/material";
 
+import { ItemInterface, UserAuthInterface } from "../interfaces";
 
-const ItemStatusUpdateButton = ({itemID, itemData, setItemData, setErrorMessage, status, buttonText, backgroundColor}) => {
-    const { userJWTToken } = useContext(UserAuthContext);
+const ItemStatusUpdateButton:React.FC<{
+    itemID: string | number,
+    itemData: ItemInterface,
+    setItemData: React.Dispatch<React.SetStateAction<ItemInterface | null>>,
+    setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
+    status: string,
+    buttonText: string,
+    backgroundColor: string,
+}> = ({
+    itemID, 
+    itemData, 
+    setItemData, 
+    setErrorMessage, 
+    status, 
+    buttonText, 
+    backgroundColor
+}) => {
+    const userAuthContext:UserAuthInterface|null = useContext(UserAuthContext);
+    const userJWTToken = userAuthContext ? userAuthContext.userJWTToken : null; 
 
     const handleItemStatusButton = () => {
         const data = {

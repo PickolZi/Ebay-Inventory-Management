@@ -7,8 +7,25 @@ import LabelQRCode from '../global/label-qr-code.component';
 
 import { getSidebarSettings } from '@/app/context/sidebar.context';
 
+import { ItemInterface, SideBarContextInterface } from '../interfaces';
+import React from 'react';
 
-const ItemsList = ({
+
+const ItemsList:React.FC<{
+    items: ItemInterface[],
+    totalItems: number,
+    searchBarInput: React.MutableRefObject<HTMLInputElement | undefined>,
+    ebayIndexesToPrint: boolean[],
+    setEbayIndexesToPrint: React.Dispatch<React.SetStateAction<boolean[]>>,
+    masterIndex: boolean,
+    setMasterIndex: React.Dispatch<React.SetStateAction<boolean>>,
+    handleSubmit: () => void,
+    pageNum: number,
+    setPageNum: React.Dispatch<React.SetStateAction<number>>,
+    itemsPerPage: number,
+    setItemsPerPage: React.Dispatch<React.SetStateAction<number>>,
+    totalPages: number,
+}> = ({
     items,
     totalItems,
     searchBarInput, 
@@ -23,8 +40,9 @@ const ItemsList = ({
     setItemsPerPage,
     totalPages
 }) => {
-    const {mobileView} = getSidebarSettings();
-
+    const sideBarContextValue:SideBarContextInterface|null = getSidebarSettings();
+    const mobileView = sideBarContextValue !== null ? sideBarContextValue.mobileView : true;
+    
     return (
         <Box 
             sx={{
@@ -37,7 +55,7 @@ const ItemsList = ({
         >
             <TextField 
                 inputRef={searchBarInput}
-                onKeyDown={(event) => {event.key === 'Enter' && handleSubmit(event)}}
+                onKeyDown={(event) => {event.key === 'Enter' && handleSubmit()}}
                 variant="filled"
                 color={items.length == 0 ? "warning" : "success"}
                 autoComplete='off'
@@ -57,7 +75,7 @@ const ItemsList = ({
                             setEbayIndexesToPrint={setEbayIndexesToPrint}
                             masterIndex={masterIndex}
                             setMasterIndex={setMasterIndex}
-                            index="N/A" 
+                            index={-1}
                         />
                         {/* <Typography>Select All</Typography> */}
                         <BulkPrintButton ebayIndexesToPrint={ebayIndexesToPrint} ebayItems={items} />

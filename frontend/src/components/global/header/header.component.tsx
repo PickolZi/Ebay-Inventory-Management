@@ -16,10 +16,17 @@ import Avatar from "./avatar.component";
 
 import MenuIcon from '@mui/icons-material/Menu';
 
+import { SideBarContextInterface, UserAuthInterface } from "@/components/interfaces";
+
 
 const Header = () => {    
-    const { userAuth, userInfo } = useContext(UserAuthContext);
-    const { mobileView, toggleSidebar } = getSidebarSettings();
+    const userAuthContext:UserAuthInterface|null = useContext(UserAuthContext);
+    const userAuth = userAuthContext ? userAuthContext.userAuth : null; 
+    const userInfo = userAuthContext ? userAuthContext.userInfo : null; 
+    
+    const sideBarContextValue:SideBarContextInterface|null = getSidebarSettings();
+    const mobileView = sideBarContextValue !== null ? sideBarContextValue.mobileView : true;
+    const toggleSidebar = sideBarContextValue !== null ? sideBarContextValue.toggleSidebar : () => {};
 
 
     return (

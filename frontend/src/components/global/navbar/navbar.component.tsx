@@ -23,15 +23,27 @@ import MapOutlinedIcon from '@mui/icons-material/MapOutlined';
 import MapIcon from '@mui/icons-material/Map';
 
 
+type PathRef = {
+    [key:string]: number
+}
+
+type NumOfItems = {
+    "Active"?: number,
+    "Completed"?: number,
+    "Not Paid"?: number,
+    "Shipped"?: number
+    "Deleted"?: number,
+    "Found"?: number,
+}
 
 const Navbar = () => {    
-    const [pageNum, setPageNum] = useState(999)
-    const [numOfItemsPerStatus, setNumOfItemsPerStatus] = useState({})
+    const [pageNum, setPageNum] = useState<number>(999)
+    const [numOfItemsPerStatus, setNumOfItemsPerStatus] = useState<NumOfItems | undefined>()
 
     // Fixes bug where the bottom navbar icon would always reset to Active when the page is refreshed.
     useEffect(() => {
-        let path = window.location.pathname;
-        let pathRef = {
+        let path:string = window.location.pathname;
+        let pathRef:PathRef = {
             "/pages/active": 0,
             "/pages/sold": 1,
             "/pages/notpaid": 2,
@@ -74,19 +86,19 @@ const Navbar = () => {
                 component={Link}
                 href="/pages/sold"
                 label="Sold" 
-                icon={<Badge color="primary" badgeContent={numOfItemsPerStatus["Completed"]}>{pageNum == 1 ? <PaidIcon /> : <PaidOutlinedIcon />}</Badge>}
+                icon={<Badge color="primary" badgeContent={numOfItemsPerStatus ? numOfItemsPerStatus["Completed"] : 0}>{pageNum == 1 ? <PaidIcon /> : <PaidOutlinedIcon />}</Badge>}
             />
             <BottomNavigationAction 
                 component={Link}
                 href="/pages/notpaid"
                 label="Not Paid"
-                 icon={<Badge color="primary" badgeContent={numOfItemsPerStatus["Not Paid"]}>{<MoneyOffCsredOutlinedIcon />}</Badge>}
+                 icon={<Badge color="primary" badgeContent={numOfItemsPerStatus ? numOfItemsPerStatus["Not Paid"] : 0}>{<MoneyOffCsredOutlinedIcon />}</Badge>}
             />
             <BottomNavigationAction 
                 component={Link}
                 href="/pages/found"
                 label="Found" 
-                icon={<Badge color="primary" badgeContent={numOfItemsPerStatus["Found"]}>{pageNum == 3 ? <BackHandIcon /> : <BackHandOutlinedIcon />}</Badge>}
+                icon={<Badge color="primary" badgeContent={numOfItemsPerStatus ? numOfItemsPerStatus["Found"] : 0}>{pageNum == 3 ? <BackHandIcon /> : <BackHandOutlinedIcon />}</Badge>}
             />
             <BottomNavigationAction 
                 component={Link}

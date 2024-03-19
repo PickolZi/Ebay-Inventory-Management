@@ -6,12 +6,13 @@ import { UserAuthContext } from '../context/user.context';
 import axios from 'axios';
 
 import { Typography, Box, Button } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridValidRowModel } from '@mui/x-data-grid';
 
 import { MACHINE_IP } from "@/utils/machine-ip";
 
+import { UserInterface, UserAuthInterface } from '@/components/interfaces';
 
-const columns = [
+const columns:GridColDef[] = [
     {
         field: 'id',
         headerName: 'UID',
@@ -44,7 +45,6 @@ const columns = [
                 ]
             }
         },
-        value: 'hi',
         flex: 1,
         editable: true,
         headerAlign: 'center',
@@ -55,16 +55,18 @@ const columns = [
 
 
 const Admin = () => {
-    const [users, setUsers] = useState([]);
-    const [errors, setErrors] = useState([]);
+    const [users, setUsers] = useState<UserInterface[]>([]);
+    const [error, setError] = useState<string>();
     const [wasRoleUpdated, setWasRoleUpdated] = useState(false);
-    const { userJWTToken } = useContext(UserAuthContext);
+
+    const userAuthContext:UserAuthInterface|null = useContext(UserAuthContext);
+    const userJWTToken = userAuthContext ? userAuthContext.userJWTToken : null; 
 
     // Sets the rows for the datagrid.
     useEffect(() => {
         axios.get(MACHINE_IP + ":5000" + "/api/firebase/getUsers").then((res) => {
             let tmpUsers = res.data["users"];
-            tmpUsers = tmpUsers.map((user) => {
+            tmpUsers = tmpUsers.map((user:UserInterface) => {
                 user["id"] = user["uid"]
                 delete user["uid"]
                 return user
@@ -74,8 +76,8 @@ const Admin = () => {
         })
     }, []);
 
-    const onCellEditCommit = (newRow, oldRow) => {    
-        let updatedUsers = users.map((user) => {
+    const onCellEditCommit = (newRow:GridValidRowModel, oldRow:GridValidRowModel) => {    
+        let updatedUsers:UserInterface[] = users.map((user:UserInterface) => {
             if (user.id == newRow.id) {
                 setWasRoleUpdated(true);
                 user.role = newRow.role;
@@ -88,8 +90,7 @@ const Admin = () => {
     }
 
     const handleRoleUpdates = () => {
-        console.log(users)
-        users.map((user) => {
+        users.map((user:UserInterface) => {
             if (user.updated) {
                 let data = {
                     JWT_TOKEN: userJWTToken,
@@ -102,13 +103,13 @@ const Admin = () => {
                 }).catch((err) => {
                     let statusCode = err.response.status;
                     if (statusCode == 403) {
-                        setErrors([...errors, "Permission denied. Please login."])
+                        setError("Permission denied. Please login.")
                         console.log("Permission denied.")
                     } else if (statusCode == 400 ) {
-                        setErrors([...errors, "Invalid request. Please refresh and try again."])
-                        console.log("Invalid option. Please refresh and try again.")
+                        setError("Invalid request. Please refresh and try again.")
+                        console.log("Invalid option. Please refresh and try again.", err)
                     } else {
-                        setErrors([...errors, "Failed to update user's role. Contact james."])
+                        setError("Failed to update user's role. Contact james.")
                         console.log("Failed to update user's role. Contact james.", err)
                     }  
                 })
