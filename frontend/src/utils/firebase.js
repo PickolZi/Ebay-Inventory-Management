@@ -4,12 +4,12 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: process.env.apiKey,
-  authDomain: process.env.authDomain,
-  projectId: process.env.projectId,
-  storageBucket: process.env.storageBucket,
-  messagingSenderId: process.env.messagingSenderId,
-  appId: process.env.appId
+  apiKey: "AIzaSyBGJZ8lDVRVHgag2OzelMYkFxvXiilSho8",
+  authDomain: "basset-itemiz.firebaseapp.com",
+  projectId: "basset-itemiz",
+  storageBucket: "basset-itemiz.appspot.com",
+  messagingSenderId: "1088813510540",
+  appId: "1:1088813510540:web:3dc39febfc392203b730a9"
 };
 
 // Initialize Firebase
