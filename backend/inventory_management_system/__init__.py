@@ -11,11 +11,10 @@ def create_app():
     cors = CORS(app)
     app.config['CORS_HEADERS'] = 'Content-Type'
 
-    # with open("SECRETS.json", "r") as file:
-    #     SECRETS = json.load(file)
+    with open("SECRETS.json", "r") as file:
+        SECRETS = json.load(file)
 
-    # app.config["SECRET_KEY"] = SECRETS.get('FLASK_SECRET_KEY')
-    app.config["SECRET_KEY"] = "7be1e1e0ae42c0e74724e2cf"
+    app.config["SECRET_KEY"] = SECRETS.get('FLASK_SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 
     db.init_app(app)

@@ -55,6 +55,23 @@ def getAllLocations():
         "locations": locations
     })
 
+@main.route("/api/getAllLocationsByStatus/<string:status>")
+def getAllLocationsByStatus(status):
+    possible_statuses = ["active", "completed", "notpaid", "found", "shipped", "deleted"]  # Completed means sold.
+
+    if status not in possible_statuses:
+        return "Incorrect status option.", 404
+    if status == "notpaid": status = "not paid"
+
+    locations = db.session.execute(db.select(Item.location).where(func.lower(Item.status)==status).distinct()).all()
+    locations = [location[0] for location in locations]
+    if None in locations: locations.remove(None)
+    locations.sort()
+
+    return jsonify({
+        "locations": locations
+    })
+
 @main.route("/api/getAllItems")
 def getAllItemsAndData():
     items = Item.query.all()
