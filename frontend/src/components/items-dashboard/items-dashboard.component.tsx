@@ -73,6 +73,7 @@ const ItemsDashboard:React.FC<{ status: string }> = ({status}) => {
                 setChosenLocations={setChosenLocations} 
                 ebayIDBarInput={ebayIDBarInput} 
                 handleSubmit={fetchItemsFromDatabase}
+                status={status}
             />
 
             <ItemsList 

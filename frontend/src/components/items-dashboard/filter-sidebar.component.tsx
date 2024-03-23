@@ -24,12 +24,14 @@ const FilterSideBar:React.FC<{
     setChosenLocations: React.Dispatch<React.SetStateAction<string[]>>,
     ebayIDBarInput: React.MutableRefObject<HTMLInputElement | undefined>,
     handleSubmit: () => void,
+    status: string,
 }> = ({
     excludeBarInput,  
     chosenLocations, 
     setChosenLocations, 
     ebayIDBarInput, 
-    handleSubmit
+    handleSubmit,
+    status
 }) => {
     const sideBarContextValue:SideBarContextInterface|null = getSidebarSettings();
     const mobileView = sideBarContextValue !== null ? sideBarContextValue.mobileView : true;
@@ -39,8 +41,13 @@ const FilterSideBar:React.FC<{
     const [locations, setLocations] = useState<string[]>([])
 
     useEffect(() => {
-        axios.get(MACHINE_IP + ":5000" + "/api/getAllLocations").then((res) => {
-            setLocations(res.data["locations"]);
+        axios.get(MACHINE_IP + ":5000" + `/api/getAllLocationsByStatus/${status}`).then((res) => {
+            let tmpLocations = res.data["locations"]
+            if (!tmpLocations.includes("")) {
+                // I want N/A location filter to be in all navigation statuses.
+                tmpLocations = ["", ...tmpLocations];
+            }
+            setLocations(tmpLocations);
         })
     }, []);
 
