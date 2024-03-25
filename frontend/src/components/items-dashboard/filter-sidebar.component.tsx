@@ -41,7 +41,7 @@ const FilterSideBar:React.FC<{
     const [locations, setLocations] = useState<string[]>([])
 
     useEffect(() => {
-        axios.get(MACHINE_IP + ":5000" + `/api/getAllLocationsByStatus/${status}`).then((res) => {
+        axios.get(MACHINE_IP + `/api/getAllLocationsByStatus/${status}`).then((res) => {
             let tmpLocations = res.data["locations"]
             if (!tmpLocations.includes("")) {
                 // I want N/A location filter to be in all navigation statuses.

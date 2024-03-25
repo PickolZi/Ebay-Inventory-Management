@@ -50,7 +50,7 @@ const ItemsDashboard:React.FC<{ status: string }> = ({status}) => {
             }
         } 
 
-        let itemsAndDataURL = `${MACHINE_IP}:5000/api/getItemsAndData/${status}/${pageNum}?per_page=${itemsPerPage}`
+        let itemsAndDataURL = `${MACHINE_IP}/api/getItemsAndData/${status}/${pageNum}?per_page=${itemsPerPage}`
         axios.get(itemsAndDataURL, config).then((res) => {
             setItems(res.data["items"]);
             setTotalItems(res.data["total"]);

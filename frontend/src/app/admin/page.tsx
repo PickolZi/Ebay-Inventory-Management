@@ -64,7 +64,7 @@ const Admin = () => {
 
     // Sets the rows for the datagrid.
     useEffect(() => {
-        axios.get(MACHINE_IP + ":5000" + "/api/firebase/getUsers").then((res) => {
+        axios.get(MACHINE_IP + "/api/firebase/getUsers").then((res) => {
             let tmpUsers = res.data["users"];
             tmpUsers = tmpUsers.map((user:UserInterface) => {
                 user["id"] = user["uid"]
@@ -97,7 +97,7 @@ const Admin = () => {
                     uid: user.id,
                     role: user.role
                 }
-                axios.post(MACHINE_IP + ":5000" + "/api/firebase/updateUserRole", data).then(() => {
+                axios.post(MACHINE_IP + "/api/firebase/updateUserRole", data).then(() => {
                     setWasRoleUpdated(false);
                     console.log("Updated user role successfully.")
                 }).catch((err) => {

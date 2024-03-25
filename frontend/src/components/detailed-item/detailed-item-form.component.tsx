@@ -51,7 +51,7 @@ const DetailedItemForm:React.FC<{
             "JWT_TOKEN": userJWTToken
         }
 
-        const endpoint = MACHINE_IP + ":5000" + "/api/editItem/" + itemsID;
+        const endpoint = MACHINE_IP + "/api/editItem/" + itemsID;
         axios.post(endpoint, body).then(() => {
             setItemData({
                 ...itemData,   

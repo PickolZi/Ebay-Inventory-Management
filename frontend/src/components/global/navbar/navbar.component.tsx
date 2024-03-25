@@ -61,7 +61,7 @@ const Navbar = () => {
     },[])
 
     useEffect(() => {
-        axios.get(MACHINE_IP + ":5000/api/getNumberOfItemsPerStatus").then((data) => {
+        axios.get(MACHINE_IP + "/api/getNumberOfItemsPerStatus").then((data) => {
             setNumOfItemsPerStatus(data.data)
         }).catch((err) => {
             console.log("Error when catching number of objects per status window.")

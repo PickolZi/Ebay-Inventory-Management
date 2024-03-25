@@ -142,7 +142,7 @@ const DetailedItems:React.FC<{params:{itemsID:string}}> = ({params}) => {
     // Calls backend API to retrieve Item information given the item id.
     useEffect(() => {
         setLoading(true);
-        axios.get(MACHINE_IP + ":5000" + "/api/getItem/" + itemsID).then((res) => {
+        axios.get(MACHINE_IP + "/api/getItem/" + itemsID).then((res) => {
             setItemData(res.data);
         }).catch((err) => {
             console.log("Error retrieving Item from database.", err)

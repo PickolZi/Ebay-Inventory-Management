@@ -64,7 +64,7 @@ const SignUp = () => {
 
             // Adds user to database.
             getUserJWT(userAuth).then((JWT_TOKEN) => {
-                axios.post(MACHINE_IP + ":5000" + "/api/firebase/addUser", {
+                axios.post(MACHINE_IP + "/api/firebase/addUser", {
                     JWT_TOKEN: JWT_TOKEN
                 });
             });

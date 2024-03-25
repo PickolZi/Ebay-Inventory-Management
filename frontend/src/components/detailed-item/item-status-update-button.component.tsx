@@ -33,7 +33,7 @@ const ItemStatusUpdateButton:React.FC<{
             "JWT_TOKEN": userJWTToken
         }
 
-        axios.post(MACHINE_IP + ":5000" + "/api/updateItemStatus/" + itemID, data).then((res) => {
+        axios.post(MACHINE_IP + "/api/updateItemStatus/" + itemID, data).then((res) => {
             if (res.data.includes("Status 200")) {
                 setItemData({...itemData, status})
             } 
