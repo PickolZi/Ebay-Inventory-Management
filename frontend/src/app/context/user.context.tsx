@@ -29,7 +29,7 @@ export const UserAuthProvider:React.FC<{children: React.ReactNode}> = ({children
                 setUserJWTToken(await user.getIdToken());
                 
                 // Grabs user's role from database because we can't store that information in firebase with the JWT.
-                axios.post(MACHINE_IP + ":5000" + "/api/firebase/getCurrentUser", {uid: user.uid}).then((userData) => {
+                axios.post(MACHINE_IP + "/api/firebase/getCurrentUser", {uid: user.uid}).then((userData) => {
                     setUserInfo(userData.data);
                 }).catch((err) => {
                     console.log("Error occured when setting user information from database using firebase uid.", err)
