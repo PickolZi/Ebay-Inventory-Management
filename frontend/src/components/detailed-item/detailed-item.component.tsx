@@ -1,8 +1,12 @@
 'use client'
 import axios from "axios";
 import dayjs from "dayjs";
-import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import React, { useState, useEffect } from "react";
+import { useContext } from "react";
+import { UserAuthContext } from "@/app/context/user.context";
+
+import { UserInfoInterface, UserAuthInterface } from "../interfaces";
 
 import ImageGallery from "react-image-gallery";
 import DetailedItemForm from "./detailed-item-form.component";
@@ -135,6 +139,9 @@ const DetailedItems:React.FC<{params:{itemsID:string}}> = ({params}) => {
     const [itemImages, setItemImages] = useState<ItemImageInterface[]>();
     const [errorMessage, setErrorMessage] = useState<string>("");
 
+    const userAuthContext:UserAuthInterface|null = useContext(UserAuthContext);
+    const userInfo:UserInfoInterface|null|undefined = userAuthContext?.userInfo;
+
     const sideBarContextValue:SideBarContextInterface|null = getSidebarSettings();
     const mobileView = sideBarContextValue !== null ? sideBarContextValue.mobileView : true;
     // const {mobileView} = useContext(SidebarContext)!;
@@ -167,66 +174,76 @@ const DetailedItems:React.FC<{params:{itemsID:string}}> = ({params}) => {
 
     }, [itemData])
 
+    useEffect(() => {
+        console.log("user info: ", userInfo?.role);
+    }, [userAuthContext])
+
     return (
-        <Paper elevation={4} 
-            sx={{
-                display: 'flex', 
-                flexDirection: mobileView ? 'column' : undefined,
-                pb: '6rem'
-            }}
-        >
-            {loading && <CircularProgress size={'5rem'}/>}
-            
-            {itemImages && 
-                <Box 
+        <>
+            { !userAuthContext?.userInfo?.role ? 
+                <Typography>User is not signed in.</Typography> 
+                    : 
+                <Paper elevation={4} 
                     sx={{
-                        width: mobileView ? '100%' :'50%', 
-                        my: mobileView ? '-0.5rem' : '1rem',
-                        ml: mobileView ? '' : '0.5rem'
-                    }}>
-                    <ImageGallery items={itemImages} />
-                </Box>
-            }
-
-            {itemData && 
-                <Box sx={{width: mobileView ? '100%' : '50%', px: '0.5rem', boxSizing: 'border-box'}}>
-                    <DetailedItemsChangeStatusButtons 
-                        itemData={itemData}
-                        setItemData={setItemData}
-                        setErrorMessage={setErrorMessage}
-                    />                   
-
-                    <Box>
-                        <Typography><b>Title:</b> {itemData["title"]}</Typography>
-                        <Typography><b>Status:</b> {itemData["status"]}</Typography>
-                        <Typography><b>Price:</b> {itemData["price"]}</Typography>
-                        <Typography><b>Listed Date:</b> {dateFormatter(itemData["listed_date"])}</Typography>
-                        {
-                            itemData["status"] != "Active" &&
-                            <Typography><b>Date Sold:</b> {dateFormatter(itemData["last_checked_on_ebay_date"])}</Typography>
-                        }
-                        <Typography><b>SKU:</b> {itemData["sku"]}</Typography>
-                        <Typography><b>Ebay ID:</b> {itemData["id"]}</Typography>
-                        <Link href={itemData["ebay_url"]} target="_blank">Ebay item page</Link>
-                    </Box>
-
-                    <DetailedItemForm 
-                        itemsID={itemsID} 
-                        itemData={itemData} 
-                        setItemData={setItemData} 
-                        setErrorMessage={setErrorMessage} 
-                    />
-
-                    { errorMessage && <Typography>{errorMessage}</Typography> }
-
-                    { !mobileView && <PrintLabelButton itemData={itemData} /> }
+                        display: 'flex', 
+                        flexDirection: mobileView ? 'column' : undefined,
+                        pb: '6rem'
+                    }}
+                >
+                    {loading && <CircularProgress size={'5rem'}/>}
                     
-                </Box>
+                    {itemImages && 
+                        <Box 
+                            sx={{
+                                width: mobileView ? '100%' :'50%', 
+                                my: mobileView ? '-0.5rem' : '1rem',
+                                ml: mobileView ? '' : '0.5rem'
+                            }}>
+                            <ImageGallery items={itemImages} />
+                        </Box>
+                    }
+
+                    {itemData && 
+                        <Box sx={{width: mobileView ? '100%' : '50%', px: '0.5rem', boxSizing: 'border-box'}}>
+                            <DetailedItemsChangeStatusButtons 
+                                itemData={itemData}
+                                setItemData={setItemData}
+                                setErrorMessage={setErrorMessage}
+                            />                   
+
+                            <Box>
+                                <Typography><b>Title:</b> {itemData["title"]}</Typography>
+                                <Typography><b>Status:</b> {itemData["status"]}</Typography>
+                                <Typography><b>Price:</b> {itemData["price"]}</Typography>
+                                <Typography><b>Listed Date:</b> {dateFormatter(itemData["listed_date"])}</Typography>
+                                {
+                                    itemData["status"] != "Active" &&
+                                    <Typography><b>Date Sold:</b> {dateFormatter(itemData["last_checked_on_ebay_date"])}</Typography>
+                                }
+                                <Typography><b>SKU:</b> {itemData["sku"]}</Typography>
+                                <Typography><b>Ebay ID:</b> {itemData["id"]}</Typography>
+                                <Link href={itemData["ebay_url"]} target="_blank">Ebay item page</Link>
+                            </Box>
+
+                            <DetailedItemForm 
+                                itemsID={itemsID} 
+                                itemData={itemData} 
+                                setItemData={setItemData} 
+                                setErrorMessage={setErrorMessage} 
+                            />
+
+                            { errorMessage && <Typography>{errorMessage}</Typography> }
+
+                            { !mobileView && <PrintLabelButton itemData={itemData} /> }
+                            
+                        </Box>
+                    }
+
+                    { (!itemData && !loading) && <h1>No item data exists for this ebay ID.</h1> }
+
+                </Paper>
             }
-
-            { (!itemData && !loading) && <h1>No item data exists for this ebay ID.</h1> }
-
-        </Paper>
+        </>
     )
 }
 
