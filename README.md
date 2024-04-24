@@ -1,6 +1,6 @@
 
 
-# [Itemiz](https://github.com/PickolZi/Ebay-Inventory-Management#ebay-inventory-management)
+# [ITEMIz](https://github.com/PickolZi/Ebay-Inventory-Management#ebay-inventory-management)
 # Purpose
 Do you have sell on ebay and have a massive inventory? If so then this web app is for you! Itemiz tracks your ebay inventory and automatically updates its database every hour while also checking for any sold or taken down items. Using our dashboard, you can view active, sold, and shipped items as well as edit their details to provide data about their measurements and location. 
 
