@@ -1,9 +1,11 @@
-
+import eMap from '../../../../../public/assets/svg'; 
 
 const Map = () => {
     return (
-        <h1>TEST!</h1>
-    )
+        <div>
+            <img src={eMap} alt="eMap" /> 
+        </div>
+    );
 }
 
 export default Map;
