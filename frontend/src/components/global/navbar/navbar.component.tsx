@@ -34,6 +34,7 @@ type NumOfItems = {
     "Shipped"?: number
     "Deleted"?: number,
     "Found"?: number,
+    "Map"?: number,    
 }
 
 const Navbar = () => {    
@@ -106,12 +107,12 @@ const Navbar = () => {
                 label="Shipped" 
                 icon={pageNum == 4 ? <LocalShippingIcon /> : <LocalShippingOutlinedIcon />}
             />
-            {/* <BottomNavigationAction 
+            <BottomNavigationAction 
                 component={Link}
                 href="/pages/map"
                 label="Map" 
                 icon={pageNum == 5 ? <MapIcon /> : <MapOutlinedIcon />}
-            /> */}
+            />
         </BottomNavigation>
     </>
     )
