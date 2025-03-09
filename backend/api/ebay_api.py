@@ -16,10 +16,13 @@ from xmlToJson import xmlToJsonParser
 
 
 ACCESS_TOKEN = ""
-SECRET_FILEPATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "SECRETS.json"))
+SECRET_FILEPATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "SECRETS.json")
+)
 # Load ebay API keys from SECRETS.json
 with open(SECRET_FILEPATH, "r") as f:
     cred = json.load(f)
+
 
 def pretty_print_json(json_data):
     print(json.dumps(json_data, indent=5))
@@ -56,18 +59,23 @@ def getAllEbayItemIDs():
 
         if "Errors" in json_data["GetMyeBaySellingResponse"].keys():
             return None
-        
-        numOfPages = int(json_data["GetMyeBaySellingResponse"]["ActiveList"]["PaginationResult"]["TotalNumberOfPages"])
 
-        ebay_items = json_data["GetMyeBaySellingResponse"]["ActiveList"]["ItemArray"]["Item"]
+        numOfPages = int(
+            json_data["GetMyeBaySellingResponse"]["ActiveList"]["PaginationResult"][
+                "TotalNumberOfPages"
+            ]
+        )
+
+        ebay_items = json_data["GetMyeBaySellingResponse"]["ActiveList"]["ItemArray"][
+            "Item"
+        ]
         for item in ebay_items:
             item_id = item["ItemID"]
             all_item_ids.append(int(item_id))
-        
+
         if page == numOfPages:
             break
-        page+= 1
-
+        page += 1
 
     return all_item_ids
 
@@ -101,52 +109,52 @@ def areSoldItems(total_ebay_ids):
     results = {}
 
     # API request
-    headers["X-EBAY-API-IAF-TOKEN"] = f"Bearer {ACCESS_TOKEN}"
-    headers["X-EBAY-API-SITE-ID"] = "0"
-    headers["X-EBAY-API-CALL-NAME"] = "GetItemStatus"
-    headers["X-EBAY-API-VERSION"] = "863"
-    headers["X-EBAY-API-REQUEST-ENCODING"] = "xml"
+    headers["X-EBAY-API-CALL-NAME"] = "GetMyeBaySelling"
+    entriesPerPage = 100
+    body = f"""
+        <?xml version="1.0" encoding="utf-8"?>
+        <GetMyeBaySellingRequest xmlns="urn:ebay:apis:eBLBaseComponents">
+            <ErrorLanguage>en_US</ErrorLanguage>
+            <WarningLevel>High</WarningLevel>
+        <SoldList>
+            <Pagination>
+            <EntriesPerPage>{entriesPerPage}</EntriesPerPage>
+            <PageNumber>1</PageNumber>
+            </Pagination>
+        </SoldList>
+        </GetMyeBaySellingRequest>
+    """
+    response = requests.post(EBAY_GET_ITEMS_ENDPOINT, headers=headers, data=body)
+    json_data = xmlToJsonParser(response.text)
+    confirmed_sold_items = set()
 
-    quotient = len(total_ebay_ids) // 20
-    remainder = len(total_ebay_ids) % 20
-    print(f"Calling API {quotient+1} times to see which items need to be removed...")
-    for i in range(quotient+1):
-        ebay_ids = total_ebay_ids[i*20:(i+1)*20]  # Can only do API calls in batches of 20
-        if i == quotient:
-            ebay_ids = total_ebay_ids[i*20:]
+    order_transactions = None
+    try:
+        order_transactions = json_data["GetMyeBaySellingResponse"]["SoldList"][
+            "OrderTransactionArray"
+        ]["OrderTransaction"]
+    except:
+        print("An error occured when trying to parse through recently sold.")
 
-        body = f"""<?xml version="1.0" encoding="utf-8"?>
-        <GetItemStatusRequest xmlns="urn:ebay:apis:eBLBaseComponents">"""
+    try:
+        for order in order_transactions:
+            sold_item_id = order["Transaction"]["Item"]["ItemID"]
+            confirmed_sold_items.add(int(sold_item_id))
+    except:
+        print(
+            "A problem occured with trying to parse through one of the recently sold items."
+        )
 
-        for ebay_id in ebay_ids:
-            body+= f"<ItemID>{ebay_id}</ItemID>"
+    print(f"Fetching past 100 sold items to see which ones are recently sold....")
 
-        body += "</GetItemStatusRequest>"
+    for ebay_id in total_ebay_ids:
+        if ebay_id in confirmed_sold_items:
+            results[ebay_id] = True
+        else:
+            results[ebay_id] = False
 
-        response = requests.post(EBAY_SHOPPING_GET_ITEMS_ENDPOINT, data=body, headers=headers)
-        json_data = xmlToJsonParser(response.text)["GetItemStatusResponse"]
-        # Handling Errors
-        RESPONSE_CODES = ["Success", "PartialFailure", "Failure"]
-        SERVER_RESPONSE_CODE = json_data["Ack"]
-
-        if SERVER_RESPONSE_CODE == RESPONSE_CODES[2]:
-            print("Failed to retrieve any sold ebay items.")
-            return None
-        elif SERVER_RESPONSE_CODE == RESPONSE_CODES[1]:
-            error_items = json_data["Errors"]["ErrorParameters"]["Value"].split(",")
-            results["Failures"] = error_items
-            print("Error when trying to find these ebay items:", error_items)
-
-        ebay_items = json_data["Item"]
-        if type(ebay_items) == dict:
-            ebay_items = [ebay_items]
-
-        # Key, Value: ebay id, boolean
-        for ebay_item in ebay_items:
-            item_id = ebay_item['ItemID']
-            status = ebay_item['ListingStatus']
-
-            results[item_id] = (status != "Active")
+    print(confirmed_sold_items)
+    print(results)
 
     return results
 
@@ -161,15 +169,17 @@ def generateAccessToken():
     EBAY_TOKEN_ENDPOINT = "https://api.ebay.com/identity/v1/oauth2/token"
     TOKEN_HEADERS = {
         "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Basic " + base64_string
+        "Authorization": "Basic " + base64_string,
     }
     TOKEN_BODY = {
         "grant_type": "refresh_token",
         "refresh_token": cred["refreshToken"],
-        "redirect_uri": cred["redirecturi"]
+        "redirect_uri": cred["redirecturi"],
     }
-    
-    response = requests.post(EBAY_TOKEN_ENDPOINT, headers=TOKEN_HEADERS, data=TOKEN_BODY)
+
+    response = requests.post(
+        EBAY_TOKEN_ENDPOINT, headers=TOKEN_HEADERS, data=TOKEN_BODY
+    )
 
     if response.status_code == 200:
         print("Access token retrieved successfully...")
@@ -187,7 +197,7 @@ def generateRefreshToken(user_code):
     # Given user_code, decode the user_code provided from the User Consent Page and call ebay endpoint to generate a new refresh token.
     # Ideally this function should only be manually called once every 1.5 years because that's when the refresh token expires.
 
-    """ URL FOR USER CONSENT PAGE.
+    """URL FOR USER CONSENT PAGE.
     https://auth.ebay.com/oauth2/authorize?client_id=JohSan-helloWor-PRD-1fcc2d46c-6fde8886&response_type=code&redirect_uri=Joh_San-JohSan-helloWor-irvlccp&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly
     """
     decoded_user_code = unquote(user_code)
@@ -200,15 +210,17 @@ def generateRefreshToken(user_code):
     EBAY_TOKEN_ENDPOINT = "https://api.ebay.com/identity/v1/oauth2/token"
     TOKEN_HEADERS = {
         "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Basic " + base64_string
+        "Authorization": "Basic " + base64_string,
     }
     TOKEN_BODY = {
         "grant_type": "authorization_code",
         "code": decoded_user_code,
-        "redirect_uri": cred["redirecturi"]
+        "redirect_uri": cred["redirecturi"],
     }
 
-    response = requests.post(EBAY_TOKEN_ENDPOINT, headers=TOKEN_HEADERS, data=TOKEN_BODY)
+    response = requests.post(
+        EBAY_TOKEN_ENDPOINT, headers=TOKEN_HEADERS, data=TOKEN_BODY
+    )
 
     if response.status_code == 400:
         print("User code failed. Please try another user code.")
@@ -228,20 +240,19 @@ if not ACCESS_TOKEN:
     sys.exit()
 
 EBAY_GET_ITEMS_ENDPOINT = "https://api.ebay.com/ws/api.dll"
-EBAY_SHOPPING_GET_ITEMS_ENDPOINT = "https://open.api.ebay.com/shopping" 
 headers = {
-        "X-EBAY-API-SITEID": "0",
-        "X-EBAY-API-COMPATIBILITY-LEVEL": "967",
-        "X-EBAY-API-CALL-NAME": None,
-        "X-EBAY-API-IAF-TOKEN": ACCESS_TOKEN
-    }
+    "X-EBAY-API-SITEID": "0",
+    "X-EBAY-API-COMPATIBILITY-LEVEL": "967",
+    "X-EBAY-API-CALL-NAME": None,
+    "X-EBAY-API-IAF-TOKEN": ACCESS_TOKEN,
+}
 
 
 if __name__ == "__main__":
     # total = getAllEbayItemIDs()
     # print(f"List of all IDs: {total}, total: {len(total)}")
     # print(f"Set of all IDs: {set(total)}, total: {len(set(total))}")
-    # print(areSoldItems([295673492242, 296005351800]))
+    # print(areSoldItems([297085378299, 296921764363]))
     # pretty_print_json(getEbayItem(295673492242))
     # total = getAllEbayItemIDs()
     # pretty_print_json(total)
