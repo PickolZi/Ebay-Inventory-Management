@@ -1,3 +1,3 @@
-echo "Running database backup"
 cur_date=$(date +'%Y-%m-%d')
-sqlite3 db.sqlite3 ".backup ./backups/$cur_date.sqlite3"
+echo "$cur_date: Running database backup"
+sqlite3 db.sqlite3 ".backup /home/pickolzi/Ebay-Inventory-Management/backend/instance/backups/$cur_date.sqlite3"
